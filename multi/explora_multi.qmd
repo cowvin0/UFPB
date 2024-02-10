@@ -8,5 +8,12 @@ library(tibble)
 ```
 
 ```{r}
-data <- readr::read_csv("School_Nutrition_Programs___Meal_Reimbursement_Information___Program_Year_2016-2017_20240131.csv")
+data <- readr::read_csv("School_Nutrition_Programs_-_Meal_Reimbursement_Information_-_Program_Year_2022-2023_20240210.csv")
+```
+
+```{r}
+data |> 
+  select(
+      c(ProgramYear, ReportType, CEID)
+  )
 ```
