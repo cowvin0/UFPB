@@ -1,0 +1,133 @@
+---
+title: "Atividade 1 - Planejamento de Experimento"
+author: Gabriel de Jesus Pereira
+format: pdf
+jupyter: python3
+echo: false
+message: false
+warning: false
+---
+
+```{python}
+import numpy as np
+import pandas as pd
+from IPython.display import Markdown
+from tabulate import tabulate
+```
+# Exercício 3.7
+
+The tensile strength of Portland cement is being studied.
+Four different mixing techniques can be used economically
+A completely randomized experiment was conducted and the following
+data were collected: 
+
+```{python}
+data = pd.DataFrame(
+        {
+         "Mixing Technique": list(range(1, 5)),
+         "1": [3129, 3200, 2800, 2600],
+         "2": [3000, 3300, 2900, 2700],
+         "3": [2865, 2975, 2985, 2600],
+         "4": [2890, 3150, 3050, 2765]
+        },
+      )
+
+```
+
+
+| Mixing Technique |  |  Tensile Strength $(lb/in^2)$ |  |  |
+|:---:|:---:|:---:|:---:|:---:|
+| 1 | 3129 | 3000 | 2865 | 2890 |
+| 2 | 3200 | 3300 | 2975 | 3150 |
+| 3 | 2800 | 2900 | 2985 | 3050 |
+| 4 | 2600 | 2700 | 2600 | 2765 |
+
+O enunciado da questão nos diz que a resistência à tração
+do cimento de Portland está sendo estudada. Diz também
+que quatro diferentes técnicas de misturas podem ser
+utilizadas de forma econômica. Após isso, nos dá dados das
+quatro diferentes misturas da resistência à tração do
+cimento.
+
+**(a)** Test the mixing techniques affect the
+strength of the cement. Use $\alpha = 0.05$.
+
+O item **(a)** pede para testar o efeito das técnicas de
+mistura na resistência à tração do cimento, com
+um nível de significância de 5%.
+
+O problema se trata de um experimento de fator único com
+$a = 4$ (quantidade de misturas diferentes) e $n = 4$
+(réplicas de resistência à tração do cimento). Como se
+trata de diferentes níveis de fator único que queremos
+comparar, devemos utilizar Análise de Variância.
+
+Calculando o total e a média para cada grupo:
+
+| Mixing Technique |      |  Tensile Strength $(lb/in^2)$ |      |      | $y_i$ | $\hat y_i$ |
+|:----------------:|:----:|:-----------------------------:|:----:|:----:|:-----:|:----------:|
+|         1        | 3129 |              3000             | 2865 | 2890 | 11884 |    2671    |
+|         2        | 3200 |              3300             | 2975 | 3150 | 12625 |   3156.25  |
+|         3        | 2800 |              2900             | 2985 | 3050 | 11735 |   2933.75  |
+|         4        | 2600 |              2700             | 2600 | 2765 | 10665 |   2666.25  |
+
+$y_{..} = 11884 + 12625 + 11735 + 10665 = 46909$
+
+$\hat y_{..} = \frac{2971.00 + 3156.25 + 2933.75 + 2666.25}{4} = 2931.8125$
+
+Em que:
+
+$y_{i.} = \sum_{j = 1}^{n} y_{ij}$: O total de observações em cada tratamento.
+
+$\bar y_{i.} = y_{i.}/n$: A média das observações em cada tratamento.
+
+$y_{..} = \sum_{i = 1}^{a} \sum_{j = 1}^{n} y_{ij}$: O total de todas as observações.
+
+$\bar y_{..} = y_{..}/N, N = a n$: A média de todas as observações.
+
+Soma total corrigida dos quadrados:
+
+$SS_T = \sum_{i = 1}^{4} \sum_{j = 1}^{4} \left(y_{ij} - \bar y_{..} \right)^2 = 643648.4375$
+
+$SS_{Treatments} = \frac{1}{4} \sum_{i = 1}^4 y_{i.}^4 - \frac{y_{..}^4}{16} = 489740.4375$
+
+$SS_E = SS_T - SS_{Treatments} = 643648.4375 - 489740.4375 = 153908$
+
+$MS_{Treatments} = \frac{SS_{Treatments}}{a - 1} = \frac{489740.4375}{4 - 1} = 163246.8125$
+
+$MS_{E} = \frac{SS_E}{N - a} = \frac{153908}{16 - 4} = 12825.667$
+
+$F_0 = \frac{MS_{Treatments}}{MS_{E}} = \frac{163246.8125}{12825.667} = 12.728$
+
+Agora construindo a tabela da ANOVA:
+
+| Souce of Variation | Sum of Squares | Degrees of Freedom | Mean Square |  $F_0$ |
+|:------------------:|:--------------:|:------------------:|:-----------:|:------:|
+|  Mixing Techniques |   489740.4375  |          3         | 163246.8125 | 12.728 |
+|        Error       |     153908     |         12         |  12825.667  |        |
+|        Total       |   643648.4375  |         15         |             |        |
+
+Calculando a $F$ no R, chegamos em $F_{0.05, 3, 12} = 3.49$, $\left(p-valor  = 4.88e-4 \right)$
+
+Dessa forma, vemos que $F_0 \left( 12.728 \right) > F_{0.05, 3, 12} \left(3.49 \right)$.
+Assim, rejeitamos $H_0$ e concluímos que as diferentes
+técnicas de misturas afetam a resistência à tração do cimento.
+
+**(b)** Construct a graphical display as described
+in Section 3.5.3 to compare the mean tensile strengths
+for the four mixing techniques. What are your conclusions?
+
+**(c)** Use Fisher LSD method with $\alpha = 0.05$ to make
+comparisons between pairs of means.
+
+$LSD = t_{0.25, 12} \sqrt{\frac{2MS_E}{4}} = 2.179 \sqrt{\frac{2 x 12825.667}{4}} = 174.4947$
+
+**(d)** Construct a normal probability plot of the residuals.
+What conclusions would you draw about the validity of
+the normality assumption?
+
+**(e)** Plot the residuals versus the predicted tensile
+strength. Comment on the plot.
+
+**(f)** Prepare a scatter plot of the results to aid
+the interpretation of the results of this experiment.

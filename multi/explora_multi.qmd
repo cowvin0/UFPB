@@ -1,0 +1,12 @@
+---
+title: Análise Exploratória
+---
+
+```{r}
+library(dplyr)
+library(tibble)
+```
+
+```{r}
+data <- readr::read_csv("School_Nutrition_Programs___Meal_Reimbursement_Information___Program_Year_2016-2017_20240131.csv")
+```

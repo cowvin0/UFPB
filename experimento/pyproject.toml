@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "experimento"
+version = "0.1.0"
+description = ""
+authors = ["cowvin0 <gabrielpereira00PereiraGabriel@outlook.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+six = "1.16.0"
+pytz = "^2024.1"
+pandas = "^2.2.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
