@@ -1,5 +1,8 @@
 ---
 title: Análise Exploratória
+echo: false
+format: revealjs
+warning: false
 ---
 
 ```{r}
@@ -12,8 +15,36 @@ data <- readr::read_csv("School_Nutrition_Programs_-_Meal_Reimbursement_Informat
 ```
 
 ```{r}
-data |> 
+data <- data |>
   select(
-      c(ProgramYear, ReportType, CEID)
+        -c(ProgramYear, ReportType, CEID,
+           SiteID, CountyDistrictCode)
   )
 ```
+
+# Introdução
+
+Uma nutrição escolar adequada desempenham um papel importante
+no desenvolvimento físico, cognitivo, e emocional das
+crianças e adolescentes em idade escolar. É amplamente 
+reconhecido que a nutrição ideal durante os anos formativos
+não apenas influencia o crescimento e o desenvolvimento
+saudáveis, mas também tem um impacto significativo no
+desempenho acadêmico e no bem-estar geral dos alunos. Dessa
+forma, programas de nutrição escolar é fundamental para
+garantir que todas as crianças tenham acesso a refeições
+ideias para o seu constante progresso intelectual enquanto
+estudante. Esses programas desempenham um papel vital em
+comunidades que as famílias podem enfrentar dificuldades 
+financeiras, garantindo que os alunos recebam as vitaminas,
+minerais e nutrientes essenciais, além de exercer um dever
+na educação alimentar, ensinando hábitos alimentares
+saudáveis que podem ser levados para a vida adulta. 
+Dessa forma, este estudo visa analisar dados de programas
+nutricionais do estado do Texas, nos Estados Unidos. O banco
+de dados contém informações de reembolso de refeições pagas
+ou aprovadas para pagamento para os locais participantes
+dos programas de nutrição escolar para o ano do programa,
+que foi realizado entre 2022 e 2024.
+
+# Objetivo
