@@ -1,24 +1,48 @@
 ---
-title: Análise Exploratória
-echo: false
-format: revealjs
-warning: false
+title: Nutrição Escolar
+author: Gabriel de Jesus Pereira
+date: '`r Sys.Date()`'
+execute:
+  refresh: true
+  warning: false
+  error: false
+  eval: true
+  echo: true
+revealjs-plugins:
+  - attribution
+  - roughnotation
+  - pointer
+format: 
+  revealjs:
+    theme: [default, style.scss]
+    width: 1920
+    height: 1080
+    transition: slide
+    background-transition: fade
+    preview-links: auto
+editor:
+  markdown:
+    wrap: 72
+lang: pt-b
 ---
 
-```{r}
+```{r echo=FALSE}
 library(dplyr)
+library(visdat)
 library(tibble)
 ```
 
-```{r}
+```{r echo=FALSE}
 data <- readr::read_csv("School_Nutrition_Programs_-_Meal_Reimbursement_Information_-_Program_Year_2022-2023_20240210.csv")
 ```
 
-```{r}
+```{r echo=FALSE}
 data <- data |>
   select(
         -c(ProgramYear, ReportType, CEID,
-           SiteID, CountyDistrictCode)
+           SiteID, CountyDistrictCode, CEName,
+           TDARegion, CECounty, SiteCounty,
+           SiteName, ClaimDate)
   )
 ```
 
@@ -31,8 +55,7 @@ reconhecido que a nutrição ideal durante os anos formativos
 não apenas influencia o crescimento e o desenvolvimento
 saudáveis, mas também tem um impacto significativo no
 desempenho acadêmico e no bem-estar geral dos alunos. Dessa
-forma, programas de nutrição escolar é fundamental para
-garantir que todas as crianças tenham acesso a refeições
+forma, programas de nutrição escolar é fundamental para garantir que todas as crianças tenham acesso a refeições
 ideias para o seu constante progresso intelectual enquanto
 estudante. Esses programas desempenham um papel vital em
 comunidades que as famílias podem enfrentar dificuldades 
@@ -48,3 +71,19 @@ dos programas de nutrição escolar para o ano do programa,
 que foi realizado entre 2022 e 2024.
 
 # Objetivo
+
+# Análise Exploratória
+
+- Banco de dados com 38 variáveis
+
+```{r echo=FALSE}
+data |> slice_sample(n = 1500) |> vis_dat()
+```
+
+# Correlação
+
+# Componentes Principais
+
+# Análise Fatorial
+
+# Considerações Finais

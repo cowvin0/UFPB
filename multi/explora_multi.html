@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en"><head>
+<html lang="pt-b"><head>
 <script src="explora_multi_files/libs/clipboard/clipboard.min.js"></script>
 <script src="explora_multi_files/libs/quarto-html/tabby.min.js"></script>
 <script src="explora_multi_files/libs/quarto-html/popper.min.js"></script>
@@ -10,7 +10,9 @@
 <link href="explora_multi_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.3.450">
 
-  <title>Análise Exploratória</title>
+  <meta name="author" content="Gabriel de Jesus Pereira">
+  <meta name="dcterms.date" content="2024-02-11">
+  <title>Nutrição Escolar</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -33,6 +35,8 @@
   <link href="explora_multi_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="explora_multi_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="explora_multi_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="explora_multi_files/libs/revealjs/plugin/reveal-attribution/attribution.css" rel="stylesheet">
+  <link href="explora_multi_files/libs/revealjs/plugin/reveal-pointer/pointer.css" rel="stylesheet">
   <link href="explora_multi_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
   <style type="text/css">
 
@@ -324,11 +328,17 @@
     <div class="slides">
 
 <section id="title-slide" class="quarto-title-block center">
-  <h1 class="title">Análise Exploratória</h1>
+  <h1 class="title">Nutrição Escolar</h1>
 
 <div class="quarto-title-authors">
+<div class="quarto-title-author">
+<div class="quarto-title-author-name">
+Gabriel de Jesus Pereira 
+</div>
+</div>
 </div>
 
+  <p class="date">2024-02-11</p>
 </section>
 <section id="introdução" class="title-slide slide level1 center">
 <h1>Introdução</h1>
@@ -337,6 +347,34 @@
 
 <section id="objetivo" class="title-slide slide level1 center">
 <h1>Objetivo</h1>
+
+</section>
+
+<section id="análise-exploratória" class="title-slide slide level1 center">
+<h1>Análise Exploratória</h1>
+<ul>
+<li>Banco de dados com 38 variáveis</li>
+</ul>
+
+<img data-src="explora_multi_files/figure-revealjs/unnamed-chunk-4-1.png" width="960" class="r-stretch"></section>
+
+<section id="correlação" class="title-slide slide level1 center">
+<h1>Correlação</h1>
+
+</section>
+
+<section id="componentes-principais" class="title-slide slide level1 center">
+<h1>Componentes Principais</h1>
+
+</section>
+
+<section id="análise-fatorial" class="title-slide slide level1 center">
+<h1>Análise Fatorial</h1>
+
+</section>
+
+<section id="considerações-finais" class="title-slide slide level1 center">
+<h1>Considerações Finais</h1>
 <div class="footer footer-default">
 
 </div>
@@ -351,6 +389,8 @@
   <script src="explora_multi_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
   <script src="explora_multi_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
   <script src="explora_multi_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="explora_multi_files/libs/revealjs/plugin/reveal-attribution/attribution.js"></script>
+  <script src="explora_multi_files/libs/revealjs/plugin/reveal-pointer/pointer.js"></script>
   <script src="explora_multi_files/libs/revealjs/plugin/quarto-support/support.js"></script>
   
 
@@ -366,13 +406,14 @@
       // https://revealjs.com/config/
       Reveal.initialize({
 'controlsAuto': true,
-'previewLinksAuto': false,
+'previewLinksAuto': true,
 'smaller': false,
 'pdfSeparateFragments': false,
 'autoAnimateEasing': "ease",
 'autoAnimateDuration': 1,
 'autoAnimateUnmatched': true,
 'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'pointer': {"key":"q","color":"red","pointerSize":16,"alwaysVisible":false},
 'smaller': false,
  
         // Display controls in the bottom right corner
@@ -498,14 +539,14 @@
         previewLinks: false,
 
         // Transition style (none/fade/slide/convex/concave/zoom)
-        transition: 'none',
+        transition: 'slide',
 
         // Transition speed (default/fast/slow)
         transitionSpeed: 'default',
 
         // Transition style for full page slide backgrounds
         // (none/fade/slide/convex/concave/zoom)
-        backgroundTransition: 'none',
+        backgroundTransition: 'fade',
 
         // Number of slides away from the current that are visible
         viewDistance: 3,
@@ -518,9 +559,9 @@
         // The "normal" size of the presentation, aspect ratio will be preserved
         // when the presentation is scaled to fit different resolutions. Can be
         // specified using percentage units.
-        width: 1050,
+        width: 1920,
 
-        height: 700,
+        height: 1080,
 
         // Factor of the display size that should remain empty around the content
         margin: 0.1,
@@ -543,7 +584,7 @@
         },
 
         // reveal.js plugins
-        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, QuartoSupport,
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, RevealAttribution, RevealPointer, QuartoSupport,
 
           RevealMath,
           RevealNotes,
@@ -641,12 +682,12 @@
         // flash "checked"
         button.classList.add('code-copy-button-checked');
         var currentTitle = button.getAttribute("title");
-        button.setAttribute("title", "Copied!");
+        button.setAttribute("title", "Copiada");
         let tooltip;
         if (window.bootstrap) {
           button.setAttribute("data-bs-toggle", "tooltip");
           button.setAttribute("data-bs-placement", "left");
-          button.setAttribute("data-bs-title", "Copied!");
+          button.setAttribute("data-bs-title", "Copiada");
           tooltip = new bootstrap.Tooltip(button, 
             { trigger: "manual", 
               customClass: "code-copy-button-tooltip",
