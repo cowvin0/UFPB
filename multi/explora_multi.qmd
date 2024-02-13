@@ -30,6 +30,7 @@ lang: pt-b
 library(dplyr)
 library(visdat)
 library(tibble)
+library(factoextra)
 ```
 
 ```{r echo=FALSE}
@@ -83,6 +84,30 @@ data |> slice_sample(n = 1500) |> vis_dat()
 # Correlação
 
 # Componentes Principais
+
+```{r}
+data <- data[lapply( data, function(x) sum(x == 0) / length(x)) <= 0.25] |>
+  mutate(ESC = as.character(ESC))
+data <- data |>
+  (\(x) {
+    is_numeric <- x |> select_if(is.numeric)
+    is_object <- x |> select_if(is.character)
+    scaled <- scale(is_numeric)
+    is_object |> 
+      cbind(scaled) |>
+      as_tibble()
+    })()
+correlacao <- cor(data |> select_if(is.numeric))
+```
+
+```{r}
+comp.p <- prcomp(data |> select_if(is.numeric), scale. = TRUE, center = TRUE, tol=0)
+fviz_eig(comp.p, addlabels = TRUE, barfill="#002951")
+fviz_pca_var(comp.p, col.var = "#002951",repel=TRUE)
+fviz_cos2(comp.p, choice = "var", axes = 1:2, fill="#002951")
+fviz_pca_var(comp.p, col.var = "cos2", title = "Biplot - Componentes principais",
+             gradient.cols = c("#002951", "#eeeeee","#a0000a"), repel = TRUE)
+```
 
 # Análise Fatorial
 
