@@ -50,6 +50,7 @@ data <- data |>
   )
 ```
 
+
 # Introdução
 
 Uma nutrição escolar adequada desempenham um papel importante
@@ -80,11 +81,14 @@ que foi realizado entre 2022 e 2024.
 
 - Banco de dados com 38 variáveis
 
+
 ```{r echo=FALSE}
 data |> slice_sample(n = 1500) |> vis_dat()
 ```
 
+
 # Correlação
+
 
 ```{r echo=FALSE}
 data <- data[lapply( data, function(x) sum(x == 0) / length(x)) <= 0.25] |>
@@ -115,7 +119,9 @@ corrplot(
 )
 ```
 
+
 # Componentes Principais
+
 
 ```{r echo=FALSE}
 comp.p <- prcomp(data |> select_if(is.numeric), scale. = TRUE, center = TRUE, tol=0)
@@ -126,7 +132,9 @@ fviz_pca_var(comp.p, col.var = "cos2", title = "Biplot - Componentes principais"
              gradient.cols = c("#002951", "#eeeeee","#a0000a"), repel = TRUE)
 ```
 
+
 # Análise Fatorial
+
 
 ```{r}
 a.factorial <- factanal(data |> select_if(is.numeric), factors = 3,
@@ -151,4 +159,6 @@ autoplot(af.reg,
   theme_bw()
 ```
 
+
 # Considerações Finais
+
