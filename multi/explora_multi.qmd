@@ -9,16 +9,16 @@ execute:
   eval: true
   echo: true
 revealjs-plugins:
-  - attribution
+  - attribution 
   - roughnotation
   - pointer
 format: 
   revealjs:
-    theme: [default, style.scss]
-    width: 1920
-    height: 1080
+    theme: [dark, style.scss]
     transition: slide
     background-transition: fade
+    footer: "Gabriel de Jesus Pereira"
+    scrollable: true
     preview-links: auto
 editor:
   markdown:
@@ -37,8 +37,10 @@ library(ggfortify)
 ```
 
 ```{r echo=FALSE}
+set.seed(42)
 data <- readr::read_csv("School_Nutrition_Programs_-_Meal_Reimbursement_Information_-_Program_Year_2022-2023_20240210.csv")
 ```
+
 
 ```{r echo=FALSE}
 data <- data |>
@@ -51,6 +53,8 @@ data <- data |>
 ```
 
 # Introdução
+
+## 
 
 Uma nutrição escolar adequada desempenham um papel importante
 no desenvolvimento físico, cognitivo, e emocional das
@@ -76,43 +80,95 @@ que foi realizado entre 2022 e 2024.
 
 # Objetivo
 
+# Organização dos dados
+
+## {auto-animate="true"}
+
+```{r}
+data <- data |>
+  select(
+      -where(
+          ~(sum(. == 0) / length(.) > 0.25)
+       )
+  )
+```
+
+## {auto-animate="true"}
+
+```{r}
+data <- data |>
+  (\(x) {
+    scaled_numeric <- x |> 
+      select_if(is.numeric) |>
+      scale()
+    x |>
+      select_if(is.character) |>
+      cbind(scaled_numeric) |>
+      as_tibble()
+    })()
+```
+
 # Análise Exploratória
 
-- Banco de dados com 38 variáveis
+## Valores ausentes e tipos de variáveis
 
 ```{r echo=FALSE}
-data |> slice_sample(n = 1500) |> vis_dat()
+data |> 
+  slice_sample(n = 1500) |> 
+  vis_dat()
 ```
+
+## Quantidade de classes em cada nominal
+
+::: {.panel-tabset}
+
+### Tab A
+
+```{r echo=FALSE}
+data |> 
+  ggplot(aes(x = forcats::fct_infreq(TypeOfAgency))) +
+  geom_bar(aes(y = (..count..)/sum(..count..)))
+```
+
+### Tab B
+
+```{r echo=FALSE}
+data |> 
+  ggplot(aes(x = forcats::fct_infreq(TypeOfOrg))) +
+  geom_bar(aes(y = (..count..)/sum(..count..)))
+```
+
+### Tab C
+
+```{r echo=FALSE}
+data |> 
+  mutate(ESC = as.factor(ESC)) |>
+  ggplot(aes(x = forcats::fct_infreq(ESC))) +
+  geom_bar(aes(y = (..count..)/sum(..count..)))
+```
+
+:::
 
 # Correlação
 
 ```{r echo=FALSE}
-data <- data[lapply( data, function(x) sum(x == 0) / length(x)) <= 0.25] |>
-  mutate(ESC = as.character(ESC))
-data <- data |>
-  (\(x) {
-    is_numeric <- x |> select_if(is.numeric)
-    is_object <- x |> select_if(is.character)
-    scaled <- scale(is_numeric)
-    is_object |> 
-      cbind(scaled) |>
-      as_tibble()
-    })()
-correlacao <- cor(data |> select_if(is.numeric))
-corrplot(
-    correlacao, method="circle",
-    col = viridis::viridis(200),
-    diag = FALSE,
-    addgrid.col = "#00000040",
-    tl.pos = "l",
-    tl.cex = 0.6,
-    tl.col = "black",
-    tl.offset = 0.25,
-    cl.length = 9,
-    cl.cex = 0.6,
-    cl.ratio = 0.25,
-    family = "mono"
-)
+data |>
+  select_if(is.numeric) |>
+  cor() |>
+  corrplot(
+      method="circle",
+      col = viridis::viridis(200),
+      diag = FALSE,
+      addgrid.col = "#00000040",
+      tl.pos = "l",
+      tl.cex = 0.6,
+      tl.col = "black",
+      tl.offset = 0.25,
+      cl.length = 9,
+      cl.cex = 0.6,
+      cl.ratio = 0.25,
+      family = "mono"
+  )
 ```
 
 # Componentes Principais
@@ -128,15 +184,24 @@ fviz_pca_var(comp.p, col.var = "cos2", title = "Biplot - Componentes principais"
 
 # Análise Fatorial
 
+##
+
 ```{r}
-a.factorial <- factanal(data |> select_if(is.numeric), factors = 3,
-                        nstart = 4)
+a.factorial <- factanal(data |> select_if(is.numeric), 
+                        factors = 2,
+                        nstart = 10)
+```
+
+##
+
+```{r}
+af.reg <- factanal(data |> select_if(is.numeric),
+                   factors = 2,
+                   scores="regression", 
+                   nstart = 10)
 ```
 
 ```{r}
-af.reg <- factanal(data |> select_if(is.numeric),factors = 3,
-                   scores="regression", nstart = 4)
-# Biplot por cores de uma variavel categorica
 autoplot(af.reg,
          data = data,
          colour = "TypeOfOrg",
