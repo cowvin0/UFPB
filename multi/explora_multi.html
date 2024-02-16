@@ -438,16 +438,16 @@ Gabriel de Jesus Pereira
 <h2 data-id="quarto-animate-title"></h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy" data-id="quarto-animate-code"><code class="sourceCode r hljs"><span id="cb2-1" class="hljs-ln-code"><a href="#cb2-1"></a>data <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span></span>
-<span id="cb2-2" class="hljs-ln-code"><a href="#cb2-2"></a>  <span class="fu">mutate</span>(<span class="at">ESC =</span> <span class="fu">as.factor</span>(ESC)) <span class="sc">|&gt;</span></span>
-<span id="cb2-3" class="hljs-ln-code"><a href="#cb2-3"></a>  (\(x) {</span>
-<span id="cb2-4" class="hljs-ln-code"><a href="#cb2-4"></a>    scaled_numeric <span class="ot">&lt;-</span> x <span class="sc">|&gt;</span> </span>
-<span id="cb2-5" class="hljs-ln-code"><a href="#cb2-5"></a>      <span class="fu">select_if</span>(is.numeric) <span class="sc">|&gt;</span></span>
-<span id="cb2-6" class="hljs-ln-code"><a href="#cb2-6"></a>      <span class="fu">scale</span>()</span>
-<span id="cb2-7" class="hljs-ln-code"><a href="#cb2-7"></a>    x <span class="sc">|&gt;</span></span>
-<span id="cb2-8" class="hljs-ln-code"><a href="#cb2-8"></a>      <span class="fu">select_if</span>(<span class="sc">~</span> <span class="fu">is.character</span>(.) <span class="sc">|</span> <span class="fu">is.factor</span>(.)) <span class="sc">|&gt;</span></span>
-<span id="cb2-9" class="hljs-ln-code"><a href="#cb2-9"></a>      <span class="fu">cbind</span>(scaled_numeric) <span class="sc">|&gt;</span></span>
-<span id="cb2-10" class="hljs-ln-code"><a href="#cb2-10"></a>      <span class="fu">as_tibble</span>()</span>
-<span id="cb2-11" class="hljs-ln-code"><a href="#cb2-11"></a>    })()</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-2" class="hljs-ln-code"><a href="#cb2-2"></a>  <span class="fu">mutate</span>(<span class="at">ESC =</span> <span class="fu">as.factor</span>(ESC)) <span class="co">#|&gt;</span></span>
+<span id="cb2-3" class="hljs-ln-code"><a href="#cb2-3"></a>  <span class="co"># (\(x) {</span></span>
+<span id="cb2-4" class="hljs-ln-code"><a href="#cb2-4"></a>  <span class="co">#   scaled_numeric &lt;- x |&gt; </span></span>
+<span id="cb2-5" class="hljs-ln-code"><a href="#cb2-5"></a>  <span class="co">#     select_if(is.numeric) |&gt;</span></span>
+<span id="cb2-6" class="hljs-ln-code"><a href="#cb2-6"></a>  <span class="co">#     scale()</span></span>
+<span id="cb2-7" class="hljs-ln-code"><a href="#cb2-7"></a>  <span class="co">#   x |&gt;</span></span>
+<span id="cb2-8" class="hljs-ln-code"><a href="#cb2-8"></a>  <span class="co">#     select_if(~ is.character(.) | is.factor(.)) |&gt;</span></span>
+<span id="cb2-9" class="hljs-ln-code"><a href="#cb2-9"></a>  <span class="co">#     cbind(scaled_numeric) |&gt;</span></span>
+<span id="cb2-10" class="hljs-ln-code"><a href="#cb2-10"></a>  <span class="co">#     as_tibble()</span></span>
+<span id="cb2-11" class="hljs-ln-code"><a href="#cb2-11"></a>  <span class="co">#   })()</span></span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section></section>
 <section>
@@ -487,26 +487,35 @@ Gabriel de Jesus Pereira
 </div>
 </div>
 </div>
-</section></section>
+</section>
+<section id="section-2" class="slide level2">
+<h2></h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>data <span class="sc">|&gt;</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a>  <span class="fu">select_if</span>(is.numeric) <span class="sc">|&gt;</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a>  <span class="fu">ggpairs</span>()</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+
+</div>
+<img data-src="explora_multi_files/figure-revealjs/unnamed-chunk-10-1.png" width="960" class="r-stretch"></section></section>
 <section id="correlação" class="title-slide slide level1 center">
 <h1>Correlação</h1>
 
-<img data-src="explora_multi_files/figure-revealjs/unnamed-chunk-10-1.png" width="960" class="r-stretch"></section>
+<img data-src="explora_multi_files/figure-revealjs/unnamed-chunk-11-1.png" width="960" class="r-stretch"></section>
 
 <section id="componentes-principais" class="title-slide slide level1 center">
 <h1>Componentes Principais</h1>
 <div class="cell">
 <div class="cell-output-display">
-<p><img data-src="explora_multi_files/figure-revealjs/unnamed-chunk-11-1.png" width="960"></p>
+<p><img data-src="explora_multi_files/figure-revealjs/unnamed-chunk-12-1.png" width="960"></p>
 </div>
 <div class="cell-output-display">
-<p><img data-src="explora_multi_files/figure-revealjs/unnamed-chunk-11-2.png" width="960"></p>
+<p><img data-src="explora_multi_files/figure-revealjs/unnamed-chunk-12-2.png" width="960"></p>
 </div>
 <div class="cell-output-display">
-<p><img data-src="explora_multi_files/figure-revealjs/unnamed-chunk-11-3.png" width="960"></p>
+<p><img data-src="explora_multi_files/figure-revealjs/unnamed-chunk-12-3.png" width="960"></p>
 </div>
 <div class="cell-output-display">
-<p><img data-src="explora_multi_files/figure-revealjs/unnamed-chunk-11-4.png" width="960"></p>
+<p><img data-src="explora_multi_files/figure-revealjs/unnamed-chunk-12-4.png" width="960"></p>
 </div>
 </div>
 </section>
@@ -516,38 +525,38 @@ Gabriel de Jesus Pereira
 <h1>Análise Fatorial</h1>
 
 </section>
-<section id="section-2" class="slide level2">
-<h2></h2>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>a.factorial <span class="ot">&lt;-</span> <span class="fu">factanal</span>(data <span class="sc">|&gt;</span> <span class="fu">select_if</span>(is.numeric), </span>
-<span id="cb3-2"><a href="#cb3-2"></a>                        <span class="at">factors =</span> <span class="dv">2</span>,</span>
-<span id="cb3-3"><a href="#cb3-3"></a>                        <span class="at">nstart =</span> <span class="dv">10</span>)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section>
 <section id="section-3" class="slide level2">
 <h2></h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>af.reg <span class="ot">&lt;-</span> <span class="fu">factanal</span>(data <span class="sc">|&gt;</span> <span class="fu">select_if</span>(is.numeric),</span>
-<span id="cb4-2"><a href="#cb4-2"></a>                   <span class="at">factors =</span> <span class="dv">2</span>,</span>
-<span id="cb4-3"><a href="#cb4-3"></a>                   <span class="at">scores=</span><span class="st">"regression"</span>, </span>
-<span id="cb4-4"><a href="#cb4-4"></a>                   <span class="at">nstart =</span> <span class="dv">10</span>)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>a.factorial <span class="ot">&lt;-</span> <span class="fu">factanal</span>(data <span class="sc">|&gt;</span> <span class="fu">select_if</span>(is.numeric), </span>
+<span id="cb4-2"><a href="#cb4-2"></a>                        <span class="at">factors =</span> <span class="dv">2</span>,</span>
+<span id="cb4-3"><a href="#cb4-3"></a>                        <span class="at">nstart =</span> <span class="dv">10</span>)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="section-4" class="slide level2">
+<h2></h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>af.reg <span class="ot">&lt;-</span> <span class="fu">factanal</span>(data <span class="sc">|&gt;</span> <span class="fu">select_if</span>(is.numeric),</span>
+<span id="cb5-2"><a href="#cb5-2"></a>                   <span class="at">factors =</span> <span class="dv">2</span>,</span>
+<span id="cb5-3"><a href="#cb5-3"></a>                   <span class="at">scores=</span><span class="st">"regression"</span>, </span>
+<span id="cb5-4"><a href="#cb5-4"></a>                   <span class="at">nstart =</span> <span class="dv">10</span>)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="fu">autoplot</span>(af.reg,</span>
-<span id="cb5-2"><a href="#cb5-2"></a>         <span class="at">data =</span> data,</span>
-<span id="cb5-3"><a href="#cb5-3"></a>         <span class="at">colour =</span> <span class="st">"TypeOfOrg"</span>,</span>
-<span id="cb5-4"><a href="#cb5-4"></a>         <span class="at">label =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb5-5"><a href="#cb5-5"></a>         <span class="at">loadings =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb5-6"><a href="#cb5-6"></a>         <span class="at">loadings.colour =</span> <span class="st">"#444444"</span>,</span>
-<span id="cb5-7"><a href="#cb5-7"></a>         <span class="at">loadings.label =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb5-8"><a href="#cb5-8"></a>         <span class="at">loadings.label.colour =</span> <span class="st">"black"</span>,</span>
-<span id="cb5-9"><a href="#cb5-9"></a>         <span class="at">label.colour =</span> <span class="st">"black"</span>,</span>
-<span id="cb5-10"><a href="#cb5-10"></a>         <span class="at">loadings.label.size =</span> <span class="dv">5</span></span>
-<span id="cb5-11"><a href="#cb5-11"></a>) <span class="sc">+</span></span>
-<span id="cb5-12"><a href="#cb5-12"></a>  <span class="fu">theme_bw</span>()</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="fu">autoplot</span>(af.reg,</span>
+<span id="cb6-2"><a href="#cb6-2"></a>         <span class="at">data =</span> data,</span>
+<span id="cb6-3"><a href="#cb6-3"></a>         <span class="at">colour =</span> <span class="st">"TypeOfOrg"</span>,</span>
+<span id="cb6-4"><a href="#cb6-4"></a>         <span class="at">label =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb6-5"><a href="#cb6-5"></a>         <span class="at">loadings =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb6-6"><a href="#cb6-6"></a>         <span class="at">loadings.colour =</span> <span class="st">"#444444"</span>,</span>
+<span id="cb6-7"><a href="#cb6-7"></a>         <span class="at">loadings.label =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb6-8"><a href="#cb6-8"></a>         <span class="at">loadings.label.colour =</span> <span class="st">"black"</span>,</span>
+<span id="cb6-9"><a href="#cb6-9"></a>         <span class="at">label.colour =</span> <span class="st">"black"</span>,</span>
+<span id="cb6-10"><a href="#cb6-10"></a>         <span class="at">loadings.label.size =</span> <span class="dv">5</span></span>
+<span id="cb6-11"><a href="#cb6-11"></a>) <span class="sc">+</span></span>
+<span id="cb6-12"><a href="#cb6-12"></a>  <span class="fu">theme_bw</span>()</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 </div>
-<img data-src="explora_multi_files/figure-revealjs/unnamed-chunk-14-1.png" width="960" class="r-stretch"></section></section>
+<img data-src="explora_multi_files/figure-revealjs/unnamed-chunk-15-1.png" width="960" class="r-stretch"></section></section>
 <section id="considerações-finais" class="title-slide slide level1 center">
 <h1>Considerações Finais</h1>
 <div class="footer footer-default">
@@ -734,9 +743,9 @@ Gabriel de Jesus Pereira
         // The "normal" size of the presentation, aspect ratio will be preserved
         // when the presentation is scaled to fit different resolutions. Can be
         // specified using percentage units.
-        width: 1920,
+        width: 1050,
 
-        height: 1080,
+        height: 700,
 
         // Factor of the display size that should remain empty around the content
         margin: 0.1,

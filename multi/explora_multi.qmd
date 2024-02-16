@@ -16,8 +16,6 @@ format:
   revealjs:
     theme: [dark, style.scss]
     transition: slide
-    width: 1920
-    height: 1080
     background-transition: fade
     footer: "Gabriel de Jesus Pereira"
     scrollable: true
@@ -79,16 +77,16 @@ data <- data |>
 
 ```{r}
 data <- data |>
-  mutate(ESC = as.factor(ESC)) |>
-  (\(x) {
-    scaled_numeric <- x |> 
-      select_if(is.numeric) |>
-      scale()
-    x |>
-      select_if(~ is.character(.) | is.factor(.)) |>
-      cbind(scaled_numeric) |>
-      as_tibble()
-    })()
+  mutate(ESC = as.factor(ESC)) #|>
+  # (\(x) {
+  #   scaled_numeric <- x |> 
+  #     select_if(is.numeric) |>
+  #     scale()
+  #   x |>
+  #     select_if(~ is.character(.) | is.factor(.)) |>
+  #     cbind(scaled_numeric) |>
+  #     as_tibble()
+  #   })()
 ```
 
 # Análise Exploratória
@@ -113,9 +111,7 @@ data |>
   geom_bar(aes(y = (..count..)/sum(..count..))) +
   scale_color_viridis(discrete = TRUE) +
   theme_bw() +
-  theme(axis.title.x = element_blank(),
-        axis.text.x = element_blank(),
-        axis.ticks.x = element_blank())
+  theme(axis.title.x = element_blank())
 ```
 
 ### Organização
@@ -125,9 +121,7 @@ data |>
   ggplot(aes(x = forcats::fct_infreq(TypeOfOrg))) +
   geom_bar(aes(y = (..count..) / sum(..count..))) +
   theme_bw() +
-  theme(axis.title.x = element_blank(),
-        axis.text.x = element_blank(),
-        axis.ticks.x = element_blank())
+  theme(axis.title.x = element_blank())
 ```
 
 ### Região
@@ -138,12 +132,18 @@ data |>
   ggplot(aes(x = forcats::fct_infreq(ESC))) +
   geom_bar(aes(y = (..count..)/sum(..count..))) +
   theme_bw() +
-  theme(axis.title.x = element_blank(),
-        axis.text.x = element_blank(),
-        axis.ticks.x = element_blank())
+  theme(axis.title.x = element_blank())
 ```
 
 :::
+
+##
+
+```{r}
+data |>
+  select_if(is.numeric) |>
+  ggpairs()
+```
 
 # Correlação
 
