@@ -16,6 +16,8 @@ format:
   revealjs:
     theme: [dark, style.scss]
     transition: slide
+    width: 1920
+    height: 1080
     background-transition: fade
     footer: "Gabriel de Jesus Pereira"
     scrollable: true
@@ -28,7 +30,9 @@ lang: pt-b
 
 ```{r echo=FALSE}
 library(dplyr)
+library(GGally)
 library(visdat)
+library(viridis)
 library(tibble)
 library(factoextra)
 library(ggplot2)
@@ -54,29 +58,7 @@ data <- data |>
 
 # Introdução
 
-## 
-
-Uma nutrição escolar adequada desempenham um papel importante
-no desenvolvimento físico, cognitivo, e emocional das
-crianças e adolescentes em idade escolar. É amplamente 
-reconhecido que a nutrição ideal durante os anos formativos
-não apenas influencia o crescimento e o desenvolvimento
-saudáveis, mas também tem um impacto significativo no
-desempenho acadêmico e no bem-estar geral dos alunos. Dessa
-forma, programas de nutrição escolar é fundamental para garantir que todas as crianças tenham acesso a refeições
-ideias para o seu constante progresso intelectual enquanto
-estudante. Esses programas desempenham um papel vital em
-comunidades que as famílias podem enfrentar dificuldades 
-financeiras, garantindo que os alunos recebam as vitaminas,
-minerais e nutrientes essenciais, além de exercer um dever
-na educação alimentar, ensinando hábitos alimentares
-saudáveis que podem ser levados para a vida adulta. 
-Dessa forma, este estudo visa analisar dados de programas
-nutricionais do estado do Texas, nos Estados Unidos. O banco
-de dados contém informações de reembolso de refeições pagas
-ou aprovadas para pagamento para os locais participantes
-dos programas de nutrição escolar para o ano do programa,
-que foi realizado entre 2022 e 2024.
+- Tipo de dado que está sendo utilizado no estudo
 
 # Objetivo
 
@@ -97,12 +79,13 @@ data <- data |>
 
 ```{r}
 data <- data |>
+  mutate(ESC = as.factor(ESC)) |>
   (\(x) {
     scaled_numeric <- x |> 
       select_if(is.numeric) |>
       scale()
     x |>
-      select_if(is.character) |>
+      select_if(~ is.character(.) | is.factor(.)) |>
       cbind(scaled_numeric) |>
       as_tibble()
     })()
@@ -110,7 +93,7 @@ data <- data |>
 
 # Análise Exploratória
 
-## Valores ausentes e tipos de variáveis
+## Valores ausentes
 
 ```{r echo=FALSE}
 data |> 
@@ -122,29 +105,42 @@ data |>
 
 ::: {.panel-tabset}
 
-### Tab A
+### Agência
 
 ```{r echo=FALSE}
 data |> 
   ggplot(aes(x = forcats::fct_infreq(TypeOfAgency))) +
-  geom_bar(aes(y = (..count..)/sum(..count..)))
+  geom_bar(aes(y = (..count..)/sum(..count..))) +
+  scale_color_viridis(discrete = TRUE) +
+  theme_bw() +
+  theme(axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank())
 ```
 
-### Tab B
+### Organização
 
 ```{r echo=FALSE}
 data |> 
   ggplot(aes(x = forcats::fct_infreq(TypeOfOrg))) +
-  geom_bar(aes(y = (..count..)/sum(..count..)))
+  geom_bar(aes(y = (..count..) / sum(..count..))) +
+  theme_bw() +
+  theme(axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank())
 ```
 
-### Tab C
+### Região
 
 ```{r echo=FALSE}
 data |> 
   mutate(ESC = as.factor(ESC)) |>
   ggplot(aes(x = forcats::fct_infreq(ESC))) +
-  geom_bar(aes(y = (..count..)/sum(..count..)))
+  geom_bar(aes(y = (..count..)/sum(..count..))) +
+  theme_bw() +
+  theme(axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank())
 ```
 
 :::
@@ -157,7 +153,7 @@ data |>
   cor() |>
   corrplot(
       method="circle",
-      col = viridis::viridis(200),
+      col = mako(200),
       diag = FALSE,
       addgrid.col = "#00000040",
       tl.pos = "l",

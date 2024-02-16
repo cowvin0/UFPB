@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.3.450">
 
   <meta name="author" content="Gabriel de Jesus Pereira">
-  <meta name="dcterms.date" content="2024-02-15">
+  <meta name="dcterms.date" content="2024-02-16">
   <title>Nutrição Escolar</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -404,17 +404,15 @@ Gabriel de Jesus Pereira
 </div>
 </div>
 
-  <p class="date">2024-02-15</p>
+  <p class="date">2024-02-16</p>
 </section>
-<section>
 <section id="introdução" class="title-slide slide level1 center">
 <h1>Introdução</h1>
-
+<ul>
+<li>Tipo de dado que está sendo utilizado no estudo</li>
+</ul>
 </section>
-<section id="section" class="slide level2">
-<h2></h2>
-<p>Uma nutrição escolar adequada desempenham um papel importante no desenvolvimento físico, cognitivo, e emocional das crianças e adolescentes em idade escolar. É amplamente reconhecido que a nutrição ideal durante os anos formativos não apenas influencia o crescimento e o desenvolvimento saudáveis, mas também tem um impacto significativo no desempenho acadêmico e no bem-estar geral dos alunos. Dessa forma, programas de nutrição escolar é fundamental para garantir que todas as crianças tenham acesso a refeições ideias para o seu constante progresso intelectual enquanto estudante. Esses programas desempenham um papel vital em comunidades que as famílias podem enfrentar dificuldades financeiras, garantindo que os alunos recebam as vitaminas, minerais e nutrientes essenciais, além de exercer um dever na educação alimentar, ensinando hábitos alimentares saudáveis que podem ser levados para a vida adulta. Dessa forma, este estudo visa analisar dados de programas nutricionais do estado do Texas, nos Estados Unidos. O banco de dados contém informações de reembolso de refeições pagas ou aprovadas para pagamento para os locais participantes dos programas de nutrição escolar para o ano do programa, que foi realizado entre 2022 e 2024.</p>
-</section></section>
+
 <section id="objetivo" class="title-slide slide level1 center">
 <h1>Objetivo</h1>
 
@@ -425,7 +423,7 @@ Gabriel de Jesus Pereira
 <h1>Organização dos dados</h1>
 
 </section>
-<section id="section-1" class="slide level2" data-auto-animate="true">
+<section id="section" class="slide level2" data-auto-animate="true">
 <h2 data-id="quarto-animate-title"></h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy" data-id="quarto-animate-code"><code class="sourceCode r hljs"><span id="cb1-1" class="hljs-ln-code"><a href="#cb1-1"></a>data <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span></span>
@@ -436,19 +434,20 @@ Gabriel de Jesus Pereira
 <span id="cb1-6" class="hljs-ln-code"><a href="#cb1-6"></a>  )</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="section-2" class="slide level2" data-auto-animate="true">
+<section id="section-1" class="slide level2" data-auto-animate="true">
 <h2 data-id="quarto-animate-title"></h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy" data-id="quarto-animate-code"><code class="sourceCode r hljs"><span id="cb2-1" class="hljs-ln-code"><a href="#cb2-1"></a>data <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span></span>
-<span id="cb2-2" class="hljs-ln-code"><a href="#cb2-2"></a>  (\(x) {</span>
-<span id="cb2-3" class="hljs-ln-code"><a href="#cb2-3"></a>    scaled_numeric <span class="ot">&lt;-</span> x <span class="sc">|&gt;</span> </span>
-<span id="cb2-4" class="hljs-ln-code"><a href="#cb2-4"></a>      <span class="fu">select_if</span>(is.numeric) <span class="sc">|&gt;</span></span>
-<span id="cb2-5" class="hljs-ln-code"><a href="#cb2-5"></a>      <span class="fu">scale</span>()</span>
-<span id="cb2-6" class="hljs-ln-code"><a href="#cb2-6"></a>    x <span class="sc">|&gt;</span></span>
-<span id="cb2-7" class="hljs-ln-code"><a href="#cb2-7"></a>      <span class="fu">select_if</span>(is.character) <span class="sc">|&gt;</span></span>
-<span id="cb2-8" class="hljs-ln-code"><a href="#cb2-8"></a>      <span class="fu">cbind</span>(scaled_numeric) <span class="sc">|&gt;</span></span>
-<span id="cb2-9" class="hljs-ln-code"><a href="#cb2-9"></a>      <span class="fu">as_tibble</span>()</span>
-<span id="cb2-10" class="hljs-ln-code"><a href="#cb2-10"></a>    })()</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-2" class="hljs-ln-code"><a href="#cb2-2"></a>  <span class="fu">mutate</span>(<span class="at">ESC =</span> <span class="fu">as.factor</span>(ESC)) <span class="sc">|&gt;</span></span>
+<span id="cb2-3" class="hljs-ln-code"><a href="#cb2-3"></a>  (\(x) {</span>
+<span id="cb2-4" class="hljs-ln-code"><a href="#cb2-4"></a>    scaled_numeric <span class="ot">&lt;-</span> x <span class="sc">|&gt;</span> </span>
+<span id="cb2-5" class="hljs-ln-code"><a href="#cb2-5"></a>      <span class="fu">select_if</span>(is.numeric) <span class="sc">|&gt;</span></span>
+<span id="cb2-6" class="hljs-ln-code"><a href="#cb2-6"></a>      <span class="fu">scale</span>()</span>
+<span id="cb2-7" class="hljs-ln-code"><a href="#cb2-7"></a>    x <span class="sc">|&gt;</span></span>
+<span id="cb2-8" class="hljs-ln-code"><a href="#cb2-8"></a>      <span class="fu">select_if</span>(<span class="sc">~</span> <span class="fu">is.character</span>(.) <span class="sc">|</span> <span class="fu">is.factor</span>(.)) <span class="sc">|&gt;</span></span>
+<span id="cb2-9" class="hljs-ln-code"><a href="#cb2-9"></a>      <span class="fu">cbind</span>(scaled_numeric) <span class="sc">|&gt;</span></span>
+<span id="cb2-10" class="hljs-ln-code"><a href="#cb2-10"></a>      <span class="fu">as_tibble</span>()</span>
+<span id="cb2-11" class="hljs-ln-code"><a href="#cb2-11"></a>    })()</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section></section>
 <section>
@@ -456,14 +455,14 @@ Gabriel de Jesus Pereira
 <h1>Análise Exploratória</h1>
 
 </section>
-<section id="valores-ausentes-e-tipos-de-variáveis" class="slide level2">
-<h2>Valores ausentes e tipos de variáveis</h2>
+<section id="valores-ausentes" class="slide level2">
+<h2>Valores ausentes</h2>
 
 <img data-src="explora_multi_files/figure-revealjs/unnamed-chunk-6-1.png" width="960" class="r-stretch"></section>
 <section id="quantidade-de-classes-em-cada-nominal" class="slide level2">
 <h2>Quantidade de classes em cada nominal</h2>
 <div class="panel-tabset">
-<ul id="tabset-1" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-1-1">Tab A</a></li><li><a href="#tabset-1-2">Tab B</a></li><li><a href="#tabset-1-3">Tab C</a></li></ul>
+<ul id="tabset-1" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-1-1">Agência</a></li><li><a href="#tabset-1-2">Organização</a></li><li><a href="#tabset-1-3">Região</a></li></ul>
 <div class="tab-content">
 <div id="tabset-1-1">
 <div class="cell">
@@ -517,7 +516,7 @@ Gabriel de Jesus Pereira
 <h1>Análise Fatorial</h1>
 
 </section>
-<section id="section-3" class="slide level2">
+<section id="section-2" class="slide level2">
 <h2></h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>a.factorial <span class="ot">&lt;-</span> <span class="fu">factanal</span>(data <span class="sc">|&gt;</span> <span class="fu">select_if</span>(is.numeric), </span>
@@ -525,7 +524,7 @@ Gabriel de Jesus Pereira
 <span id="cb3-3"><a href="#cb3-3"></a>                        <span class="at">nstart =</span> <span class="dv">10</span>)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="section-4" class="slide level2">
+<section id="section-3" class="slide level2">
 <h2></h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>af.reg <span class="ot">&lt;-</span> <span class="fu">factanal</span>(data <span class="sc">|&gt;</span> <span class="fu">select_if</span>(is.numeric),</span>
@@ -735,9 +734,9 @@ Gabriel de Jesus Pereira
         // The "normal" size of the presentation, aspect ratio will be preserved
         // when the presentation is scaled to fit different resolutions. Can be
         // specified using percentage units.
-        width: 1050,
+        width: 1920,
 
-        height: 700,
+        height: 1080,
 
         // Factor of the display size that should remain empty around the content
         margin: 0.1,
