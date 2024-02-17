@@ -38,21 +38,6 @@ library(corrplot)
 library(ggfortify)
 ```
 
-```{r echo=FALSE}
-set.seed(42)
-data <- readr::read_csv("School_Nutrition_Programs_-_Meal_Reimbursement_Information_-_Program_Year_2022-2023_20240210.csv")
-```
-
-
-```{r echo=FALSE}
-data <- data |>
-  select(
-        -c(ProgramYear, ReportType, CEID,
-           SiteID, CountyDistrictCode, CEName,
-           TDARegion, CECounty, SiteCounty,
-           SiteName, ClaimDate)
-  )
-```
 
 # Introdução
 
@@ -60,9 +45,22 @@ data <- data |>
 
 # Objetivo
 
-# Organização dos dados
+# Leitura dos dados
 
 ## {auto-animate="true"}
+
+```{r echo=FALSE}
+set.seed(42)
+data <- readr::read_csv("dados.csv") |>
+  select(
+      -c(BreakfastDays, BreakfastTotal, LunchDays,
+         LunchTotal, FreeEligQty, ProgramYear,
+         ReportType, CEID, SiteID, 
+         CountyDistrictCode, CEName, 
+         CECounty, SiteName, SiteCounty, 
+         SiteName, ClaimDate, ESC)
+  )
+```
 
 ```{r}
 data <- data |>
@@ -77,16 +75,7 @@ data <- data |>
 
 ```{r}
 data <- data |>
-  mutate(ESC = as.factor(ESC)) #|>
-  # (\(x) {
-  #   scaled_numeric <- x |> 
-  #     select_if(is.numeric) |>
-  #     scale()
-  #   x |>
-  #     select_if(~ is.character(.) | is.factor(.)) |>
-  #     cbind(scaled_numeric) |>
-  #     as_tibble()
-  #   })()
+  mutate(TDARegion = as.factor(TDARegion))
 ```
 
 # Análise Exploratória
@@ -108,10 +97,11 @@ data |>
 ```{r echo=FALSE}
 data |> 
   ggplot(aes(x = forcats::fct_infreq(TypeOfAgency))) +
-  geom_bar(aes(y = (..count..)/sum(..count..))) +
+  geom_bar(aes(y = after_stat(count) / sum(after_stat(count)))) +
   scale_color_viridis(discrete = TRUE) +
   theme_bw() +
-  theme(axis.title.x = element_blank())
+  theme(axis.title.x = element_blank()) +
+  labs(y = "(%)")
 ```
 
 ### Organização
@@ -119,27 +109,29 @@ data |>
 ```{r echo=FALSE}
 data |> 
   ggplot(aes(x = forcats::fct_infreq(TypeOfOrg))) +
-  geom_bar(aes(y = (..count..) / sum(..count..))) +
+  geom_bar(aes(y = after_stat(count) / sum(after_stat(count)))) +
   theme_bw() +
-  theme(axis.title.x = element_blank())
+  theme(axis.title.x = element_blank()) +
+  labs(y = "(%)")
 ```
 
 ### Região
 
 ```{r echo=FALSE}
 data |> 
-  mutate(ESC = as.factor(ESC)) |>
-  ggplot(aes(x = forcats::fct_infreq(ESC))) +
-  geom_bar(aes(y = (..count..)/sum(..count..))) +
+  mutate(TDARegion = as.factor(TDARegion)) |>
+  ggplot(aes(x = forcats::fct_infreq(TDARegion))) +
+  geom_bar(aes(y = after_stat(count) / sum(after_stat(count)))) +
   theme_bw() +
-  theme(axis.title.x = element_blank())
+  theme(axis.title.x = element_blank()) +
+  labs(y = "(%)")
 ```
 
 :::
 
 ##
 
-```{r}
+```{r echo=FALSE}
 data |>
   select_if(is.numeric) |>
   ggpairs()
@@ -200,7 +192,7 @@ af.reg <- factanal(data |> select_if(is.numeric),
 ```{r}
 autoplot(af.reg,
          data = data,
-         colour = "TypeOfOrg",
+         colour = "TDARegion",
          label = FALSE,
          loadings = TRUE,
          loadings.colour = "#444444",
