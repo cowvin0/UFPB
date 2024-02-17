@@ -40,6 +40,7 @@ library(ggfortify)
 ```
 
 
+
 # Introdução
 
 - Tipo de dado que está sendo utilizado no estudo
@@ -49,6 +50,7 @@ library(ggfortify)
 # Leitura dos dados
 
 ## {auto-animate="true"}
+
 
 ```{r}
 data <- readr::read_csv("dados.csv") |>
@@ -70,9 +72,11 @@ data <- readr::read_csv("dados.csv") |>
   select(-c(BreakfastServedFree, LunchServedFree, TotalMeals_Snacks))
 ```
 
+
 # Análise Exploratória
 
 ## Valores ausentes
+
 
 ```{r echo=FALSE}
 data |> 
@@ -80,7 +84,9 @@ data |>
   vis_dat()
 ```
 
+
 ## Quantidade de classes em cada nominal
+
 
 ```{r echo=FALSE}
 data |> 
@@ -92,7 +98,9 @@ data |>
 ```
 
 
+
 # Correlação
+
 
 ```{r echo=FALSE}
 data |>
@@ -114,7 +122,9 @@ data |>
   )
 ```
 
+
 # Componentes Principais
+
 
 ```{r echo=FALSE}
 comp.p <- prcomp(data |> select_if(is.numeric), scale. = TRUE, center = TRUE, tol=0)
@@ -125,9 +135,11 @@ fviz_pca_var(comp.p, col.var = "cos2", title = "Biplot - Componentes principais"
              gradient.cols = c("#002951", "#eeeeee","#a0000a"), repel = TRUE)
 ```
 
+
 # Análise Fatorial
 
 ##
+
 
 ```{r}
 a.factorial <- factanal(data |> select_if(is.numeric), 
@@ -135,7 +147,9 @@ a.factorial <- factanal(data |> select_if(is.numeric),
                         nstart = 10)
 ```
 
+
 ##
+
 
 ```{r}
 af.reg <- factanal(data |> select_if(is.numeric),
@@ -159,4 +173,6 @@ autoplot(af.reg,
   theme_bw()
 ```
 
+
 # Considerações Finais
+
