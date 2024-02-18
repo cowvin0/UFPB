@@ -118,22 +118,41 @@ data |>
 
 ```{r echo=FALSE}
 comp.p <- prcomp(data |> select_if(is.numeric), scale. = TRUE, center = TRUE, tol=0)
-fviz_eig(comp.p, addlabels = TRUE, barfill="#002951")
-fviz_pca_var(comp.p, col.var = "#002951",repel=TRUE)
-fviz_cos2(comp.p, choice = "var", axes = 1:2, fill="#002951")
-fviz_pca_var(comp.p, col.var = "cos2", title = "Biplot - Componentes principais",
-             gradient.cols = c("#002951", "#eeeeee","#a0000a"), repel = TRUE)
 ```
-
-# Análise Fatorial
 
 ##
 
 ```{r}
-a.factorial <- factanal(data |> select_if(is.numeric), 
-                        factors = 2,
-                        nstart = 10)
+fviz_eig(comp.p, addlabels = TRUE, barfill="#002951")
 ```
+
+##
+
+```{r}
+fviz_pca_var(comp.p, col.var = "#002951",repel=TRUE)
+```
+
+##
+
+```{r}
+fviz_cos2(comp.p, choice = "var", axes = 1:2, fill="#002951")
+```
+
+##
+
+```{r}
+fviz_pca_var(comp.p, col.var = "#002951",repel=TRUE)
+```
+
+##
+
+```{r}
+fviz_pca_var(comp.p, col.var = "cos2", title = "Biplot - Componentes principais",
+             gradient.cols = c("#002951", "#eeeeee","#a0000a"), repel = TRUE)
+
+```
+
+# Análise Fatorial
 
 ##
 
