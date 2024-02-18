@@ -457,82 +457,99 @@ Gabriel de Jesus Pereira
 <section id="quantidade-de-classes-em-cada-nominal" class="slide level2">
 <h2>Quantidade de classes em cada nominal</h2>
 
-<img data-src="explora_multi_files/figure-revealjs/unnamed-chunk-4-1.png" width="960" class="r-stretch"></section></section>
-<section id="correlação" class="title-slide slide level1 center">
-<h1>Correlação</h1>
+<img data-src="explora_multi_files/figure-revealjs/unnamed-chunk-4-1.png" width="960" class="r-stretch"></section>
+<section id="section-1" class="slide level2">
+<h2></h2>
 
 <img data-src="explora_multi_files/figure-revealjs/unnamed-chunk-5-1.png" width="960" class="r-stretch"></section>
+<section id="section-2" class="slide level2">
+<h2></h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>data <span class="sc">|&gt;</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>  <span class="fu">mutate</span>(<span class="at">EnrollmentQty =</span> EnrollmentQty <span class="sc">/</span> <span class="dv">10000</span>) <span class="sc">|&gt;</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">color =</span> forcats<span class="sc">::</span><span class="fu">fct_infreq</span>(TypeOfOrg), <span class="at">x =</span> EnrollmentQty)) <span class="sc">+</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a>  <span class="fu">geom_density</span>() <span class="sc">+</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a>  <span class="fu">theme_bw</span>()</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
+</div>
+<img data-src="explora_multi_files/figure-revealjs/unnamed-chunk-6-1.png" width="960" class="r-stretch"></section>
+<section id="correlação" class="slide level2">
+<h2>Correlação</h2>
+
+<img data-src="explora_multi_files/figure-revealjs/unnamed-chunk-7-1.png" width="960" class="r-stretch"></section></section>
 <section>
 <section id="componentes-principais" class="title-slide slide level1 center">
 <h1>Componentes Principais</h1>
 
 </section>
-<section id="section-1" class="slide level2">
-<h2></h2>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">fviz_eig</span>(comp.p, <span class="at">addlabels =</span> <span class="cn">TRUE</span>, <span class="at">barfill=</span><span class="st">"#002951"</span>)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
-
-</div>
-<img data-src="explora_multi_files/figure-revealjs/unnamed-chunk-7-1.png" width="960" class="r-stretch"></section>
-<section id="section-2" class="slide level2">
-<h2></h2>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="fu">fviz_pca_var</span>(comp.p, <span class="at">col.var =</span> <span class="st">"#002951"</span>,<span class="at">repel=</span><span class="cn">TRUE</span>)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
-
-</div>
-<img data-src="explora_multi_files/figure-revealjs/unnamed-chunk-8-1.png" width="960" class="r-stretch"></section>
 <section id="section-3" class="slide level2">
 <h2></h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="fu">fviz_cos2</span>(comp.p, <span class="at">choice =</span> <span class="st">"var"</span>, <span class="at">axes =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="at">fill=</span><span class="st">"#002951"</span>)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="fu">fviz_eig</span>(comp.p, <span class="at">addlabels =</span> <span class="cn">TRUE</span>, <span class="at">barfill=</span><span class="st">"#002951"</span>)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 </div>
 <img data-src="explora_multi_files/figure-revealjs/unnamed-chunk-9-1.png" width="960" class="r-stretch"></section>
 <section id="section-4" class="slide level2">
 <h2></h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="fu">fviz_pca_var</span>(comp.p, <span class="at">col.var =</span> <span class="st">"#002951"</span>,<span class="at">repel=</span><span class="cn">TRUE</span>)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="fu">fviz_pca_var</span>(comp.p, <span class="at">col.var =</span> <span class="st">"#002951"</span>,<span class="at">repel=</span><span class="cn">TRUE</span>)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 </div>
 <img data-src="explora_multi_files/figure-revealjs/unnamed-chunk-10-1.png" width="960" class="r-stretch"></section>
 <section id="section-5" class="slide level2">
 <h2></h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="fu">fviz_pca_var</span>(comp.p, <span class="at">col.var =</span> <span class="st">"cos2"</span>, <span class="at">title =</span> <span class="st">"Biplot - Componentes principais"</span>,</span>
-<span id="cb6-2"><a href="#cb6-2"></a>             <span class="at">gradient.cols =</span> <span class="fu">c</span>(<span class="st">"#002951"</span>, <span class="st">"#eeeeee"</span>,<span class="st">"#a0000a"</span>), <span class="at">repel =</span> <span class="cn">TRUE</span>)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="fu">fviz_cos2</span>(comp.p, <span class="at">choice =</span> <span class="st">"var"</span>, <span class="at">axes =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="at">fill=</span><span class="st">"#002951"</span>)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 </div>
-<img data-src="explora_multi_files/figure-revealjs/unnamed-chunk-11-1.png" width="960" class="r-stretch"></section></section>
+<img data-src="explora_multi_files/figure-revealjs/unnamed-chunk-11-1.png" width="960" class="r-stretch"></section>
+<section id="section-6" class="slide level2">
+<h2></h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="fu">fviz_pca_var</span>(comp.p, <span class="at">col.var =</span> <span class="st">"#002951"</span>,<span class="at">repel=</span><span class="cn">TRUE</span>)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+
+</div>
+<img data-src="explora_multi_files/figure-revealjs/unnamed-chunk-12-1.png" width="960" class="r-stretch"></section>
+<section id="section-7" class="slide level2">
+<h2></h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="fu">fviz_pca_var</span>(comp.p, <span class="at">col.var =</span> <span class="st">"cos2"</span>, <span class="at">title =</span> <span class="st">"Biplot - Componentes principais"</span>,</span>
+<span id="cb7-2"><a href="#cb7-2"></a>             <span class="at">gradient.cols =</span> <span class="fu">c</span>(<span class="st">"#002951"</span>, <span class="st">"#eeeeee"</span>,<span class="st">"#a0000a"</span>), <span class="at">repel =</span> <span class="cn">TRUE</span>)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+
+</div>
+<img data-src="explora_multi_files/figure-revealjs/unnamed-chunk-13-1.png" width="960" class="r-stretch"></section></section>
 <section>
 <section id="análise-fatorial" class="title-slide slide level1 center">
 <h1>Análise Fatorial</h1>
 
 </section>
-<section id="section-6" class="slide level2">
+<section id="section-8" class="slide level2">
 <h2></h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>af.reg <span class="ot">&lt;-</span> <span class="fu">factanal</span>(data <span class="sc">|&gt;</span> <span class="fu">select_if</span>(is.numeric),</span>
-<span id="cb7-2"><a href="#cb7-2"></a>                   <span class="at">factors =</span> <span class="dv">2</span>,</span>
-<span id="cb7-3"><a href="#cb7-3"></a>                   <span class="at">scores=</span><span class="st">"regression"</span>, </span>
-<span id="cb7-4"><a href="#cb7-4"></a>                   <span class="at">nstart =</span> <span class="dv">10</span>)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>af.reg <span class="ot">&lt;-</span> <span class="fu">factanal</span>(data <span class="sc">|&gt;</span> <span class="fu">select_if</span>(is.numeric),</span>
+<span id="cb8-2"><a href="#cb8-2"></a>                   <span class="at">factors =</span> <span class="dv">2</span>,</span>
+<span id="cb8-3"><a href="#cb8-3"></a>                   <span class="at">scores=</span><span class="st">"regression"</span>, </span>
+<span id="cb8-4"><a href="#cb8-4"></a>                   <span class="at">nstart =</span> <span class="dv">10</span>)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="fu">autoplot</span>(af.reg,</span>
-<span id="cb8-2"><a href="#cb8-2"></a>         <span class="at">data =</span> data,</span>
-<span id="cb8-3"><a href="#cb8-3"></a>         <span class="at">colour =</span> <span class="st">"TypeOfOrg"</span>,</span>
-<span id="cb8-4"><a href="#cb8-4"></a>         <span class="at">label =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb8-5"><a href="#cb8-5"></a>         <span class="at">loadings =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb8-6"><a href="#cb8-6"></a>         <span class="at">loadings.colour =</span> <span class="st">"#444444"</span>,</span>
-<span id="cb8-7"><a href="#cb8-7"></a>         <span class="at">loadings.label =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb8-8"><a href="#cb8-8"></a>         <span class="at">loadings.label.colour =</span> <span class="st">"black"</span>,</span>
-<span id="cb8-9"><a href="#cb8-9"></a>         <span class="at">label.colour =</span> <span class="st">"black"</span>,</span>
-<span id="cb8-10"><a href="#cb8-10"></a>         <span class="at">loadings.label.size =</span> <span class="dv">5</span></span>
-<span id="cb8-11"><a href="#cb8-11"></a>) <span class="sc">+</span></span>
-<span id="cb8-12"><a href="#cb8-12"></a>  <span class="fu">theme_bw</span>()</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
-
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>auto <span class="ot">&lt;-</span> <span class="fu">autoplot</span>(af.reg,</span>
+<span id="cb9-2"><a href="#cb9-2"></a>         <span class="at">data =</span> data,</span>
+<span id="cb9-3"><a href="#cb9-3"></a>         <span class="at">colour =</span> <span class="st">"TypeOfOrg"</span>,</span>
+<span id="cb9-4"><a href="#cb9-4"></a>         <span class="at">label =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb9-5"><a href="#cb9-5"></a>         <span class="at">loadings =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb9-6"><a href="#cb9-6"></a>         <span class="at">loadings.colour =</span> <span class="st">"#444444"</span>,</span>
+<span id="cb9-7"><a href="#cb9-7"></a>         <span class="at">loadings.label =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb9-8"><a href="#cb9-8"></a>         <span class="at">loadings.label.colour =</span> <span class="st">"black"</span>,</span>
+<span id="cb9-9"><a href="#cb9-9"></a>         <span class="at">label.colour =</span> <span class="st">"black"</span>,</span>
+<span id="cb9-10"><a href="#cb9-10"></a>         <span class="at">loadings.label.size =</span> <span class="dv">5</span></span>
+<span id="cb9-11"><a href="#cb9-11"></a>) <span class="sc">+</span></span>
+<span id="cb9-12"><a href="#cb9-12"></a>  <span class="fu">theme_bw</span>()</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<img data-src="explora_multi_files/figure-revealjs/unnamed-chunk-13-1.png" width="960" class="r-stretch"></section></section>
+</section>
+<section id="section-9" class="slide level2">
+<h2></h2>
+
+<img data-src="explora_multi_files/figure-revealjs/unnamed-chunk-16-1.png" width="960" class="r-stretch"></section></section>
 <section id="considerações-finais" class="title-slide slide level1 center">
 <h1>Considerações Finais</h1>
 <div class="footer footer-default">
