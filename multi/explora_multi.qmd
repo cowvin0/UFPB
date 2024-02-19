@@ -100,9 +100,8 @@ data |>
 
 ```{r echo=FALSE}
 data |>
-  ggplot(aes(x = TypeOfOrg, y = EnrollmentQty, fill = TypeOfOrg)) +
-  geom_violin(width = 1) +
-  geom_boxplot(width = 0.1, color = "grey", alpha = 0.2) +
+  ggplot(aes(x = TypeOfOrg, y = EnrollmentQty)) +
+  geom_boxplot(fill = "#4c83b6", alpha = 0.2) +
   scale_fill_viridis(discrete = TRUE) +
   theme_ipsum() +
   theme(
