@@ -85,8 +85,37 @@ data |>
   ) +
   theme_bw() +
   theme(axis.title.x = element_blank()) +
+<<<<<<< HEAD
   labs(y = NULL, x = NULL) +
   scale_fill_manual(values=mako(4)[2:4])
+=======
+  labs(y = NULL, x = NULL) 
+```
+
+##
+
+```{r echo=FALSE}
+data |>
+  ggplot(aes(x = TypeOfOrg, y = EnrollmentQty)) +
+  geom_boxplot(fill = "#4c83b6", alpha = 0.2) +
+  scale_fill_viridis(discrete = TRUE) +
+  theme_ipsum() +
+  theme(
+    legend.position = "none",
+    plot.title = element_text(size = 11)
+  ) +
+  xlab("")
+```
+
+##
+
+```{r}
+data |>
+  mutate(EnrollmentQty = EnrollmentQty / 10000) |>
+  ggplot(aes(color = forcats::fct_infreq(TypeOfOrg), x = EnrollmentQty)) +
+  geom_density() +
+  theme_bw()
+>>>>>>> refs/remotes/origin/main
 ```
 
 ## Correlação
