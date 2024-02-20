@@ -1,5 +1,5 @@
 ---
-title: Nutrição Escolar
+title: Molusco Abalone
 author: Gabriel de Jesus Pereira
 date: '`r Sys.Date()`'
 execute:
@@ -53,23 +53,16 @@ library(ggfortify)
 ## {auto-animate="true"}
 
 ```{r}
-data <- readr::read_csv("dados.csv") |>
-  select(
-      -c(BreakfastDays, BreakfastTotal, LunchDays,
-         LunchTotal, FreeEligQty, ProgramYear,
-         ReportType, CEID, SiteID, 
-         CountyDistrictCode, CEName, 
-         CECounty, SiteName, SiteCounty, TDARegion,
-         SiteName, ClaimDate, ESC, TypeOfAgency,
-         BreakfastReimbursement, LunchReimbursement)
-  ) |>
-  mutate(TotalServedFree = BreakfastServedFree + LunchServedFree) |>
-  select(
-      -where(
-          ~(sum(. == 0) / length(.) > 0.25)
-      )
-  ) |>
-  select(-c(BreakfastServedFree, LunchServedFree, TotalMeals_Snacks))
+data <- readr::read_csv("abalone.csv") |>
+  mutate(Sex = case_when(
+                    Sex == "F" ~ "Fêmea",
+                    Sex == "M" ~ "Macho",
+                    TRUE ~ "Filhote")
+  )
+
+data |> 
+  head() |>
+  knitr::kable()
 ```
 
 # Análise Exploratória
@@ -78,53 +71,39 @@ data <- readr::read_csv("dados.csv") |>
 
 ```{r echo=FALSE}
 data |> 
-  slice_sample(n = 1500) |> 
   vis_dat()
 ```
 
-## Quantidade de classes em cada nominal
+## Frequência de cada sexo
 
 ```{r echo=FALSE}
 data |> 
-  ggplot(aes(x = forcats::fct_infreq(TypeOfOrg))) +
+  ggplot(aes(x = forcats::fct_infreq(Sex))) +
   geom_bar(
-        aes(y = after_stat(count) / sum(after_stat(count))),
-        fill = "#4c83b6"
+        aes(y = after_stat(count) / sum(after_stat(count)), fill = Sex),
+        show.legend = FALSE,
   ) +
   theme_bw() +
   theme(axis.title.x = element_blank()) +
-  labs(y = NULL, x = NULL) 
-```
-
-##
-
-```{r echo=FALSE}
-data |>
-  ggplot(aes(x = TypeOfOrg, y = EnrollmentQty, fill = TypeOfOrg)) +
-  geom_violin(width = 1) +
-  geom_boxplot(width = 0.1, color = "grey", alpha = 0.2) +
-  scale_fill_viridis(discrete = TRUE) +
-  theme_ipsum() +
-  theme(
-    legend.position = "none",
-    plot.title = element_text(size = 11)
-  ) +
-  xlab("")
-```
-
-##
-
-```{r}
-data |>
-  mutate(EnrollmentQty = EnrollmentQty / 10000) |>
-  ggplot(aes(color = forcats::fct_infreq(TypeOfOrg), x = EnrollmentQty)) +
-  geom_density() +
-  theme_bw()
+  labs(y = NULL, x = NULL) +
+  scale_fill_manual(values=mako(4)[2:4])
 ```
 
 ## Correlação
 
 ```{r echo=FALSE}
+data <- data |>
+  (\(x) {
+     scaled <- x |>
+       select_if(is.numeric) |>
+       scale() |>
+       as_tibble()
+
+     x |>
+       select_if(is.character) |>
+       cbind(scaled)
+  })()
+
 data |>
   select_if(is.numeric) |>
   cor() |>
@@ -179,7 +158,6 @@ fviz_pca_var(comp.p, col.var = "#002951",repel=TRUE)
 ```{r}
 fviz_pca_var(comp.p, col.var = "cos2", title = "Biplot - Componentes principais",
              gradient.cols = c("#002951", "#eeeeee","#a0000a"), repel = TRUE)
-
 ```
 
 # Análise Fatorial
@@ -196,7 +174,7 @@ af.reg <- factanal(data |> select_if(is.numeric),
 ```{r}
 auto <- autoplot(af.reg,
          data = data,
-         colour = "TypeOfOrg",
+         colour = "Sex",
          label = FALSE,
          loadings = TRUE,
          loadings.colour = "#444444",
