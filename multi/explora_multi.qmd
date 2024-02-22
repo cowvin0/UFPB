@@ -31,6 +31,7 @@ set.seed(42)
 library(dplyr)
 library(GGally)
 library(visdat)
+library(tidyr)
 library(viridis)
 library(hrbrthemes)
 library(tibble)
@@ -44,13 +45,55 @@ library(ggfortify)
 
 # Introdução
 
-- Tipo de dado que está sendo utilizado no estudo
+## O que são os Abalones
+
+:::: {.columns}
+
+::: {.column width="50%"}
+- É um molusco gastrópode, podendo ser pequeno ou muito grande
+
+- Servem como alimento e joias para os seres humanos, sendo a China o principal consumidor
+:::
+
+::: {.column width="50%"}
+![](https://www.e-fish.com/cdn/shop/files/1lbsabalone2.jpg?v=1696278727)
+:::
+
+::::
+
+## Sobre o banco de dados
+
+- É um banco de dados da área de biologia que contém medidas físicas de um Abalone;
+
+- O banco de dados contém 4177 observações;
+
+- 8 colunas, sendo uma delas nominal e o restante numérica;
+
+- Foi criado por Warwick Nash, Tracy Sellers, Simon Talbot, Andrew Cawthorn, Wes Ford.
+
+## As variáveis do banco de dados {auto-animate="true"}
+
+- Sexo do Abalone: variável nominal indicando se o Abalone é macho, fêmea ou filhote.
+
+- Length: Medição do maior comprimento da concha
+
+- Diameter: perpendicular ao comprimento
+
+- Height: com carne na casca
+
+## As variáveis do banco de dados {auto-animate="true"}
+
+- Whole weight: abalone inteiro
+
+- Shucked weight: peso da carne
+
+- Viscera weight: peso das vísceras (após sangria)
+
+- Shell weight: após ser seco
 
 # Objetivo
 
 # Leitura dos dados
-
-## {auto-animate="true"}
 
 ```{r}
 data <- readr::read_csv("abalone.csv") |>
@@ -58,11 +101,8 @@ data <- readr::read_csv("abalone.csv") |>
                     Sex == "F" ~ "Fêmea",
                     Sex == "M" ~ "Macho",
                     TRUE ~ "Filhote")
-  )
-
-data |> 
-  head() |>
-  knitr::kable()
+  ) |>
+  select(- Rings)
 ```
 
 # Análise Exploratória
@@ -76,8 +116,12 @@ data |>
 
 ## Frequência de cada sexo
 
-```{r echo=FALSE}
-data |> 
+::: {.panel-tabset}
+
+### Código
+
+```{r}
+Frequência <- data |> 
   ggplot(aes(x = forcats::fct_infreq(Sex))) +
   geom_bar(
         aes(y = after_stat(count) / sum(after_stat(count)), fill = Sex),
@@ -85,42 +129,67 @@ data |>
   ) +
   theme_bw() +
   theme(axis.title.x = element_blank()) +
-<<<<<<< HEAD
-  labs(y = NULL, x = NULL) +
-  scale_fill_manual(values=mako(4)[2:4])
-=======
+  scale_fill_manual(
+    values = viridis::mako(5)[3:5]
+    ) +
   labs(y = NULL, x = NULL) 
 ```
 
-##
+### Frequência
 
 ```{r echo=FALSE}
-data |>
-  ggplot(aes(x = TypeOfOrg, y = EnrollmentQty)) +
-  geom_boxplot(fill = "#4c83b6", alpha = 0.2) +
-  scale_fill_viridis(discrete = TRUE) +
-  theme_ipsum() +
-  theme(
-    legend.position = "none",
-    plot.title = element_text(size = 11)
-  ) +
-  xlab("")
+Frequência
 ```
 
-##
+:::
+
+
+## Distribuições
+
+::: {.panel-tabset}
+
+### Código
 
 ```{r}
-data |>
-  mutate(EnrollmentQty = EnrollmentQty / 10000) |>
-  ggplot(aes(color = forcats::fct_infreq(TypeOfOrg), x = EnrollmentQty)) +
-  geom_density() +
-  theme_bw()
->>>>>>> refs/remotes/origin/main
+Distribuição <- data |>
+  pivot_longer(
+    !Sex,
+    names_to = "variable",
+    values_to = "values"
+  ) |>
+  ggplot(
+    aes(
+      x = values, 
+      fill = Sex
+      )
+    ) +
+  geom_violin(aes(y = variable)) +
+  labs(x = "", y = "") +
+  facet_wrap(vars(variable), scales = "free") +
+  scale_fill_manual(
+    values = viridis::mako(5)[3:5], 
+    name = "Sexo"
+    ) +
+  theme_bw() +
+  theme(axis.text.y = element_blank())
 ```
+
+### Distribuição
+
+```{r echo=FALSE}
+Distribuição
+```
+
+:::
+
 
 ## Correlação
 
-```{r echo=FALSE}
+::: {.panel-tabset}
+
+### Código
+
+```{r output=FALSE}
 data <- data |>
   (\(x) {
      scaled <- x |>
@@ -151,6 +220,58 @@ data |>
       family = "mono"
   )
 ```
+
+### Correlação
+
+```{r echo=FALSE}
+data |>
+  select_if(is.numeric) |>
+  cor() |>
+  corrplot(
+      method="circle",
+      col = mako(200),
+      diag = FALSE,
+      addgrid.col = "#00000040",
+      tl.pos = "l",
+      tl.cex = 0.6,
+      tl.col = "black",
+      tl.offset = 0.25,
+      cl.length = 9,
+      cl.cex = 0.6,
+      cl.ratio = 0.25,
+      family = "mono"
+  )
+```
+
+:::
+
+## Relações
+
+::: {.panel-tabset}
+
+### Código
+
+```{r output=FALSE}
+Relação <- data |>
+  ggpairs(
+    columns = 2:8,
+    upper = list(
+      continuous = wrap("points", alpha = 0.4)
+    ),
+    lower = list(
+      continuous = wrap("points", alpha = 0.4)
+    )
+  ) +
+  theme_bw()
+```
+
+### Relação
+
+```{r echo=FALSE}
+Relação
+```
+
+:::
 
 # Componentes Principais
 
