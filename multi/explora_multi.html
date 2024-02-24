@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.3.450">
 
   <meta name="author" content="Gabriel de Jesus Pereira">
-  <meta name="dcterms.date" content="2024-02-21">
+  <meta name="dcterms.date" content="2024-02-23">
   <title>Molusco Abalone</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -404,7 +404,7 @@ Gabriel de Jesus Pereira
 </div>
 </div>
 
-  <p class="date">2024-02-21</p>
+  <p class="date">2024-02-23</p>
 </section>
 <section>
 <section id="introdução" class="title-slide slide level1 center">
@@ -549,42 +549,24 @@ Gabriel de Jesus Pereira
 </div>
 </div>
 </section>
-<section id="correlação" class="slide level2">
-<h2>Correlação</h2>
+<section id="relações" class="slide level2">
+<h2>Relações</h2>
 <div class="panel-tabset">
-<ul id="tabset-3" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-3-1">Código</a></li><li><a href="#tabset-3-2">Correlação</a></li></ul>
+<ul id="tabset-3" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-3-1">Código</a></li><li><a href="#tabset-3-2">Relação</a></li></ul>
 <div class="tab-content">
 <div id="tabset-3-1">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>data <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span></span>
-<span id="cb4-2"><a href="#cb4-2"></a>  (\(x) {</span>
-<span id="cb4-3"><a href="#cb4-3"></a>     scaled <span class="ot">&lt;-</span> x <span class="sc">|&gt;</span></span>
-<span id="cb4-4"><a href="#cb4-4"></a>       <span class="fu">select_if</span>(is.numeric) <span class="sc">|&gt;</span></span>
-<span id="cb4-5"><a href="#cb4-5"></a>       <span class="fu">scale</span>() <span class="sc">|&gt;</span></span>
-<span id="cb4-6"><a href="#cb4-6"></a>       <span class="fu">as_tibble</span>()</span>
-<span id="cb4-7"><a href="#cb4-7"></a></span>
-<span id="cb4-8"><a href="#cb4-8"></a>     x <span class="sc">|&gt;</span></span>
-<span id="cb4-9"><a href="#cb4-9"></a>       <span class="fu">select_if</span>(is.character) <span class="sc">|&gt;</span></span>
-<span id="cb4-10"><a href="#cb4-10"></a>       <span class="fu">cbind</span>(scaled)</span>
-<span id="cb4-11"><a href="#cb4-11"></a>  })()</span>
-<span id="cb4-12"><a href="#cb4-12"></a></span>
-<span id="cb4-13"><a href="#cb4-13"></a>data <span class="sc">|&gt;</span></span>
-<span id="cb4-14"><a href="#cb4-14"></a>  <span class="fu">select_if</span>(is.numeric) <span class="sc">|&gt;</span></span>
-<span id="cb4-15"><a href="#cb4-15"></a>  <span class="fu">cor</span>() <span class="sc">|&gt;</span></span>
-<span id="cb4-16"><a href="#cb4-16"></a>  <span class="fu">corrplot</span>(</span>
-<span id="cb4-17"><a href="#cb4-17"></a>      <span class="at">method=</span><span class="st">"circle"</span>,</span>
-<span id="cb4-18"><a href="#cb4-18"></a>      <span class="at">col =</span> <span class="fu">mako</span>(<span class="dv">200</span>),</span>
-<span id="cb4-19"><a href="#cb4-19"></a>      <span class="at">diag =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb4-20"><a href="#cb4-20"></a>      <span class="at">addgrid.col =</span> <span class="st">"#00000040"</span>,</span>
-<span id="cb4-21"><a href="#cb4-21"></a>      <span class="at">tl.pos =</span> <span class="st">"l"</span>,</span>
-<span id="cb4-22"><a href="#cb4-22"></a>      <span class="at">tl.cex =</span> <span class="fl">0.6</span>,</span>
-<span id="cb4-23"><a href="#cb4-23"></a>      <span class="at">tl.col =</span> <span class="st">"black"</span>,</span>
-<span id="cb4-24"><a href="#cb4-24"></a>      <span class="at">tl.offset =</span> <span class="fl">0.25</span>,</span>
-<span id="cb4-25"><a href="#cb4-25"></a>      <span class="at">cl.length =</span> <span class="dv">9</span>,</span>
-<span id="cb4-26"><a href="#cb4-26"></a>      <span class="at">cl.cex =</span> <span class="fl">0.6</span>,</span>
-<span id="cb4-27"><a href="#cb4-27"></a>      <span class="at">cl.ratio =</span> <span class="fl">0.25</span>,</span>
-<span id="cb4-28"><a href="#cb4-28"></a>      <span class="at">family =</span> <span class="st">"mono"</span></span>
-<span id="cb4-29"><a href="#cb4-29"></a>  )</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>Relação <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a>  <span class="fu">ggpairs</span>(</span>
+<span id="cb4-3"><a href="#cb4-3"></a>    <span class="at">columns =</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">8</span>,</span>
+<span id="cb4-4"><a href="#cb4-4"></a>    <span class="at">upper =</span> <span class="fu">list</span>(</span>
+<span id="cb4-5"><a href="#cb4-5"></a>      <span class="at">continuous =</span> <span class="fu">wrap</span>(<span class="st">"points"</span>, <span class="at">alpha =</span> <span class="fl">0.4</span>)</span>
+<span id="cb4-6"><a href="#cb4-6"></a>    ),</span>
+<span id="cb4-7"><a href="#cb4-7"></a>    <span class="at">lower =</span> <span class="fu">list</span>(</span>
+<span id="cb4-8"><a href="#cb4-8"></a>      <span class="at">continuous =</span> <span class="fu">wrap</span>(<span class="st">"points"</span>, <span class="at">alpha =</span> <span class="fl">0.4</span>)</span>
+<span id="cb4-9"><a href="#cb4-9"></a>    )</span>
+<span id="cb4-10"><a href="#cb4-10"></a>  ) <span class="sc">+</span></span>
+<span id="cb4-11"><a href="#cb4-11"></a>  <span class="fu">theme_bw</span>()</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 <div id="tabset-3-2">
@@ -597,24 +579,42 @@ Gabriel de Jesus Pereira
 </div>
 </div>
 </section>
-<section id="relações" class="slide level2">
-<h2>Relações</h2>
+<section id="correlação" class="slide level2">
+<h2>Correlação</h2>
 <div class="panel-tabset">
-<ul id="tabset-4" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-4-1">Código</a></li><li><a href="#tabset-4-2">Relação</a></li></ul>
+<ul id="tabset-4" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-4-1">Código</a></li><li><a href="#tabset-4-2">Correlação</a></li></ul>
 <div class="tab-content">
 <div id="tabset-4-1">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>Relação <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span></span>
-<span id="cb5-2"><a href="#cb5-2"></a>  <span class="fu">ggpairs</span>(</span>
-<span id="cb5-3"><a href="#cb5-3"></a>    <span class="at">columns =</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">8</span>,</span>
-<span id="cb5-4"><a href="#cb5-4"></a>    <span class="at">upper =</span> <span class="fu">list</span>(</span>
-<span id="cb5-5"><a href="#cb5-5"></a>      <span class="at">continuous =</span> <span class="fu">wrap</span>(<span class="st">"points"</span>, <span class="at">alpha =</span> <span class="fl">0.4</span>)</span>
-<span id="cb5-6"><a href="#cb5-6"></a>    ),</span>
-<span id="cb5-7"><a href="#cb5-7"></a>    <span class="at">lower =</span> <span class="fu">list</span>(</span>
-<span id="cb5-8"><a href="#cb5-8"></a>      <span class="at">continuous =</span> <span class="fu">wrap</span>(<span class="st">"points"</span>, <span class="at">alpha =</span> <span class="fl">0.4</span>)</span>
-<span id="cb5-9"><a href="#cb5-9"></a>    )</span>
-<span id="cb5-10"><a href="#cb5-10"></a>  ) <span class="sc">+</span></span>
-<span id="cb5-11"><a href="#cb5-11"></a>  <span class="fu">theme_bw</span>()</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>data <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a>  (\(x) {</span>
+<span id="cb5-3"><a href="#cb5-3"></a>     scaled <span class="ot">&lt;-</span> x <span class="sc">|&gt;</span></span>
+<span id="cb5-4"><a href="#cb5-4"></a>       <span class="fu">select_if</span>(is.numeric) <span class="sc">|&gt;</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a>       <span class="fu">scale</span>() <span class="sc">|&gt;</span></span>
+<span id="cb5-6"><a href="#cb5-6"></a>       <span class="fu">as_tibble</span>()</span>
+<span id="cb5-7"><a href="#cb5-7"></a></span>
+<span id="cb5-8"><a href="#cb5-8"></a>     x <span class="sc">|&gt;</span></span>
+<span id="cb5-9"><a href="#cb5-9"></a>       <span class="fu">select_if</span>(is.character) <span class="sc">|&gt;</span></span>
+<span id="cb5-10"><a href="#cb5-10"></a>       <span class="fu">cbind</span>(scaled)</span>
+<span id="cb5-11"><a href="#cb5-11"></a>  })()</span>
+<span id="cb5-12"><a href="#cb5-12"></a></span>
+<span id="cb5-13"><a href="#cb5-13"></a>data <span class="sc">|&gt;</span></span>
+<span id="cb5-14"><a href="#cb5-14"></a>  <span class="fu">select_if</span>(is.numeric) <span class="sc">|&gt;</span></span>
+<span id="cb5-15"><a href="#cb5-15"></a>  <span class="fu">cor</span>() <span class="sc">|&gt;</span></span>
+<span id="cb5-16"><a href="#cb5-16"></a>  <span class="fu">corrplot</span>(</span>
+<span id="cb5-17"><a href="#cb5-17"></a>      <span class="at">method=</span><span class="st">"circle"</span>,</span>
+<span id="cb5-18"><a href="#cb5-18"></a>      <span class="at">col =</span> <span class="fu">mako</span>(<span class="dv">200</span>),</span>
+<span id="cb5-19"><a href="#cb5-19"></a>      <span class="at">diag =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb5-20"><a href="#cb5-20"></a>      <span class="at">addgrid.col =</span> <span class="st">"#00000040"</span>,</span>
+<span id="cb5-21"><a href="#cb5-21"></a>      <span class="at">tl.pos =</span> <span class="st">"l"</span>,</span>
+<span id="cb5-22"><a href="#cb5-22"></a>      <span class="at">tl.cex =</span> <span class="fl">0.6</span>,</span>
+<span id="cb5-23"><a href="#cb5-23"></a>      <span class="at">tl.col =</span> <span class="st">"black"</span>,</span>
+<span id="cb5-24"><a href="#cb5-24"></a>      <span class="at">tl.offset =</span> <span class="fl">0.25</span>,</span>
+<span id="cb5-25"><a href="#cb5-25"></a>      <span class="at">cl.length =</span> <span class="dv">9</span>,</span>
+<span id="cb5-26"><a href="#cb5-26"></a>      <span class="at">cl.cex =</span> <span class="fl">0.6</span>,</span>
+<span id="cb5-27"><a href="#cb5-27"></a>      <span class="at">cl.ratio =</span> <span class="fl">0.25</span>,</span>
+<span id="cb5-28"><a href="#cb5-28"></a>      <span class="at">family =</span> <span class="st">"mono"</span></span>
+<span id="cb5-29"><a href="#cb5-29"></a>  )</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 <div id="tabset-4-2">

@@ -182,6 +182,33 @@ Distribuição
 
 :::
 
+## Relações
+
+::: {.panel-tabset}
+
+### Código
+
+```{r output=FALSE}
+Relação <- data |>
+  ggpairs(
+    columns = 2:8,
+    upper = list(
+      continuous = wrap("points", alpha = 0.4)
+    ),
+    lower = list(
+      continuous = wrap("points", alpha = 0.4)
+    )
+  ) +
+  theme_bw()
+```
+
+### Relação
+
+```{r echo=FALSE}
+Relação
+```
+
+:::
 
 ## Correlação
 
@@ -245,38 +272,14 @@ data |>
 
 :::
 
-## Relações
-
-::: {.panel-tabset}
-
-### Código
-
-```{r output=FALSE}
-Relação <- data |>
-  ggpairs(
-    columns = 2:8,
-    upper = list(
-      continuous = wrap("points", alpha = 0.4)
-    ),
-    lower = list(
-      continuous = wrap("points", alpha = 0.4)
-    )
-  ) +
-  theme_bw()
-```
-
-### Relação
-
-```{r echo=FALSE}
-Relação
-```
-
-:::
-
 # Componentes Principais
 
 ```{r echo=FALSE}
-comp.p <- prcomp(data |> select_if(is.numeric), scale. = TRUE, center = TRUE, tol=0)
+comp.p <- prcomp(
+  data |> select_if(is.numeric),
+  scale. = TRUE,
+  center = TRUE, tol=0
+  )
 ```
 
 ##
