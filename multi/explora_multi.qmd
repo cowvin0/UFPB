@@ -15,9 +15,9 @@ revealjs-plugins:
 format: 
   revealjs:
     theme: [default, style.scss]
+    embed-resources: true
     transition: slide
     background-transition: fade
-    footer: "Gabriel de Jesus Pereira"
     scrollable: true
     preview-links: auto
 editor:
@@ -50,7 +50,7 @@ library(ggfortify)
 :::: {.columns}
 
 ::: {.column width="50%"}
-- É um molusco gastrópode, podendo ser pequeno ou muito grande
+- É um molusco gastrópode, podendo ser pequeno ou grande;
 
 - Servem como alimento e joias para os seres humanos, sendo a China o principal consumidor
 :::
@@ -93,6 +93,8 @@ library(ggfortify)
 
 # Objetivo
 
+Analisar os dados de abalones utilizando métodos descritivos, fatoriais e de componentes principais.
+
 # Leitura dos dados
 
 ```{r}
@@ -111,7 +113,8 @@ data <- readr::read_csv("abalone.csv") |>
 
 ```{r echo=FALSE}
 data |> 
-  vis_dat()
+  vis_dat() +
+  labs()
 ```
 
 ## Frequência de cada sexo
@@ -143,6 +146,11 @@ Frequência
 
 :::
 
+## Frequência de cada sexo
+
+- O sexo mais frequente é o macho, seguido pela fêmea em terceiro lugar, com 31,29%, enquanto o macho apresenta 36,58%. Os filhotes representam 32,12%;
+
+- O filhote é considerado como um sexo separado pois não é possível afirmar se é macho ou fêmea.
 
 ## Distribuições
 
@@ -163,7 +171,10 @@ Distribuição <- data |>
       fill = Sex
       )
     ) +
-  geom_violin(aes(y = variable)) +
+  geom_violin(
+    aes(y = variable),
+    draw_quantiles = c(0.25, 0.5, 0.75),
+    ) +
   labs(x = "", y = "") +
   facet_wrap(vars(variable), scales = "free") +
   scale_fill_manual(
@@ -182,33 +193,11 @@ Distribuição
 
 :::
 
-## Relações
+## Distribuições
 
-::: {.panel-tabset}
+- Com exceção do diâmetro e do comprimento da concha, a maioria das variáveis apresenta assimetria positiva;
 
-### Código
-
-```{r output=FALSE}
-Relação <- data |>
-  ggpairs(
-    columns = 2:8,
-    upper = list(
-      continuous = wrap("points", alpha = 0.4)
-    ),
-    lower = list(
-      continuous = wrap("points", alpha = 0.4)
-    )
-  ) +
-  theme_bw()
-```
-
-### Relação
-
-```{r echo=FALSE}
-Relação
-```
-
-:::
+- O molusco macho é aquele que possuí as maiores medidas e, como é de se esperar, o filhote tem as menores;
 
 ## Correlação
 
@@ -248,7 +237,7 @@ data |>
   )
 ```
 
-### Correlação
+### Matriz de correlação
 
 ```{r echo=FALSE}
 data |>
@@ -272,77 +261,172 @@ data |>
 
 :::
 
+## Correlação
+
+As variáveis têm uma correlação significativa entre si, sendo o comprimento da concha e o diâmetro as mais correlacionadas. Além disso, perceba que a relação entre elas é diretamente proporcional, o que faz sentido, uma vez que se trata de medidas corporais dos moluscos.
+
 # Componentes Principais
 
-```{r echo=FALSE}
-comp.p <- prcomp(
-  data |> select_if(is.numeric),
-  scale. = TRUE,
+## Variância explicada por componente
+
+::: {.panel-tabset}
+
+### Código
+
+```{r}
+Componentes <- prcomp(
+  data |> 
+    select_if(is.numeric),
   center = TRUE, tol=0
   )
+
+Var <- fviz_eig(
+  Componentes, 
+  addlabels = TRUE, 
+  barfill="#002951"
+  ) +
+  labs(
+    y = "Porcentagem da variância explicada",
+    x = "Componentes",
+    title = ""
+    )
 ```
 
-##
+### Componentes
+
+```{r echo=FALSE}
+Var
+```
+
+:::
+
+## Variância explicada por componente
+
+- Podemos ver que o primeiro componente é aquele que mais explica a variância;
+
+- A proporção acumulada do primeiro componente com o segundo componente chega aos 94,8%. 
+
+## Contribuição das variáveis
+
+::: {.panel-tabset}
+
+### Código
 
 ```{r}
-fviz_eig(comp.p, addlabels = TRUE, barfill="#002951")
+Contrib <- fviz_cos2(
+  Componentes, 
+  choice = "var",
+  axes = 1:2,
+  fill="#002951"
+  ) +
+  labs(
+    y = "Representação",
+    title = ""
+    )
 ```
 
-##
+### Contribuição
+
+```{r echo=FALSE}
+Contrib
+```
+
+:::
+
+## Contribuição das variáveis
+
+- As duas variáveis que mais contribuem para a formação das dimensões são o peso e a altura do abalone;
+
+- As duas que menos contribuem são o peso da casca e a medição do comprimento da concha.
+
+## Interpretação das componentes
+
+::: {.panel-tabset}
+
+### Código
 
 ```{r}
-fviz_pca_var(comp.p, col.var = "#002951",repel=TRUE)
+auto <- autoplot(
+  Componentes,
+  data = data,
+  col="#444444",
+  label.colour = "#002951",
+  colour = "Sex",
+  label = FALSE,
+  label.size = 2,
+  loadings = TRUE,
+  loadings.colour = "#777777",
+  loadings.label = TRUE,
+  loadings.label.colour = "black",
+  loadings.label.size = 4
+  ) +
+  theme_bw() +
+  scale_color_manual(values = viridis::mako(5)[3:5])
 ```
 
-##
-
-```{r}
-fviz_cos2(comp.p, choice = "var", axes = 1:2, fill="#002951")
-```
-
-##
-
-```{r}
-fviz_pca_var(comp.p, col.var = "#002951",repel=TRUE)
-```
-
-##
-
-```{r}
-fviz_pca_var(comp.p, col.var = "cos2", title = "Biplot - Componentes principais",
-             gradient.cols = c("#002951", "#eeeeee","#a0000a"), repel = TRUE)
-```
-
-# Análise Fatorial
-
-##
-
-```{r}
-af.reg <- factanal(data |> select_if(is.numeric),
-                   factors = 2,
-                   scores="regression", 
-                   nstart = 10)
-```
-
-```{r}
-auto <- autoplot(af.reg,
-         data = data,
-         colour = "Sex",
-         label = FALSE,
-         loadings = TRUE,
-         loadings.colour = "#444444",
-         loadings.label = TRUE,
-         loadings.label.colour = "black",
-         label.colour = "black",
-         loadings.label.size = 5
-) +
-  theme_bw()
-```
-
-##
+### Componentes
 
 ```{r echo=FALSE}
 auto
 ```
 
+:::
+
+
+## Interpretação das componentes
+
+- Analisando o PC1, vemos que as medidas do abalone são diretamente proporcionais a dimensão 1, mas podemos concluir também que os filhotes são aqueles com as menores medidas;
+
+- Para o PC2, alguns pontos extremos podem ser responsáveis por boa parte da variabilidade de sua componente.
+
+# Análise Fatorial
+
+## Interpretação dos fatores
+
+::: {.panel-tabset}
+
+### Código
+
+```{r}
+Fator <- factanal(
+  data |> select_if(is.numeric),
+  factors = 2,
+  scores="regression", 
+  nstart = 10
+  )
+
+auto <- autoplot(
+  Fator,
+  data = data,
+  colour = "Sex",
+  label = FALSE,
+  loadings = TRUE,
+  loadings.colour = "#444444",
+  loadings.label = TRUE,
+  loadings.label.colour = "black",
+  label.colour = "black",
+  loadings.label.size = 5
+  ) +
+  theme_bw() +
+  scale_color_manual(values = viridis::mako(5)[3:5])
+```
+
+### Fatores
+
+```{r echo=FALSE}
+auto
+```
+
+:::
+
+## Interpretação dos fatores
+
+- Vemos que alguns dos filhotes estão concentrados na faixa do segundo fator, que é o fator com as menores medidas;
+
+- O fator 1 está diretamente relacionado às medidas dos abalones. 
+
 # Considerações Finais
+
+- As duas primeiras componentes explicam 94.779% da variância total. Vimos também que a primeira componente está diretamente relacionada às medidas corporais dos abalones.
+
+- Para a análise fatorial, podemos observar que 2 fatores explicam 92.4% da variância total, sendo o fator 1 relacionado às maiores medidas dos abalones. Além disso, percebemos que alguns dos filhotes estão representados na faixa do fator 2, que é aquele que possui as menores medidas.
