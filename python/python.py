@@ -1,12 +1,54 @@
-class MinhaLista(list):
-    def __sub__(self, outra):
-        diferenças = []
-        for i in range(len(self)):
-            diferenças.append(self[i] - outra[i])
-        return diferenças
+from numba import jit
+from functools import lru_cache
 
 
-l1 = MinhaLista([1, 2, 3])
-l2 = MinhaLista([5, 4, 3])
+@jit
+def sum(elements):
+    sum = elements[0]
+    for i in range(1, len(elements)):
+        sum += elements[i]
 
-print(l1 - l2)
+    return sum
+
+
+@jit
+def fatorial(value):
+    prod = 1
+    for i in range(1, value):
+        prod *= value - i + 1
+    return prod
+
+
+@jit
+def aprox_pi(lim):
+    prev = 1
+    i = 1
+    sum = 1
+    while True:
+        numerator = (-1) ** i
+        denom = 2 * i + 1
+        sum += numerator / denom
+        if abs(4 * (sum - prev)) < lim:
+            break
+        i += 1
+        prev = sum
+
+    return 4 * sum
+
+
+@lru_cache
+def fibonacci(n):
+    a = 0
+    b = 1
+    c = 0
+
+    for _ in range(n):
+        c = a + b
+        a = b
+        b = c
+
+    return c
+
+
+# def is_cdf(func):
+#     if
