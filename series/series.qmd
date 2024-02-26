@@ -34,7 +34,14 @@ library(tidyverse)
 library(timetk)
 ```
 
-# Leitura dos dados
+# Sobre os dados de séries temporais
+
+- São dados de vendas de lojas da Corporación Favorita, uma grande varejista de supermercados com sede no Equador.
+
+- Uma das características da série é que o setor público é pago a cada duas semanas, no dia 15 e no último dia do mês, podendo aumentar as vendas de supermercado.
+
+
+# Leitura e limpeza dos dados
 
 ```{r echo=TRUE}
 data <- readr::read_csv(
@@ -42,19 +49,67 @@ data <- readr::read_csv(
   ) |> 
   group_by(date) |> 
   summarise(sales = mean(sales)) |> 
-  filter(year(date) == 2016)
+  filter(year(date) == 2017) |>
+  mutate(
+    Semana = factor(week(date)),
+    Dia = factor(day(date)),
+    Mês = factor(month(date, label = TRUE)),
+    Ano = factor(year(date)),
+    Dias_Semana = factor(
+      stringr::str_to_title(weekdays(date)),
+      levels = c(
+        "Segunda", "Terça",
+        "Quarta", "Quinta",
+        "Sexta", "Sábado",
+        "Domingo"
+        )
+      )
+  )
 ```
 
-##
+# Análise exploratória
 
-```{r echo=TRUE}
-data |> 
+# Análise por mês
+
+::: {.panel-tabset}
+
+### Código
+
+```{r output=FALSE}
+Temp <- data |> 
   plot_time_series(
     date, 
     sales,
     .interactive = TRUE
     )
 ```
+
+### Série temporal
+
+```{r echo=FALSE}
+Temp
+```
+
+:::
+
+## Análise por semana
+
+```{r echo=TRUE}
+data |> 
+  ggplot(
+    aes(
+      x = Dias_Semana, 
+      y = sales, 
+      group = Semana,
+      color = Semana
+      )
+    ) +
+  geom_line() +
+  theme_bw() +
+  labs(y = "Venda", x = "") +
+  scale_color_manual(values = viridis::mako(33))
+```
+
 
 ##
 
