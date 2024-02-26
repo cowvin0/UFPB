@@ -1,0 +1,69 @@
+---
+title: Séries temporais de venda de 
+author: Gabriel de Jesus Pereira
+date: '`r Sys.Date()`'
+execute:
+  refresh: true
+  warning: false
+  error: false
+  eval: true
+  echo: true
+revealjs-plugins:
+  - attribution 
+  - roughnotation
+  - pointer
+format: 
+  revealjs:
+    theme: [default, style.scss]
+    embed-resources: true
+    transition: slide
+    background-transition: fade
+    scrollable: true
+    preview-links: auto
+editor:
+  markdown:
+    wrap: 72
+lang: pt-b
+---
+
+```{r echo=FALSE}
+library(modeltime)
+library(tseries)
+library(seastests)
+library(tidyverse)
+library(timetk)
+```
+
+# Leitura dos dados
+
+```{r echo=TRUE}
+data <- readr::read_csv(
+  "train.csv"
+  ) |> 
+  group_by(date) |> 
+  summarise(sales = mean(sales)) |> 
+  filter(year(date) == 2016)
+```
+
+##
+
+```{r echo=TRUE}
+data |> 
+  plot_time_series(
+    date, 
+    sales,
+    .interactive = TRUE
+    )
+```
+
+##
+
+```{r echo=TRUE}
+data |> 
+  plot_acf_diagnostics(
+    date,
+    sales,
+    .interactive = TRUE
+  )
+```
+
