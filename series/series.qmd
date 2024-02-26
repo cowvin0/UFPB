@@ -47,9 +47,10 @@ library(timetk)
 data <- readr::read_csv(
   "train.csv"
   ) |> 
-  group_by(date) |> 
-  summarise(sales = mean(sales)) |> 
-  filter(year(date) == 2017) |>
+  group_by(date) |>
+  filter(family == "AUTOMOTIVE")
+  summarise(sales = mean(sales)) |>
+  filter(year(date) == 2016) |>
   mutate(
     Semana = factor(week(date)),
     Dia = factor(day(date)),
@@ -65,6 +66,10 @@ data <- readr::read_csv(
         )
       )
   )
+
+teste.adf <- data |> pull(sales) |> adf.test()
+teste.kpss <- data |> pull(sales) |> kpss.test()
+teste.pp <- data |> pull(sales) |> pp.test()
 ```
 
 # Análise exploratória

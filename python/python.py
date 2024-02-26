@@ -1,3 +1,4 @@
+import sys
 from numba import jit
 from functools import lru_cache
 
@@ -50,5 +51,42 @@ def fibonacci(n):
     return c
 
 
-# def is_cdf(func):
-#     if
+def velo_motorista(velo):
+    if velo > 80:
+        print(f"Você foi multado, esse é o valor de sua multa: {5 * velo}")
+    else:
+        print("Muito bem, você não está acima da velocidade limite.")
+
+
+def numeros(numeros):
+    print(f"Esses são seus valores na ordem correta: {numeros[1:].sort()}")
+
+
+def salario_func(salario):
+    if salario > 1250:
+        return salario * 1.1
+    else:
+        return salario * 1.5
+
+
+def is_prime(num):
+    while True:
+        for i in range(2, num):
+            if num % i == 0:
+                print(f"O número {num} não é primo.")
+                break
+            else:
+                print(
+                    r"""
+                      Ainda não foi confirmado não ser primo,
+                      continue a iteração...
+                    """
+                )
+                continue
+        break
+
+
+def is_cdf(func, *kwargs):
+    is_non_decreasing = all((func(i) < func(i + 1)) for i in range(-10, 100))
+
+
