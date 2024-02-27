@@ -86,7 +86,6 @@ def is_prime(num):
         break
 
 
-def is_cdf(func, *kwargs):
-    is_non_decreasing = all((func(i) < func(i + 1)) for i in range(-10, 100))
-
-
+def ex(n):
+    for i in range(0, n * n):
+        print(f"{i // n + 1} {i % n + 1}")
