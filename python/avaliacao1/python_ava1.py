@@ -63,14 +63,21 @@ def funcao_pokemon(passe_pokemon):
 
 # 5)
 
+
 def impar(func):
-    filtra_impar = list(filter(lambda x: x % 2 == 0, func))
-    return filtra_impar if len(filtra_impar) != 0 else func
+    def retorna_impar():
+        filtra_impar = list(filter(lambda x: x % 2 == 0, func()))
+        return filtra_impar if len(filtra_impar) != 0 else func()
+
+    return retorna_impar
 
 
 def par(func):
-    filtra_par = list(filter(lambda x: x % 3 == 0, func()))
-    return filtra_par if len(filtra_par) != 0 else func()
+    def retorna_lista():
+        filtra_par = list(filter(lambda x: x % 3 == 0, func()))
+        return filtra_par if len(filtra_par) != 0 else func()
+
+    return retorna_lista
 
 
 # Agora, considere que você tem uma função que calcule o aumento salarial de cada funcionário
