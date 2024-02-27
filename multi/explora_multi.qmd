@@ -1,5 +1,5 @@
 ---
-title: Molusco Abalone
+title: Molusco abalone
 author: Gabriel de Jesus Pereira
 date: '`r Sys.Date()`'
 execute:
@@ -45,7 +45,7 @@ library(ggfortify)
 
 # Introdução
 
-## O que são os Abalones
+## O que são os abalones
 
 :::: {.columns}
 
@@ -63,7 +63,7 @@ library(ggfortify)
 
 ## Sobre o banco de dados
 
-- É um banco de dados da área de biologia que contém medidas físicas de um Abalone;
+- É um banco de dados da área de biologia que contém medidas físicas de um abalone;
 
 - O banco de dados contém 4177 observações;
 
@@ -73,7 +73,7 @@ library(ggfortify)
 
 ## As variáveis do banco de dados {auto-animate="true"}
 
-- Sexo do Abalone: variável nominal indicando se o Abalone é macho, fêmea ou filhote.
+- Sexo do abalone: variável nominal indicando se o abalone é macho, fêmea ou filhote.
 
 - Length: Medição do maior comprimento da concha
 
@@ -81,15 +81,15 @@ library(ggfortify)
 
 - Height: com carne na casca
 
-## As variáveis do banco de dados {auto-animate="true"}
+## As variáveis do banco de dados
 
 - Whole weight: abalone inteiro
 
 - Shucked weight: peso da carne
 
-- Viscera weight: peso das vísceras (após sangria)
+- Viscera weight: peso das vísceras
 
-- Shell weight: após ser seco
+- Shell weight: peso da concha sem carne
 
 # Objetivo
 
@@ -99,11 +99,13 @@ Analisar os dados de abalones utilizando métodos descritivos, fatoriais e de co
 
 ```{r}
 data <- readr::read_csv("abalone.csv") |>
-  mutate(Sex = case_when(
-                    Sex == "F" ~ "Fêmea",
-                    Sex == "M" ~ "Macho",
-                    TRUE ~ "Filhote")
-  ) |>
+  mutate(
+    Sex = case_when(
+      Sex == "F" ~ "Fêmea",
+      Sex == "M" ~ "Macho",
+      TRUE ~ "Filhote"
+      )
+    ) |>
   select(- Rings)
 ```
 
@@ -111,11 +113,39 @@ data <- readr::read_csv("abalone.csv") |>
 
 ## Valores ausentes
 
-```{r echo=FALSE}
-data |> 
+::: {.panel-tabset}
+
+### Código
+
+```{r}
+Ausentes <- data |> 
   vis_dat() +
-  labs()
+  labs(
+    y = "Observações"
+    ) +
+  scale_fill_manual(
+    values = viridis::mako(10)[5:6],
+    labels = c("Qualitativa", "Quantitativa")
+    ) +
+  theme(
+    legend.position = "bottom",
+    legend.title = element_blank(),
+  )
 ```
+
+### Valores ausentes
+
+```{r echo=FALSE}
+Ausentes
+```
+
+:::
+
+## Valores ausentes
+
+- Observando todas as variáveis do banco de dados pelo gráfico, vemos que o banco de dados não possui valores ausentes;
+
+- Podemos também ver o tipo de cada uma das variáveis do banco de dados.
 
 ## Frequência de cada sexo
 
@@ -127,7 +157,10 @@ data |>
 Frequência <- data |> 
   ggplot(aes(x = forcats::fct_infreq(Sex))) +
   geom_bar(
-        aes(y = after_stat(count) / sum(after_stat(count)), fill = Sex),
+        aes(
+          y = after_stat(count) / sum(after_stat(count)), 
+          fill = Sex
+          ),
         show.legend = FALSE,
   ) +
   theme_bw() +
@@ -263,7 +296,7 @@ data |>
 
 ## Correlação
 
-As variáveis têm uma correlação significativa entre si, sendo o comprimento da concha e o diâmetro as mais correlacionadas. Além disso, perceba que a relação entre elas é diretamente proporcional, o que faz sentido, uma vez que se trata de medidas corporais dos moluscos.
+As variáveis têm uma correlação significativa entre si, sendo o comprimento da concha e o diâmetro as mais correlacionadas. Além disso, perceba que a relação entre as medidas corporais do molusco é diretamente proporcional.
 
 # Componentes Principais
 
@@ -361,7 +394,8 @@ auto <- autoplot(
   loadings.label.size = 4
   ) +
   theme_bw() +
-  scale_color_manual(values = viridis::mako(5)[3:5])
+  scale_color_manual(values = viridis::mako(5)[3:5],
+                     name = "Sexo")
 ```
 
 ### Componentes
@@ -408,7 +442,8 @@ auto <- autoplot(
   loadings.label.size = 5
   ) +
   theme_bw() +
-  scale_color_manual(values = viridis::mako(5)[3:5])
+  scale_color_manual(values = viridis::mako(5)[3:5],
+                     name = "Sexo")
 ```
 
 ### Fatores
