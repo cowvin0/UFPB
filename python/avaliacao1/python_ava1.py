@@ -65,19 +65,31 @@ def funcao_pokemon(passe_pokemon):
 
 
 def impar(func):
-    def retorna_impar():
-        filtra_impar = list(filter(lambda x: x % 2 == 0, func()))
-        return filtra_impar if len(filtra_impar) != 0 else func()
+    def retorna_impar(lista_salario):
+        pega_lista_ant = func(lista_salario)
+        filtra_impar = list(filter(lambda x: x % 3 == 0, pega_lista_ant))
+        return filtra_impar if len(filtra_impar) != 0 else pega_lista_ant
 
     return retorna_impar
 
 
 def par(func):
-    def retorna_lista():
-        filtra_par = list(filter(lambda x: x % 3 == 0, func()))
-        return filtra_par if len(filtra_par) != 0 else func()
+    def retorna_par(lista_salario):
+        pega_lista_ant = func(lista_salario)
+        filtra_par = list(filter(lambda x: x % 2 == 0, pega_lista_ant))
+        return filtra_par if len(filtra_par) != 0 else pega_lista_ant
 
-    return retorna_lista
+    return retorna_par
+
+
+def impar_par(func):
+    def retorna_par(lista_salario):
+        pega_lista_ant = func(lista_salario)
+        filtra_par = list(filter(lambda x: x % 2 == 0, pega_lista_ant))
+        impar = [odd for odd in pega_lista_ant if odd not in filtra_par]
+        return filtra_par if len(filtra_par) != 0 else pega_lista_ant, impar
+
+    return retorna_par
 
 
 # Agora, considere que você tem uma função que calcule o aumento salarial de cada funcionário
@@ -85,10 +97,21 @@ def par(func):
 
 
 @impar
-@par
-def salario(passe_lista_salario=[1001, 679999]):
-    return list(map(lambda x: x * 1.1 if x > 1250 else x * 1.15, passe_lista_salario))
+def salario(lista_salario):
+    return list(map(lambda x: x * 1.1 if x > 1250 else x * 1.15, lista_salario))
 
+
+@par
+def salario(lista_salario):
+    return list(map(lambda x: x * 1.1 if x > 1250 else x * 1.15, lista_salario))
+
+
+@impar_par
+def salario(lista_salario):
+    return list(map(lambda x: x * 1.1 if x > 1250 else x * 1.15, lista_salario))
+
+
+print(salario(lista_salario=[1250, 1300, 1500, 1000]))
 
 # A função salário é primeiramente passada para o decorador par para verificar os números pares para retornar. Caso não exista
 # números pares, a lista retornada no decorador par é passada para o decorador impar, retornando aqueles valores que são impares.

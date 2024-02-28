@@ -1,1 +1,1 @@
-from . import soma
+from soma import soma
