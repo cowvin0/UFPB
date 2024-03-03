@@ -1,7 +1,7 @@
 ---
-title: Séries temporais de venda de 
+title: Venda de alimentos e bebidas no varejo dos EUA
 author: Gabriel de Jesus Pereira
-date: '`r Sys.Date()`'
+Date: '`r Sys.Date()`'
 execute:
   refresh: true
   warning: false
@@ -29,52 +29,40 @@ lang: pt-b
 ```{r echo=FALSE}
 library(modeltime)
 library(tseries)
+library(rlang)
+library(stats)
+library(forecast)
 library(seastests)
 library(tidyverse)
 library(timetk)
 ```
 
-# Sobre os dados de séries temporais
+# Descrição da série temporal
 
-- São dados de vendas de lojas da Corporación Favorita, uma grande varejista de supermercados com sede no Equador.
+- A série temporal aborda as vendas no varejo dos Estados Unidos de janeiro de 2000 a dezembro de 2019, com 240 observações.
 
-- Uma das características da série é que o setor público é pago a cada duas semanas, no dia 15 e no último dia do mês, podendo aumentar as vendas de supermercado.
+- O mercado analisado foi o de alimentos e bebidas, pois atende às exigências de sazonalidade e não estacionariedade necessárias para o estudo, além de apresentar padrões claros de aumento de consumo de bebida e alimentos. 
 
-
-# Leitura e limpeza dos dados
+# Processamento dos dados
 
 ```{r echo=TRUE}
-data <- readr::read_csv(
-  "train.csv"
-  ) |> 
-  group_by(date) |>
-  filter(family == "AUTOMOTIVE")
-  summarise(sales = mean(sales)) |>
-  filter(year(date) == 2016) |>
+data <- readr::read_csv("us-retail-sales.csv") |>
   mutate(
-    Semana = factor(week(date)),
-    Dia = factor(day(date)),
-    Mês = factor(month(date, label = TRUE)),
-    Ano = factor(year(date)),
-    Dias_Semana = factor(
-      stringr::str_to_title(weekdays(date)),
-      levels = c(
-        "Segunda", "Terça",
-        "Quarta", "Quinta",
-        "Sexta", "Sábado",
-        "Domingo"
-        )
-      )
-  )
-
-teste.adf <- data |> pull(sales) |> adf.test()
-teste.kpss <- data |> pull(sales) |> kpss.test()
-teste.pp <- data |> pull(sales) |> pp.test()
+    Date = paste0(Month, "-01") |> 
+      as.Date("%Y-%m-%d")
+    ) |> 
+  select(Date, FoodAndBeverage) |>
+  mutate(
+    Mês = factor(month(Date, label = TRUE)),
+    Ano = year(Date),
+  ) |> 
+  filter(Ano >= 2000) |> 
+  mutate(Ano = factor(Ano)) |> 
+  rename(`Alimentos e Bebidas` = FoodAndBeverage)
 ```
+# Identificando padrões
 
-# Análise exploratória
-
-# Análise por mês
+## A série temporal
 
 ::: {.panel-tabset}
 
@@ -83,9 +71,10 @@ teste.pp <- data |> pull(sales) |> pp.test()
 ```{r output=FALSE}
 Temp <- data |> 
   plot_time_series(
-    date, 
-    sales,
-    .interactive = TRUE
+    Date, 
+    `Alimentos e Bebidas`,
+    .interactive = TRUE,
+    .title = ""
     )
 ```
 
@@ -94,36 +83,226 @@ Temp <- data |>
 ```{r echo=FALSE}
 Temp
 ```
-
 :::
 
-## Análise por semana
+## A série temporal
 
-```{r echo=TRUE}
-data |> 
+Podemos observar uma tendência de crescimento ao comparar o valor inicial com o valor final. Também é possível notar a tendência de crescimento nas médias móveis centradas.
+
+
+## Análise dos meses
+
+::: {.panel-tabset}
+
+### Código
+
+```{r output=FALSE}
+Seas <- data |> 
   ggplot(
     aes(
-      x = Dias_Semana, 
-      y = sales, 
-      group = Semana,
-      color = Semana
+      x = Mês, 
+      y = `Alimentos e Bebidas`, 
+      group = Ano,
+      color = Ano
       )
     ) +
   geom_line() +
   theme_bw() +
-  labs(y = "Venda", x = "") +
+  labs(y = "Alimentos e Bebidas", x = "") +
   scale_color_manual(values = viridis::mako(33))
 ```
 
+### Meses de cada ano
 
-##
+```{r echo=FALSE}
+Seas
+```
+:::
 
-```{r echo=TRUE}
-data |> 
+## Análise dos meses
+
+Podemos observar um padrão de comportamento nos diferentes meses ao longo dos anos, com alguns picos de consumo possivelmente associados a datas comemorativas. Por exemplo, podemos ver que próximo de dezembro há um aumento de consumo em todos os anos, podendo ser explicado pelo Dia de Ação de Graças Além disso, observa-se um aumento em setembro, que coincide com a celebração do Dia do Trabalho.
+
+# Sazonalidade e estacionariedade
+
+## Teste para estacionariedade
+
+:::: {.columns}
+
+::: {.column width="50%"}
+```{r}
+Teste.Adf <- data |> 
+  pull(`Alimentos e Bebidas`) |>
+  adf.test()
+
+Teste.Adf
+```
+
+:::
+
+::: {.column width="50%"}
+```{r warning=FALSE}
+Teste.Kpss <- data |>
+  pull(`Alimentos e Bebidas`) |>
+  kpss.test()
+
+Teste.Kpss
+```
+
+:::
+
+::::
+
+## Teste para estacionariedade
+
+Ao analisar os resultados do teste de Dickey-Fuller (ADF) e o de KPSS, vemos que ao nível de 95% de confiança, não rejeitamos a hipótese nula de não-estacionariedade do teste ADF e rejeitamos a hipótese nula de estacionariedade do teste KPSS. Com p-valor de 0.6 e 0.01 para o teste ADF e KPSS, respectivamente.
+
+## Teste para sazonalidade
+
+:::: {.columns}
+
+::: {.column width="50%"}
+```{r}
+Teste.Kw <- data |>
+  pull(`Alimentos e Bebidas`) |>
+  isSeasonal(
+    freq = 12, 
+    test = "kw"
+    )
+
+Teste.Kw
+```
+
+:::
+
+::: {.column width="50%"}
+```{r}
+Teste.Fried <- data |>
+  pull(`Alimentos e Bebidas`) |>
+  isSeasonal(
+    freq = 12, 
+    test = "fried"
+    )
+
+Teste.Fried
+```
+
+:::
+
+::::
+
+## Teste para sazonalidade
+
+Analisando os resultados para a sazonalidade, podemos perceber que, ao nível de 95% de confiança, rejeitamos a hipótese nula de que não há sazonalidade para o teste de Kruskall Wallis e também para o teste de Friedman.
+
+## ACF e PACF
+
+::: {.panel-tabset}
+### Código
+
+```{r output=FALSE}
+ACF_PACF <- data |> 
   plot_acf_diagnostics(
-    date,
-    sales,
-    .interactive = TRUE
+    Date,
+    `Alimentos e Bebidas`,
+    .interactive = TRUE,
+    .lags = 100,
+    .title = "", 
+    .y_lab = ""
   )
 ```
 
+
+### ACF e PACF
+
+```{r echo=FALSE}
+ACF_PACF
+```
+:::
+
+## ACF e PACF
+
+Observando os gráficos de ACF e PACF, podemos notar um padrão em que o ACF decresce geometricamente até um ponto em que o lag é não significativo. Além disso, podemos perceber que o PACF é significativo apenas para alguns lags, tornando-se não significativo a partir do lag 9. Dessa forma, isso pode indicar um processo $AR(8)$.
+
+##  Código para decomposição clássica e STL
+
+```{r output=FALSE}
+data_ts <- data |> 
+  pull(`Alimentos e Bebidas`) |> 
+  ts(frequency = 12, 
+     start = c(2000, 01), 
+     end = c(2019, 12)
+     )
+
+Clássica <- data_ts |> 
+  decompose() 
+
+STL <- stl(data_ts, s.window = "periodic", robust = TRUE)
+```
+
+
+## Decomposição clássica e STL
+
+::: {.panel-tabset}
+### Código
+
+```{r output=FALSE}
+Clássica |> 
+  autoplot(
+    labels = c("Tendência", "Sazonalidade", "Ruído")
+    ) +
+  labs(title = "") +
+  xlab("") +
+  theme_bw()
+```
+
+
+### Clássica
+
+```{r echo=FALSE}
+Clássica |> 
+  autoplot(
+    labels = c("Tendência", "Sazonalidade", "Ruído")
+    ) +
+  labs(title = "") +
+  xlab("") +
+  theme_bw()
+```
+:::
+
+## Decomposição clássica e STL
+
+::: {.panel-tabset}
+### Código
+
+```{r output=FALSE}
+STL |> 
+  autoplot(
+    labels = c("Tendência", "Sazonalidade", "Ruído")
+    ) +
+  xlab("") +
+  theme_bw()
+```
+
+
+### STL
+
+```{r echo=FALSE}
+STL |> 
+  autoplot(
+    labels = c("Tendência", "Sazonalidade", "Ruído"),
+    ) +
+  xlab("") +
+  theme_bw()
+```
+:::
+
+## Decomposição clássica e STL
+
+Pode-se perceber que a decomposição da série exibe uma forte tendência para cima, a qual pode representar boa parte da variação na série. Analisando o ruído branco, podemos ver que as componentes do ruído da série são relativamente pequenas para maior parte da série. No entanto, próximo a 2020, ocorre uma grande queda nos ruídos, chegando abaixo de -3000, possivelmente representando quedas no consumo de alimentos e bebidas.
+
+# Referências
+
+- Séries temporais: <https://www.kaggle.com/datasets/ryanholbrook/ts-course-data>
+
+- Forecasting: Principles and Practice - Rob J Hyndman and George Athanasopoulos.
