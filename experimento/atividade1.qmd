@@ -1,18 +1,35 @@
 ---
-title: "Atividade 1 - Planejamento de Experimento"
+title: Atividade 1 - Planejamento de Experimento
 author: Gabriel de Jesus Pereira
-format: pdf
-jupyter: python3
-echo: false
-message: false
-warning: false
+date: '`r Sys.Date()`'
+execute:
+  refresh: true
+  warning: false
+  error: false
+  eval: true
+  echo: true
+revealjs-plugins:
+  - attribution 
+  - roughnotation
+  - pointer
+format: 
+  revealjs:
+    theme: [default, style.scss]
+    width: 1980
+    height: 1080
+    embed-resources: true
+    transition: slide
+    background-transition: fade
+    scrollable: true
+    preview-links: auto
+editor:
+  markdown:
+    wrap: 72
+lang: pt-b
 ---
 
-```{python}
-import numpy as np
-import pandas as pd
-from IPython.display import Markdown
-from tabulate import tabulate
+```{r echo=FALSE}
+library(tidyverse)
 ```
 # Exercício 3.7
 
@@ -21,19 +38,15 @@ Four different mixing techniques can be used economically
 A completely randomized experiment was conducted and the following
 data were collected: 
 
-```{python}
-data = pd.DataFrame(
-        {
-         "Mixing Technique": list(range(1, 5)),
-         "1": [3129, 3200, 2800, 2600],
-         "2": [3000, 3300, 2900, 2700],
-         "3": [2865, 2975, 2985, 2600],
-         "4": [2890, 3150, 3050, 2765]
-        },
-      )
-
+```{r echo=FALSE}
+data <- tibble(
+  `Mixing Technique` = 1:4,
+  "1" = c(3129, 3200, 2800, 2600),
+  "2" = c(3000, 3300, 2900, 2700),
+  "3" = c(2865, 2975, 2985, 2600),
+  "4" = c(2890, 3150, 3050, 2765)
+)
 ```
-
 
 | Mixing Technique |  |  Tensile Strength $(lb/in^2)$ |  |  |
 |:---:|:---:|:---:|:---:|:---:|
@@ -49,12 +62,41 @@ utilizadas de forma econômica. Após isso, nos dá dados das
 quatro diferentes misturas da resistência à tração do
 cimento.
 
+# Item *a)*
+
 **(a)** Test the mixing techniques affect the
 strength of the cement. Use $\alpha = 0.05$.
 
 O item **(a)** pede para testar o efeito das técnicas de
 mistura na resistência à tração do cimento, com
 um nível de significância de 5%.
+
+## Código para item *a)*
+
+```{r}
+Quadrados <- function(dados) {
+  dados <- dados[-1]
+  dimen <- dim(dados)
+  total <- sum(dados)  
+  quoc <- total^2 / prod(dimen)
+  SSt <- sum(dados ^ 2) - quoc
+  SStret <- sum(rowSums(dados)^2) / dimen[2] - quoc
+  SSe <- SSt - SStret
+  gl <- c(dimen[1] - 1, prod(dimen) - dimen[1], prod(dimen) - 1)
+  MSe = c(SStret / gl[1], SSe / gl[2])
+  Fe = MSe[1] / MSe[2]
+  c(
+    SSt = SSt, 
+    SStret = SStret, 
+    SSe = SSe,
+    Gl = list(gl),
+    MSe = list(MSe),
+    Fe = Fe
+    )
+}
+```
+
+## Continuação *a)*
 
 O problema se trata de um experimento de fator único com
 $a = 4$ (quantidade de misturas diferentes) e $n = 4$
@@ -71,63 +113,49 @@ Calculando o total e a média para cada grupo:
 |         3        | 2800 |              2900             | 2985 | 3050 | 11735 |   2933.75  |
 |         4        | 2600 |              2700             | 2600 | 2765 | 10665 |   2666.25  |
 
-$y_{..} = 11884 + 12625 + 11735 + 10665 = 46909$
-
-$\hat y_{..} = \frac{2971.00 + 3156.25 + 2933.75 + 2666.25}{4} = 2931.8125$
-
-Em que:
-
-$y_{i.} = \sum_{j = 1}^{n} y_{ij}$: O total de observações em cada tratamento.
-
-$\bar y_{i.} = y_{i.}/n$: A média das observações em cada tratamento.
-
-$y_{..} = \sum_{i = 1}^{a} \sum_{j = 1}^{n} y_{ij}$: O total de todas as observações.
-
-$\bar y_{..} = y_{..}/N, N = a n$: A média de todas as observações.
-
-Soma total corrigida dos quadrados:
-
-$SS_T = \sum_{i = 1}^{4} \sum_{j = 1}^{4} \left(y_{ij} - \bar y_{..} \right)^2 = 643648.4375$
-
-$SS_{Treatments} = \frac{1}{4} \sum_{i = 1}^4 y_{i.}^4 - \frac{y_{..}^4}{16} = 489740.4375$
-
-$SS_E = SS_T - SS_{Treatments} = 643648.4375 - 489740.4375 = 153908$
-
-$MS_{Treatments} = \frac{SS_{Treatments}}{a - 1} = \frac{489740.4375}{4 - 1} = 163246.8125$
-
-$MS_{E} = \frac{SS_E}{N - a} = \frac{153908}{16 - 4} = 12825.667$
-
-$F_0 = \frac{MS_{Treatments}}{MS_{E}} = \frac{163246.8125}{12825.667} = 12.728$
 
 Agora construindo a tabela da ANOVA:
 
-| Souce of Variation | Sum of Squares | Degrees of Freedom | Mean Square |  $F_0$ |
-|:------------------:|:--------------:|:------------------:|:-----------:|:------:|
-|  Mixing Techniques |   489740.4375  |          3         | 163246.8125 | 12.728 |
-|        Error       |     153908     |         12         |  12825.667  |        |
-|        Total       |   643648.4375  |         15         |             |        |
-
-Calculando a $F$ no R, chegamos em $F_{0.05, 3, 12} = 3.49$, $\left(p-valor  = 4.88e-4 \right)$
+|      Variação      | Soma dos Quadrados | Graus de Liberdade |         Quadrado Médio         | $F_0$ | $p-valor$ |
+|:------------------:|:------------------:|:------------------:|:------------------------------:|:-----:|:---------:|
+| $SS_{Tratamentos}$ |      489740.2      |          3         | $MS_{Tratamentos} = 163246.73$ | 12.72 |   4.88-4  |
+|       $SS_E$       |      153908.2      |         12         |        $MS_E = 12825.69$       |       |           |
+|       $SS_T$       |      643648.4      |         15         |                                |       |           |
 
 Dessa forma, vemos que $F_0 \left( 12.728 \right) > F_{0.05, 3, 12} \left(3.49 \right)$.
 Assim, rejeitamos $H_0$ e concluímos que as diferentes
 técnicas de misturas afetam a resistência à tração do cimento.
 
+# Item *b)*
+
 **(b)** Construct a graphical display as described
 in Section 3.5.3 to compare the mean tensile strengths
 for the four mixing techniques. What are your conclusions?
 
+## Código para item *b)*
+
+# Item *c)*
+
 **(c)** Use Fisher LSD method with $\alpha = 0.05$ to make
 comparisons between pairs of means.
 
+
+## Código para item *c)*
+
 $LSD = t_{0.25, 12} \sqrt{\frac{2MS_E}{4}} = 2.179 \sqrt{\frac{2 x 12825.667}{4}} = 174.4947$
+
+# Item *d)*
 
 **(d)** Construct a normal probability plot of the residuals.
 What conclusions would you draw about the validity of
 the normality assumption?
 
+# Item *e)*
+
 **(e)** Plot the residuals versus the predicted tensile
 strength. Comment on the plot.
+
+# Item *f)*
 
 **(f)** Prepare a scatter plot of the results to aid
 the interpretation of the results of this experiment.
