@@ -45,9 +45,7 @@ data <- tibble(
   "2" = c(3000, 3300, 2900, 2700),
   "3" = c(2865, 2975, 2985, 2600),
   "4" = c(2890, 3150, 3050, 2765)
-) |> 
-  pivot_longer(-`Mixing Technique`) |> 
-  select(- name)
+)
 ```
 
 | Mixing Technique |  |  Tensile Strength $(lb/in^2)$ |  |  |
@@ -146,14 +144,18 @@ $LSD = t_{0.25, 12} \sqrt{\frac{2MS_E}{4}} = 2.179 \sqrt{\frac{2 x 12825.667}{4}
 ## Código para item *c)*
 
 ```{r}
+LSD <- sqrt(2 * Quadrados(data)$MSe[2] / nrow(data)) 
+
 diffe <- data |>
+  pivot_longer(- `Mixing Technique`) |>
+  select(- name) |>
   group_by(`Mixing Technique`) |>
-  summarise(mean_value = mean(value)) |>
+  summarise(Média = mean(value)) |>
   (\(x) {
     n = nrow(x)
     sapply(1:(n - 1), FUN = \(i) {
       sapply((i + 1):n, FUN = \(j) {
-        x$mean_value[i] - x$mean_value[j]
+        x$Média[i] - x$Média[j]
         })
       })
     })()
