@@ -1,52 +1,46 @@
 ---
-title: Atividade 1 - Planejamento de Experimento
+title: O cimento de Portland
 author: Gabriel de Jesus Pereira
-date: '`r Sys.Date()`'
+documentclass: scrreprt
 execute:
   refresh: true
   warning: false
   error: false
   eval: true
   echo: true
-revealjs-plugins:
-  - attribution 
-  - roughnotation
-  - pointer
 format: 
-  revealjs:
-    theme: [default, style.scss]
-    width: 1980
-    height: 1080
-    embed-resources: true
-    transition: slide
-    background-transition: fade
-    scrollable: true
-    preview-links: auto
+  pdf
 editor:
   markdown:
     wrap: 72
-lang: pt-b
+lang: pt-br
+subtitle: Universidade Federal da Paraíba - CCEN
+date: today
+date-format: long
+monofont: "Ubuntu Mono"
+monofontoptions: Scale = 1
+fig-cap-location: top
 ---
 
 ```{r echo=FALSE}
 library(tidyverse)
+library(agricolae)
+library(ibd)
+library(nortest)
+library(tidymodels)
+library(moments)
+library(lmtest)
 ```
-# Exercício 3.7
+
+
+# O problema a ser resolvido e os dados
+
+## Exércicio 3.7.
 
 The tensile strength of Portland cement is being studied.
 Four different mixing techniques can be used economically
 A completely randomized experiment was conducted and the following
 data were collected: 
-
-```{r echo=FALSE}
-data <- tibble(
-  `Mixing Technique` = 1:4,
-  "1" = c(3129, 3200, 2800, 2600),
-  "2" = c(3000, 3300, 2900, 2700),
-  "3" = c(2865, 2975, 2985, 2600),
-  "4" = c(2890, 3150, 3050, 2765)
-)
-```
 
 | Mixing Technique |  |  Tensile Strength $(lb/in^2)$ |  |  |
 |:---:|:---:|:---:|:---:|:---:|
@@ -62,123 +56,279 @@ utilizadas de forma econômica. Após isso, nos dá dados das
 quatro diferentes misturas da resistência à tração do
 cimento.
 
-# Item *a)*
-
-**(a)** Test the mixing techniques affect the
-strength of the cement. Use $\alpha = 0.05$.
-
-O item **(a)** pede para testar o efeito das técnicas de
-mistura na resistência à tração do cimento, com
-um nível de significância de 5%.
-
-## Código para item *a)*
-
-```{r}
-Quadrados <- function(dados) {
-  dados <- dados[-1]
-  dimen <- dim(dados)
-  total <- sum(dados)  
-  quoc <- total^2 / prod(dimen)
-  SSt <- sum(dados ^ 2) - quoc
-  SStret <- sum(rowSums(dados)^2) / dimen[2] - quoc
-  SSe <- SSt - SStret
-  gl <- c(dimen[1] - 1, prod(dimen) - dimen[1], prod(dimen) - 1)
-  MSe = c(SStret / gl[1], SSe / gl[2])
-  Fe = MSe[1] / MSe[2]
-  c(
-    SSt = SSt, 
-    SStret = SStret, 
-    SSe = SSe,
-    Gl = list(gl),
-    MSe = list(MSe),
-    Fe = Fe
-    )
-}
-```
-
-## Continuação *a)*
+## O que está sendo testado
 
 O problema se trata de um experimento de fator único com
 $a = 4$ (quantidade de misturas diferentes) e $n = 4$
-(réplicas de resistência à tração do cimento). Como se
-trata de diferentes níveis de fator único que queremos
-comparar, devemos utilizar Análise de Variância.
+(réplicas de resistência à tração do cimento).
 
-Calculando o total e a média para cada grupo:
+O que queremos testar é se as diferentes misturas afetam a resistência à tração do cimento.
 
-| Mixing Technique |      |  Tensile Strength $(lb/in^2)$ |      |      | $y_i$ | $\hat y_i$ |
-|:----------------:|:----:|:-----------------------------:|:----:|:----:|:-----:|:----------:|
-|         1        | 3129 |              3000             | 2865 | 2890 | 11884 |    2671    |
-|         2        | 3200 |              3300             | 2975 | 3150 | 12625 |   3156.25  |
-|         3        | 2800 |              2900             | 2985 | 3050 | 11735 |   2933.75  |
-|         4        | 2600 |              2700             | 2600 | 2765 | 10665 |   2666.25  |
+Dessa forma, queremos testar se $H_0: \mu_1 = \mu_2 = \mu_3 = \mu_4$ contra a hipótese alternativa de que algumas médias são diferentes $\left(H_1: \mu_i \neq \mu_j \ | \  \exists \ \left(i, \ j\right) \right)$. Assim, podemos interpretar $H_0$ como sendo a hipótese que nos diz que a técnica de mistura não afeta na resistência à tração do cimento. $H_1$ é a hipótese que nos diz que pelo menos uma das técnicas de mistura afeta na resistência à tração do cimento.
 
+## Suposições de normalidade e homogeneidade
 
-Agora construindo a tabela da ANOVA:
+A seguir, veremos os testes de hipótese e gráficos que sustentam as suposições necessárias para criação do modelo.
 
-|      Variação      | Soma dos Quadrados | Graus de Liberdade |         Quadrado Médio         | $F_0$ | $p-valor$ |
-|:------------------:|:------------------:|:------------------:|:------------------------------:|:-----:|:---------:|
-| $SS_{Tratamentos}$ |      489740.2      |          3         | $MS_{Tratamentos} = 163246.73$ | 12.72 |   4.88-4  |
-|       $SS_E$       |      153908.2      |         12         |        $MS_E = 12825.69$       |       |           |
-|       $SS_T$       |      643648.4      |         15         |                                |       |           |
+### Normalidade
+: Resultado dos testes para normalidade {#tbl-norm}
 
-Dessa forma, vemos que $F_0 \left( 12.728 \right) > F_{0.05, 3, 12} \left(3.49 \right)$.
-Assim, rejeitamos $H_0$ e concluímos que as diferentes
-técnicas de misturas afetam a resistência à tração do cimento.
+|Teste           | Estatística| p-valor|
+|:---------------|-----------:|-------:|
+|Anderson-Darling| $A = 0.185$|   0.890|
+|Cramer-von Mises| $W = 0.028$|   0.854|
+|Lilliefors      | $D = 0.118$|   0.793|
+|Shapiro-Francia | $W = 0.982$|   0.947|
+|Shapiro-Wilk    | $W = 0.970$|   0.846|
+|Jarque-Bera     |$JB = 0.688$|   0.709|
 
-# Item *b)*
+Mais da metade dos testes da @tbl-norm não rejeitam a hipótese de normalidade, e gráficamente pelo Q-Q plot da @fig-norm os resíduos parecem sim ter distribuição aproximadamente normal pois se assemelham aos quantis teóricos da distribuição normal.
 
-**(b)** Construct a graphical display as described
-in Section 3.5.3 to compare the mean tensile strengths
-for the four mixing techniques. What are your conclusions?
-
-## Código para item *b)*
-
-# Item *c)*
-
-**(c)** Use Fisher LSD method with $\alpha = 0.05$ to make
-comparisons between pairs of means.
-
-$LSD = t_{0.25, 12} \sqrt{\frac{2MS_E}{4}} = 2.179 \sqrt{\frac{2 x 12825.667}{4}} = 174.4947$
-
-## Código para item *c)*
 
 ```{r}
-LSD <- sqrt(2 * Quadrados(data)$MSe[2] / nrow(data)) 
+#| fig-cap: Q-Q plot dos resíduos padronizados do modelo
+#| label: fig-norm
+#| fig-height: 4
+#| out-width: 100%
 
-diffe <- data |>
-  pivot_longer(- `Mixing Technique`) |>
-  select(- name) |>
-  group_by(`Mixing Technique`) |>
-  summarise(Média = mean(value)) |>
+# Dados
+data <- tibble(
+  `Técnica de mistura` = factor(rep(1:4, each = 4)),
+  `Força de tensão` = c(3129, 3000, 2865, 2890,
+                        3200, 3300, 2975, 3150,
+                        2800, 2900, 2985, 3050,
+                        2600, 2700, 2600, 2765)
+)
+
+
+# modelo One Way ANOVA
+modelo <- aov(`Força de tensão` ~ `Técnica de mistura`, data = data)
+
+# Código para criação de gráfico Q-Q plot
+data |> 
+  ggplot(aes(sample = rstandard(modelo))) +
+  geom_qq(color = "#21908C") +
+  geom_abline(alpha = 0.3) +
+  tune::coord_obs_pred() +
+  theme_bw() +
+  labs(
+    x = "Quantil teórico", 
+    y = "Resíduos padronizados"
+    )
+```
+
+\newpage
+
+```{r echo=FALSE, output=FALSE}
+# testes para as suposições de normalidade e homocedasticidade
+
+# normalidade
+shapiro.test(rstandard(modelo))
+nortest::lillie.test(rstandard(modelo))
+jarque.test(rstandard(modelo))
+# homocedasticidade
+lmtest::bptest(modelo)
+lmtest::gqtest(modelo)
+lmtest::hmctest(modelo)
+
+# homogeneidade
+bartlett.test(`Força de tensão` ~ `Técnica de mistura`, data = data)
+car::leveneTest(`Força de tensão` ~ `Técnica de mistura`, data = data)
+```
+
+
+### Homogeneidade
+: Resultado dos testes para homogeneidade {#tbl-homo}
+
+|Teste           |  Estatística| p-valor|
+|:---------------|------------:|-------:|
+|      Barlett   | $K = 0.711$ |  0.870 |
+|      Levene    | $F = 0.183$ |  0.905 |
+
+Todos os testes da @tbl-homo não rejeitam a hipótese de que as variâncias são iguais entre os grupos, com p-valores acima de 5%. Isso indica que a variância do modelo é constante para todos os valores estimados da variável resposta, o gráfico da @fig-homo apoia esta suposição.
+
+```{r}
+#| fig-cap: Gráfico dos resíduos padronizados versus valores estimados
+#| label: fig-homo
+#| fig-height: 4
+#| out-width: 100%
+
+# Código para criação de gráfico dos resíduos padronizados 
+# versus valores estimados
+
+modelo |> 
+  augment(newdata = data) |>
+  mutate(.std.resid = rstandard(modelo)) |> 
+  ggplot(aes(x = .fitted, y = .std.resid)) +
+  geom_point(aes(color = .std.resid)) +
+  geom_smooth(color = "#00000040", se = FALSE) +
+  scale_color_viridis_c() +
+  labs(
+    x = "Força de tensão estimada",
+    y = "Resíduo padronizado",
+    color = "Resíduo\nPadronizado"
+    ) +
+  theme_bw(10, "serif")
+```
+\newpage
+
+## A tabela ANOVA do problema
+
+Agora vamos testar as hipóteses e verificar se as técnicas de mistura afetam na resistência à tração do cimento de Portland.
+
+O primeiro passo será calcular as somas dos quadrados dos erros e dos tratamentos, além de encontrar o grau de liberdade.
+
+Soma total dos quadrados: $SS_T = \sum_{i = 1} ^n \sum_{i = 1}^n y_{ij} ^ 2 - \frac{y_{..}^2}{N}$
+
+Soma dos quadrados entre os tratamentos: $SS_{Tratamentos} = \frac{\sum_{i = 1}^n y_{i.} ^ 2}{n} - \frac{y_{..}^2}{N}$
+
+Soma dos quadrados dentro dos tratamentos: $SS_E = SS_T - SS_{Tratamentos}$
+
+Agora que temos as somas dos quadrados, podemos calcular os erros quadráticos médios, que podem ser calculados com as seguintes formas:
+
+Erro quadrático médio entre os tratamentos: $MS_{Tratamentos} = \frac{SS_{Tratamentos}}{a - 1}$ 
+
+Erro quadrático médio dentro dos tratamentos: $MS_{E} = \frac{SS_{E}}{N - a}$
+
+Em que $a - 1$ e $N - a$ são os graus de libertade entre e dentro dos tratamentos, respectivamente.
+
+Dessa forma, chegamos na seguinte tabela ANOVA:
+
+: Tabela da ANOVA
+
+|      Variação      | Soma dos Quadrados | Graus de Liberdade |         Erro quadrático médio         | $F_0$ | $p-valor$ |
+|:------------------:|:------------------:|:------------------:|:-------------------------------------:|:-----:|:---------:|
+| $SS_{Tratamentos}$ |      489740.2      |          3         | $MS_{Tratamentos} = 163246.73$        | 12.73 |   4.89-4  |
+|       $SS_E$       |      153908.2      |         12         |        $MS_E = 12825.69$              |       |           |
+|       $SS_T$       |      643648.4      |         15         |                                       |       |           |
+
+Dessa forma, vemos que $F_0 \left( 12.73 \right) > F_{0.05, 3, 12} \left(3.49 \right)$.
+Assim, rejeitamos $H_0$ e concluímos que algumas das diferentes técnicas de misturas afetam a resistência à tração do cimento.
+
+\newpage
+
+## Contrastes
+
+```{r}
+Contrastes <- tibble(
+  C1 = c(1, -1, 0, 0),
+  C2 = c(1, 1, -1, -1),
+  C3 = c(0, 0, 1, -1)
+  )
+contrasts(data$`Técnica de mistura`) <- Contrastes |> 
+  as.matrix()
+
+modelo_contraste <- aov(`Força de tensão` ~ `Técnica de mistura`, data = data)
+```
+
+|                                    | Coeficientes | Erro padrao | Estatistica $t$ | $Pr(>\|t\|)$ |
+|:----------------------------------:|:------------:|:-----------:|:---------------:|:------------:|
+|             Intercepto             |    2931.81   |    28.31    |     103.551     |   $< 2e-16$  |
+|         $\mu_1 - \mu2 = 0$         |    -92.63    |    40.04    |      -2.313     |    0.0392    |
+| $\mu_1 + \mu2 - \mu_3 - \mu_4 = 0$ |    131.81    |    28.31    |      4.656      |    0.0005    |
+|         $\mu_3 - \mu4 = 0$         |    133.75    |    40.04    |      3.340      |    0.0058    |
+
+Assim, concluímos analisando o p-valor que há diferenças significativas na resistência à tração entre os níveis 1 e 2 e entre o 3 e 4. Ainda, a média do nível 1 e 2 diferem significamente do média do nível 3 e 4.
+
+\newpage
+
+## Comparações múltiplas
+
+### Fisher Least Signiﬁcant Difference (LSD)
+
+$LSD = t_{\alpha / 2, N - a} \sqrt{\frac{2MS_E}{n}} = 174.4797$
+
+```{r}
+LSD = LSD.test(modelo, "Técnica de mistura")
+
+Diferenças <- data |>
+  group_by(`Técnica de mistura`) |>
+  summarise(Média = mean(`Força de tensão`)) |>
   (\(x) {
     n = nrow(x)
-    sapply(1:(n - 1), FUN = \(i) {
-      sapply((i + 1):n, FUN = \(j) {
+    all_dif <- sapply(1:(n - 1), FUN = \(i) {
+      diffs <- sapply((i + 1):n, FUN = \(j) {
         x$Média[i] - x$Média[j]
-        })
       })
-    })()
+      c(rep(NA, i - 1), diffs)
+    }) |>
+      t() |>
+      as_tibble()
+    colnames(all_dif) <- 2:4
+    all_dif
+  })()
 ```
 
-## Continuação *c)* 
+::: {layout-ncol=2}
+
+: Diferença das médias
+
+|             | $\bar y_2.$ | $\bar y_3.$ | $\bar y_4.$ |
+|:-----------:|:-----------:|:-----------:|:-----------:|
+| $\bar y_1.$ |   -185.25   |    37.25    |    304.75   |
+| $\bar y_2.$ |             |    222.50   |    409.00   |
+| $\bar y_3.$ |             |             |    267.50   |
+
+: Significantemente diferente
+
+|             | $\bar y_2.$ | $\bar y_3.$ | $\bar y_4.$ |
+|:-----------:|:-----------:|:-----------:|:-----------:|
+| $\bar y_1.$ |      1      |      0      |      1      |
+| $\bar y_2.$ |             |      1      |      1      |
+| $\bar y_3.$ |             |             |      1      |
+
+:::
+
+Pelos resultados do Least Significant Difference (LSD), vemos que a única diferença que não é significantemente diferente é a diferença entre a média do grupo 1 e 3. Os outros resultados puderam ser comprovados também pelos contrastes, que vemos que há diferenças significativas na resistência à tração entre os grupos considerados.
+
+\newpage
+
+Agora calculando: $S_{\bar y_{i.}} = \sqrt \frac{MS_E}{n} = 56.625$
 
 ```{r}
+#| fig-cap: Gráfico para comparar as médias da resistência à tração
+#| label: fig-comp
+#| fig-height: 4
+#| out-width: 100%
 
+data |> 
+  group_by(`Técnica de mistura`) |> 
+  summarise(media = mean(`Força de tensão`)) |> 
+  ggplot(aes(x = media, y = 0)) +
+  xlim(1500, 4000) +
+  geom_function(fun = \(x) dt(x, df = 12, ncp = 2800) * 56.625, color = "#21908C") +
+  geom_point(aes(color = `Técnica de mistura`)) + 
+  scale_color_viridis_d() +
+  labs(x = "", y = "") + 
+  theme_bw()
 ```
 
-# Item *d)*
+Pelo gráfico da @fig-comp, podemos concluir também sobre as diferenças. Vemos que a média da mistura 1 e mistura 3 estão bastante próximas, mostrando que sua diferenção não é significativa. Já para as outras diferenças, vemos que estão distantes, concluindo sobre as diferenças significativas que foram obtidas nos resultados anteriores.
 
-**(d)** Construct a normal probability plot of the residuals.
-What conclusions would you draw about the validity of
-the normality assumption?
+```{r}
+#| fig-cap: Tabela do intervalo de confiança de 95% de cada técnica de mistura
+#| label: fig-int-tab
+#| fig-height: 4
+#| out-width: 100%
 
-# Item *e)*
+LSD$means |>
+  select(`Força de tensão`, LCL, UCL) |>
+  knitr::kable()
+```
 
-**(e)** Plot the residuals versus the predicted tensile
-strength. Comment on the plot.
+```{r}
+#| fig-cap: Gráfico do intervalo de confiança para cada técnica de mistura
+#| label: fig-int-grap
+#| fig-height: 4
+#| out-width: 100%
 
-# Item *f)*
+LSD$means |> 
+  select(`Força de tensão`, LCL, UCL) |> 
+  mutate(`Técnica de mistura` = factor(1:4)) |> 
+  ggplot(aes(x = `Técnica de mistura`, y = `Força de tensão`)) +
+  geom_point(color = "#21908C") +
+  geom_errorbar(aes(ymin = LCL, ymax = UCL), color = "#21908C") +
+  theme_bw()
+```
 
-**(f)** Prepare a scatter plot of the results to aid
-the interpretation of the results of this experiment.
+Os intervalos de confiança da técnica de mistura 1 e 3 estão bastante próximas, podendo significar, mais uma vez, que essas técnicas tem o mesmo efeito sobre a resistência à tração. 

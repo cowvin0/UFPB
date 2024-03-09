@@ -1,0 +1,68 @@
+---
+title: "Segunda avaliação de estatística não paramétrica"
+author: "Gabriel de Jesus Pereira"
+format: pdf
+editor: visual
+---
+
+![](quest1.jpeg)
+
+\newpage
+
+## Questão 2
+
+Numa classe de 24 alunos, comparou-se o rendimento de estudantes provenientes de escolas particulares e escolas públicas. Os resultados seguem abaixo:
+
+```{r}
+dados2 <- tibble::tibble(
+  Acima = c(5, 10),
+  Abaixo = c(7, 2)
+)
+
+# teste de fisher
+
+fisher.test(dados2)
+```
+
+Temos um $p-valor = 0.089$. Assim, ao nível de 5% de significância, não rejeitamos a hipótese nula. Ou seja, existe diferença entre os rendimentos, a depender do tipo de escola.
+
+\newpage
+
+![](quest3.jpeg)
+
+\newpage
+
+![](quest4.jpeg)
+
+\newpage
+
+![](quest5.jpeg)
+
+\newpage
+
+## Questão 6
+
+
+
+```{r}
+consumo_carne <- tibble::tibble(
+  Kg = c(4.6, 4.7, 4.8, 4.9, 
+         4.9, 4.4, 4.7, 5.2,
+         5, 4.3, 4.6, 5.4, 
+         4.8, 4.4, 4.5, 5.1, 
+         4.7, 4.1, 4.6, 5.6),
+  Pessoas = rep(1:5, each = 4),
+  Mês = rep(c("Fev", "Mai", "Ago", "Nov"), 5)
+  )
+friedman.test(
+  consumo_carne$Kg,
+  groups = consumo_carne$Mês,
+  blocks = consumo_carne$Pessoas
+  )
+```
+
+Com um $p-valor = 0.0069$, rejeitamos a hipótese nula. Dessa forma, ao nível de 5% de significância, o consumo não é o mesmo nos 4 meses considerados.
+
+\newpage
+
+![](quest7.jpeg)
