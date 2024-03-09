@@ -10,6 +10,8 @@ lang: pt-br
 ```{r echo=FALSE, message=FALSE}
 library(tidyverse)
 library(caret)
+library(mgcv)
+library(gamlss)
 library(pROC)
 ```
 
@@ -88,13 +90,70 @@ abline(0, 1, lty = 2, col = "black")
 
 Construa um envelope para os resíduos. Há algum ponto que não pertence ao envelope? Se sim, qual(is)?
 
+```{r}
+par(mfrow=c(1,1))
+X <- model.matrix(modelo1)
+n <- nrow(X)
+p <- ncol(X)
+w <- modelo1$weights
+W <- diag(w)
+H <- solve(t(X)%*%W%*%X)
+H <- sqrt(W)%*%X%*%H%*%t(X)%*%sqrt(W)
+h <- diag(H)
+td <- resid(modelo1,type="deviance")/sqrt(1-h)
+e <- matrix(0,n,100)
+#
+for(i in 1:100){
+dif <- runif(n) - fitted(modelo1)
+dif[dif >= 0 ] <- 0
+dif[dif<0] <- 1
+nresp <- dif
+fit <- glm(nresp ~ X, family=binomial)
+w <- fit$weights
+W <- diag(w)
+H <- solve(t(X)%*%W%*%X)
+H <- sqrt(W)%*%X%*%H%*%t(X)%*%sqrt(W)
+h <- diag(H)
+e[,i] <- sort(resid(fit,type="deviance")/sqrt(1-h))}
+#
+e1 <- numeric(n)
+e2 <- numeric(n)
+#
+for(i in 1:n){
+  eo <- sort(e[i,])
+e1[i] <- (eo[2]+eo[3])/2
+e2[i] <- (eo[97]+eo[98])/2}
+#
+med <- apply(e,1,mean)
+faixa <- range(td,e1,e2)
+par(pty="s")
+qqnorm(td,xlab="Percentil da N(0,1)",
+ylab="Componente do Desvio", ylim=faixa, pch=16)
+#
+par(new=T)
+#
+qqnorm(e1,axes=F,xlab="",ylab="",type="l",ylim=faixa,lty=1)
+par(new=T)
+qqnorm(e2,axes=F,xlab="",ylab="", type="l",ylim=faixa,lty=1)
+par(new=T)
+qqnorm(med,axes=F,xlab="", ylab="", type="l",ylim=faixa,lty=2)
+```
+
+Não existem pontos fora do envelope, significando que o modelo se ajustou bem aos dados. Existem apenas alguns pontos próximos dos limites do envelope, mas não parecem indicar nenhuma anormalidade no modelo.
+
 ## d) 
 
 Construa um intervalo de confiaça de 90% para os parâmetros do modelo.
 
+```{r}
+confint(modelo1, level = 0.9)
+```
+
 ## e)
 
 Interprete o coeficiente $\beta_5$ da idade. Mantendo-se as outras variáveis constantes, o acréscimo de um ano na idade do paciente aumenta (ou diminui) em quanto a chance do paciente desenvolver uma doença cardíaca?
+
+
 
 # Questão 2
 
@@ -104,9 +163,40 @@ Considere o banco de dados Prestige do pacote carData do R que fornece 102 obser
 
 Faça o gráfico de dispersão da variável resposta **prestige** pelas variáveis explicativas **income** e **education**.
 
+```{r}
+dados2 <- carData::Prestige
+
+dados2 |> 
+  pivot_longer(c(income, education)) |> 
+  ggplot(aes(y = prestige, x = value, color = name)) + 
+  geom_point() +
+  facet_wrap(name~., scales = "free") +
+  scale_color_viridis_d() +
+  theme_bw() +
+  labs(y = "Prestige",
+       x = "")
+```
+
+Observando os gráficos de dispersão, a variável resposta **prestige** parece uma correlação maior com a variável **education** do que com a variável **income**.
+
 ## b)
 
 Realize o ajuste de um modelo GAM com a variável resposta **prestige** tendo uma distribuição Normal. Faça o gráfico das funções de suavização.
+
+```{r}
+library(mgcv)
+
+modelo2 <- gam(
+  prestige ~ s(education) + s(income), 
+  data = dados2, 
+  family=gaussian)
+
+par(mfrow = c(1, 2))
+
+plot(modelo2, residuals=TRUE)
+```
+
+Podemos perceber que 
 
 ## c)
 
@@ -121,9 +211,22 @@ Considere o banco de dados **fabric** do pacote **gamlss** do R. Em que y é o n
 
 Faça o gráfico de dispersão da variável resposta y pela variável explicativa (x).
 
+```{r}
+dados3 <- fabric
+
+dados3 |>
+  ggplot(aes(y = y, x = leng)) +
+  geom_point() +
+  theme_bw()
+```
+
 ## b)
 
 Realize o ajuste de um modelo GAMLSS com a variável resposta R tendo uma distribuição Poisson.
+
+```{r}
+modelo3 <- gamlss(y ~  leng, data = dados3, family = PO(mu.link = "log"))
+```
 
 ## c)
 
