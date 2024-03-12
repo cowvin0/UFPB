@@ -12,6 +12,7 @@ library(tidyverse)
 library(caret)
 library(mgcv)
 library(gamlss)
+library(boot)
 library(pROC)
 ```
 
@@ -27,16 +28,9 @@ Realize o ajuste da regressão logística e selecione as variáveis. O modelo é
 dados1 <- readr::read_csv("heartdis.txt") |> 
   select(-caso)
 
-modelo1 <- glm(HeartDisease ~ x1 + x2 + x3  + x4 + x5, 
+modelo1 <- glm(HeartDisease ~ + x1 + x2 + x3 + x4 + x5, 
                family = binomial(link = "logit"), 
                data = dados1)
-
-phi1 <- summary(modelo1)$dispersion
-desvio1 <- summary(modelo1)$deviance / phi1
-q.quadr1 <- qchisq(0.95, desvio1)
-
-probs_previstas <- predict(modelo1, dados1, type = "response")
-classes_previstas <- ifelse(probs_previstas > 0.5, 1, 0)
 ```
 
 \newpage
@@ -52,16 +46,40 @@ classes_previstas <- ifelse(probs_previstas > 0.5, 1, 0)
 |    $x_4$   |  -0.035640  |   0.028833  |    -1.236   |   0.216433   |
 |    $x_5$   |   0.052780  |   0.009512  |    5.549    |   2.88e-08   |
 
-Vemos pela tabela acima que boa parte das variáveis acima são significativas, com excessão do $x_1$, que é a pressão sistólica do sangue e a variável $x_4$, que é a medida de obesidade. Ainda, chegamos no seguinte modelo:
+Vemos pela tabela acima que boa parte das variáveis acima são significativas, com excessão do $x_1$, que é a pressão sistólica do sangue e a variável $x_4$, que é a medida de obesidade. Dessa forma, vamos ajustar outro modelo, mas sem essas variáveis.
 
-$$\log\left(\frac{\pi_i}{1 - \pi_i}\right) = - 4.313 + 0.0064x_1 + 0.186x_2 + 0.903x_3 - 0.035x_4 + 0.052x_5$$
+```{r}
+modelo1 <- glm(HeartDisease ~ x2 + x3 + x5, 
+               family = binomial(link = "logit"), 
+               data = dados1)
+
+phi1 <- summary(modelo1)$dispersion
+desvio1 <- summary(modelo1)$deviance / phi1
+q.quadr1 <- qchisq(0.95, desvio1)
+
+probs_previstas <- predict(modelo1, dados1, type = "response")
+classes_previstas <- ifelse(probs_previstas > 0.5, 1, 0)
+```
+
+: Tabela dos coeficientes e outras estatísticas do modelo com variáveis significativas
+
+|            | Coeficiente | Erro padrão | Estatística | $Pr(>\|z\|)$ |
+|:----------:|:-----------:|:-----------:|:-----------:|:------------:|
+| Intercepto |  -4.351833  |   0.491257  |    -8.859   |     2e-16    |
+|    $x_2$   |   0.169796  |   0.053446  |    3.177    |    0.00149   |
+|    $x_3$   |   0.881992  |   0.219469  |    4.019    |   5.85e-05   |
+|    $x_5$   |   0.054755  |   0.009077  |    6.033    |   1.61e-09   |
+
+$$\log\left(\frac{\pi_i}{1 - \pi_i}\right) = - 4.351 + 0.169x_2 + 0.881x_3 + 0.054x_5$$
 
 A tabela a seguir nos diz que, a um nível de 5% de significância, o modelo é adequado. Chegamos a esse resultados pois o desvio é menor que o quantil $\chi^2$.
 
 |               | Resultado Final |
 |:-------------:|:---------------:|
-|$Desvio / \phi$|     493.6152    |
-|   $\chi ^ 2$  |     546.4087    |
+|$Desvio / \phi$|     496.1803    |
+|   $\chi ^ 2$  |     549.1079    |
+
+Observando a tabela acima, vemos que o desvio é menor que $\chi ^ 2$, indicando que o modelo é adequado.
 
 Agora observe a matriz confusão abaixo:
 
@@ -72,7 +90,7 @@ cm <- confusionMatrix(table(classes_previstas, dados1$HeartDisease))
 cm
 ```
 
-Pela matriz de confusão, podemos ver que 255 pessoas corretamente classificadas como não tendo doença cardíaca e 84 pessoas classificadas corretamente como tendo doença cardíaca. Ainda, vemos que 47 pessoas sem doença cardíaca foram incorretamente classificadas como tendo a doença. 76 pessoas com a doença foram incorretamente classificadas como não tendo a doença cardíaca. Podemos ver também que conseguimos uma acurácia de 73.38%, que é a proporção de predições corretas. Assim, 84.44% dos casos em que a pessoa não tem a doença foram identificadas pelo modelo. Já os casos em que as pessoas tem a doença, 52.5% foram corretamente identificados.
+Pela matriz de confusão, podemos ver que 259 pessoas corretamente classificadas como não tendo doença cardíaca e 80 pessoas classificadas corretamente como tendo doença cardíaca. Ainda, vemos que 43 pessoas sem doença cardíaca foram incorretamente classificadas como tendo a doença. 80 pessoas com a doença foram incorretamente classificadas como não tendo a doença cardíaca. Podemos ver também que conseguimos uma acurácia de 73.38%, que é a proporção de predições corretas. Assim, 85.76% dos casos em que a pessoa não tem a doença foram identificadas pelo modelo. Já os casos em que as pessoas tem a doença, 50% foram corretamente identificados.
 
 Agora fica mais claro o porque os casos em que as pessoas não tem a doença são melhores classificados pelo modelo. Na nossa base de dados existem 302 pessoas sem a doença e 160 tem a doença. Dessa forma, os casos em que as pessoas não tem a doença, serão melhor classificados.
 
@@ -85,6 +103,12 @@ roc_obj <- roc(dados1$HeartDisease, probs_previstas)
 plot(roc_obj, main = "")
 abline(0, 1, lty = 2, col = "black")
 ```
+
+```{r}
+auc(roc_obj)
+```
+
+Podemos ver que o AUC é 76.89%, indicando uma performance razoável do classificador.
 
 ## c)
 
@@ -139,7 +163,7 @@ par(new=T)
 qqnorm(med,axes=F,xlab="", ylab="", type="l",ylim=faixa,lty=2)
 ```
 
-Não existem pontos fora do envelope, significando que o modelo se ajustou bem aos dados. Existem apenas alguns pontos próximos dos limites do envelope, mas não parecem indicar nenhuma anormalidade no modelo.
+Não existem pontos fora do envelope, significando que o modelo se ajustou bem aos dados. Existem apenas alguns pontos próximos dos limites do envelope, mas não parecem indicar nenhuma anormalidade no modelo. No entanto, apesar de todos os coeficientes serem significativos, a variância dos coeficientes é bastante alta.
 
 ## d) 
 
@@ -153,7 +177,12 @@ confint(modelo1, level = 0.9)
 
 Interprete o coeficiente $\beta_5$ da idade. Mantendo-se as outras variáveis constantes, o acréscimo de um ano na idade do paciente aumenta (ou diminui) em quanto a chance do paciente desenvolver uma doença cardíaca?
 
+```{r}
+exp(modelo1$coefficients)
+```
 
+
+Mantendo-se as outras variáveis constantes, vemos que as chances de se ter a doença cardíaca aumenta em 5.6% a cada ano.
 
 # Questão 2
 
@@ -177,7 +206,7 @@ dados2 |>
        x = "")
 ```
 
-Observando os gráficos de dispersão, a variável resposta **prestige** parece uma correlação maior com a variável **education** do que com a variável **income**.
+Observando os gráficos de dispersão, a variável resposta **prestige** parece ter uma correlação maior com a variável **education** do que com a variável **income**. Além disso, o gráfico à direita parece ter algumas observações extremas para **income** acima de 18000.
 
 ## b)
 
@@ -196,12 +225,17 @@ par(mfrow = c(1, 2))
 plot(modelo2, residuals=TRUE)
 ```
 
-Podemos perceber que 
+Para um modelo bem ajustado, os resíduos parciais devem estar uniformemente dispersos em torno da curva. Dessa forma, podemos perceber que o caso com a variável **education** parece ter se ajustado melhor. Podemos ver também que ao final do gráfico de **income** o spline não parece estar interpolando bem ao final da distribuição. Isso pode ser devido a poucas observações naquele intervalo de **income**, ou devido a pontos extremos da própria distribuição. Além disso, podemos ver que o intervalo de credibilidade é mais estreito no gráfico à direita, indicando ter um efeito estatístico significando maior que o gráfico à direita.
 
 ## c)
 
 Faça uma análise de diagnósticos do modelo escolhido. O que você pode concluir do modelo?
 
+```{r}
+gam.check(modelo2)
+```
+
+Podemos perceber pelo QQ-Plot que o modelo parece sim seguir uma distribuição aproximadamente normal, pois se assemelham aos quantis teóricos da distribuição normal. Pelo gráfico de resíduos versus estimados, nos mostra que o modelo parece ser homocedástico. Ainda, observando o histograma dos resíduos, podemos ver que os resíduos parecem seguir de fato uma distribuição aproximadamente normal. Além disso, a relação entre os valores observados versus ajustados parecem ser lineares.
 
 # Questão 3
 
@@ -212,7 +246,8 @@ Considere o banco de dados **fabric** do pacote **gamlss** do R. Em que y é o n
 Faça o gráfico de dispersão da variável resposta y pela variável explicativa (x).
 
 ```{r}
-dados3 <- fabric
+dados3 <- fabric |> 
+  select(-x)
 
 dados3 |>
   ggplot(aes(y = y, x = leng)) +
@@ -220,14 +255,40 @@ dados3 |>
   theme_bw()
 ```
 
+Podemos perceber que a relação entre o número de falhas em um rolo de tecido e o comprimento de tecido é não linear. Dessa forma, talvez o ideial seja utilizar um modelo que consiga capitar essa relação não linear.
+
 ## b)
 
 Realize o ajuste de um modelo GAMLSS com a variável resposta R tendo uma distribuição Poisson.
 
 ```{r}
-modelo3 <- gamlss(y ~  leng, data = dados3, family = PO(mu.link = "log"))
+modelo3 <- gamlss(y ~  leng, data = dados3, family = PO)
+modelo3.2 <- gamlss(y ~  leng, data = dados3, family = PO(mu.link = "identity"))
+modelo3.3 <- gamlss(y ~  leng, data = dados3, family = PO(mu.link = "inverse"))
+
+tibble(
+  y = dados3$y,
+  log = fitted(modelo3),
+  identidade = fitted(modelo3.2),
+  inverso = fitted(modelo3.3),
+) |>
+  pivot_longer(-y) |>
+  ggplot(aes(x = value, y = y)) +
+  facet_wrap(vars(name)) +
+  geom_point() +
+  geom_abline(alpha = 0.25) +
+  labs(x = "Valores ajustados", y = "Valores observados") +
+  theme_bw()
 ```
+
+Pelos gráficos de valores observados versus valores ajustados podemos perceber que nenhum dos modelos conseguiram se ajustar muito bem aos dados. No entanto, vemos que o Poisson com função de ligação **inverso** foi aquele que melhor se ajustou aos dados. O inverso também foi aquele que obteve o menor GAIC (184.764), enquanto o maior foi o de ligação identidade (187.749)
 
 ## c)
 
 Faça uma análise de diagnósticos do modelo escolhido. O que você pode concluir do modelo?
+
+```{r}
+plot(modelo3)
+```
+
+Podemos perceber pela densidade dos quantis dos resíduos que os resíduos parecem seguir uma distribuição aproximadamente normal. Podemos perceber também pelos quantis dos resíduos versus valores ajustados que o modelo parece ser homocedástico. Ainda, no QQ-plot, vemos também que parece seguir aproximadamente uma distribuição normal. 
