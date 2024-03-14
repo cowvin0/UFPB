@@ -105,8 +105,7 @@ data <- readr::read_csv("abalone.csv") |>
       Sex == "M" ~ "Macho",
       TRUE ~ "Filhote"
       )
-    ) |>
-  select(- Rings)
+    )
 ```
 
 # Análise Exploratória
@@ -255,7 +254,7 @@ data |>
   select_if(is.numeric) |>
   cor() |>
   corrplot(
-      method="circle",
+      method = "circle",
       col = mako(200),
       diag = FALSE,
       addgrid.col = "#00000040",
@@ -277,7 +276,7 @@ data |>
   select_if(is.numeric) |>
   cor() |>
   corrplot(
-      method="circle",
+      method = "circle",
       col = mako(200),
       diag = FALSE,
       addgrid.col = "#00000040",
@@ -297,171 +296,3 @@ data |>
 ## Correlação
 
 As variáveis têm uma correlação significativa entre si, sendo o comprimento da concha e o diâmetro as mais correlacionadas. Além disso, perceba que a relação entre as medidas corporais do molusco é diretamente proporcional.
-
-# Componentes Principais
-
-## Variância explicada por componente
-
-::: {.panel-tabset}
-
-### Código
-
-```{r}
-Componentes <- prcomp(
-  data |> 
-    select_if(is.numeric),
-  center = TRUE, tol=0
-  )
-
-Var <- fviz_eig(
-  Componentes, 
-  addlabels = TRUE, 
-  barfill="#002951"
-  ) +
-  labs(
-    y = "Porcentagem da variância explicada",
-    x = "Componentes",
-    title = ""
-    )
-```
-
-### Componentes
-
-```{r echo=FALSE}
-Var
-```
-
-:::
-
-## Variância explicada por componente
-
-- Podemos ver que o primeiro componente é aquele que mais explica a variância;
-
-- A proporção acumulada do primeiro componente com o segundo componente chega aos 94,8%. 
-
-## Contribuição das variáveis
-
-::: {.panel-tabset}
-
-### Código
-
-```{r}
-Contrib <- fviz_cos2(
-  Componentes, 
-  choice = "var",
-  axes = 1:2,
-  fill="#002951"
-  ) +
-  labs(
-    y = "Representação",
-    title = ""
-    )
-```
-
-### Contribuição
-
-```{r echo=FALSE}
-Contrib
-```
-
-:::
-
-## Contribuição das variáveis
-
-- As duas variáveis que mais contribuem para a formação das dimensões são o peso e a altura do abalone;
-
-- As duas que menos contribuem são o peso da casca e a medição do comprimento da concha.
-
-## Interpretação das componentes
-
-::: {.panel-tabset}
-
-### Código
-
-```{r}
-auto <- autoplot(
-  Componentes,
-  data = data,
-  col="#444444",
-  label.colour = "#002951",
-  colour = "Sex",
-  label = FALSE,
-  label.size = 2,
-  loadings = TRUE,
-  loadings.colour = "#777777",
-  loadings.label = TRUE,
-  loadings.label.colour = "black",
-  loadings.label.size = 4
-  ) +
-  theme_bw() +
-  scale_color_manual(values = viridis::mako(5)[3:5],
-                     name = "Sexo")
-```
-
-### Componentes
-
-```{r echo=FALSE}
-auto
-```
-
-:::
-
-
-## Interpretação das componentes
-
-- Analisando o PC1, vemos que as medidas do abalone são diretamente proporcionais a dimensão 1, mas podemos concluir também que os filhotes são aqueles com as menores medidas;
-
-- Para o PC2, alguns pontos extremos podem ser responsáveis por boa parte da variabilidade de sua componente.
-
-# Análise Fatorial
-
-## Interpretação dos fatores
-
-::: {.panel-tabset}
-
-### Código
-
-```{r}
-Fator <- factanal(
-  data |> select_if(is.numeric),
-  factors = 2,
-  scores="regression", 
-  nstart = 10
-  )
-
-auto <- autoplot(
-  Fator,
-  data = data,
-  colour = "Sex",
-  label = FALSE,
-  loadings = TRUE,
-  loadings.colour = "#444444",
-  loadings.label = TRUE,
-  loadings.label.colour = "black",
-  label.colour = "black",
-  loadings.label.size = 5
-  ) +
-  theme_bw() +
-  scale_color_manual(values = viridis::mako(5)[3:5],
-                     name = "Sexo")
-```
-
-### Fatores
-
-```{r echo=FALSE}
-auto
-```
-
-:::
-
-## Interpretação dos fatores
-
-- Vemos que alguns dos filhotes estão concentrados na faixa do segundo fator, que é o fator com as menores medidas;
-
-- O fator 1 está diretamente relacionado às medidas dos abalones. 
-
-# Considerações Finais
-
-- As duas primeiras componentes explicam 94.779% da variância total. Vimos também que a primeira componente está diretamente relacionada às medidas corporais dos abalones.
-
-- Para a análise fatorial, podemos observar que 2 fatores explicam 92.4% da variância total, sendo o fator 1 relacionado às maiores medidas dos abalones. Além disso, percebemos que alguns dos filhotes estão representados na faixa do fator 2, que é aquele que possui as menores medidas.
