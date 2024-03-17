@@ -82,7 +82,7 @@ A seguir, veremos os testes de hipótese e gráficos que sustentam as suposiçõ
 |Shapiro-Wilk    | $W = 0.970$|   0.846|
 |Jarque-Bera     |$JB = 0.688$|   0.709|
 
-Mais da metade dos testes da @tbl-norm não rejeitam a hipótese de normalidade, e gráficamente pelo Q-Q plot da @fig-norm os resíduos parecem sim ter distribuição aproximadamente normal pois se assemelham aos quantis teóricos da distribuição normal.
+Todos os testes da @tbl-norm não rejeitam a hipótese de normalidade, e gráficamente pelo Q-Q plot da @fig-norm os resíduos parecem sim ter distribuição aproximadamente normal pois se assemelham aos quantis teóricos da distribuição normal.
 
 
 ```{r}
@@ -180,8 +180,6 @@ Dessa forma, chegamos na seguinte tabela ANOVA:
 Dessa forma, vemos que $F_0 \left( 12.73 \right) > F_{0.05, 3, 12} \left(3.49 \right)$.
 Assim, rejeitamos $H_0$ e concluímos que algumas das diferentes técnicas de misturas afetam a resistência à tração do cimento.
 
-\newpage
-
 ## Contrastes
 
 ```{r}
@@ -258,8 +256,6 @@ Pelos resultados do Least Significant Difference (LSD), vemos que a única difer
 
 \newpage
 
-Agora calculando: $S_{\bar y_{i.}} = \sqrt \frac{MS_E}{n} = 56.625$
-
 ```{r}
 #| fig-cap: Gráfico para comparar as médias da resistência à tração
 #| label: fig-comp
@@ -267,7 +263,11 @@ Agora calculando: $S_{\bar y_{i.}} = \sqrt \frac{MS_E}{n} = 56.625$
 #| out-width: 100%
 
 data |> 
-  mutate(`Força de tensão` = (`Força de tensão` - mean(`Força de tensão`)) / sd(`Força de tensão`)) |> 
+  mutate(
+    `Força de tensão` = (
+      `Força de tensão` - mean(`Força de tensão`)
+        ) / sd(`Força de tensão`)
+  ) |> 
   group_by(`Técnica de mistura`) |> 
   summarise(media = mean(`Força de tensão`)) |> 
   ggplot(aes(x = media, y = 0)) +
@@ -279,7 +279,7 @@ data |>
   theme_bw()
   ```
 
-Pelo gráfico da @fig-comp, podemos concluir também sobre as diferenças. Vemos que a média da mistura 1 e mistura 3 estão bastante próximas, mostrando que sua diferenção não é significativa. Já para as outras diferenças, vemos que estão distantes, concluindo sobre as diferenças significativas que foram obtidas nos resultados anteriores.
+Pelo gráfico da @fig-comp, podemos concluir também sobre as diferenças. Vemos que a média da mistura 1 e mistura 3 estão bastante próximas, mostrando que sua diferença não é significativa. Já para as outras diferenças, vemos que estão distantes, concluindo sobre as diferenças significativas que foram obtidas nos resultados anteriores.
 
 ```{r}
 #| fig-cap: Tabela do intervalo de confiança de 95% de cada técnica de mistura

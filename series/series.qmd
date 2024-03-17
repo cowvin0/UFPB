@@ -23,7 +23,7 @@ format:
 editor:
   markdown:
     wrap: 72
-lang: pt-b
+lang: pt-br
 ---
 
 ```{r echo=FALSE}
