@@ -42,22 +42,53 @@ library(timetk)
 
 ```{r}
 dados <- readxl::read_xls("ipeadata[15-03-2024-10-52].xls") |> 
-  mutate(Data = paste0(Data, ".01") |> 
-           as.Date(format = "%Y.%m.%d"),
-         Mês = factor(month(Data, label = TRUE)),
-         Ano = factor(year(Data))
-         )
+  mutate(
+    Data = paste0(Data, ".01") |> 
+      as.Date(format = "%Y.%m.%d"),
+    Mês = factor(month(Data, label = TRUE)),
+    Ano = year(Data)
+    ) |> 
+  filter(Ano >= 2000) |> 
+  mutate(Ano = factor(Ano))
 ```
-
-# A série temporal
 
 Os dados são do ICMS do estado do Rio de Janeiro, coletados no período de janeiro de 1993 a dezembro de 2023.
 
-## Deflação
+# Análise exploratória
 
-```{r}
+## A série temporal sem deflação
+
+::: {.panel-tabset}
+
+### Código
+
+```{r output=FALSE}
+Nao_deflacionado <- dados |> 
+  plot_time_series(
+    Data, 
+    ICMS,
+    .interactive = TRUE,
+    .title = ""
+    )
+```
+
+### Sem deflação
+
+```{r echo=FALSE}
+Nao_deflacionado
+```
+
+:::
+
+## A Série temporal com deflação
+
+::: {.panel-tabset}
+
+### Código
+
+```{r output=FALSE}
 dados <- deflate(dados$ICMS, dados$Data, "12/2023", "igpm") |> 
-  ts(start = c(1993, 1), frequency = 12) |> 
+  ts(start = c(2000, 1), frequency = 12) |> 
   (\(x) {
     tibble(
       Data = time(x) |>
@@ -69,18 +100,8 @@ dados <- deflate(dados$ICMS, dados$Data, "12/2023", "igpm") |>
         Mês = factor(month(Data, label = TRUE))
       )
   })()
-```
 
-# Análise exploratória
-
-## A Série temporal
-
-::: {.panel-tabset}
-
-### Código
-
-```{r output=FALSE}
-Temp <- dados |> 
+Deflacionado <- dados |> 
   plot_time_series(
     Data, 
     ICMS,
@@ -89,10 +110,10 @@ Temp <- dados |>
     )
 ```
 
-### Série temporal
+### Com deflação
 
 ```{r echo=FALSE}
-Temp
+Deflacionado
 ```
 
 :::
@@ -104,27 +125,24 @@ Temp
 ### Código
 
 ```{r output=FALSE}
-Seas <- dados |> 
+Meses <- dados |> 
   ggplot(
     aes(
       x = Mês, 
-      y = `ICMS`, 
+      y = `ICMS` / 1000000, 
       group = Ano,
       color = Ano
       )
     ) +
   geom_line() +
   theme_bw() +
-  labs(y = "ICMS", x = "") +
+  labs(y = "Arrecadação do ICMS (milhões)", x = "") +
   scale_color_manual(values = viridis::mako(33))
 ```
 
 ### Meses de cada ano
 
 ```{r echo=FALSE}
-Seas
+Meses
 ```
 :::
-
-# Sazonalidade e Estacionariedade
-
