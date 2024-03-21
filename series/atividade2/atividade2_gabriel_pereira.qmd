@@ -1,0 +1,318 @@
+---
+title: Análise do ICMS do Estado do Rio de Janeiro
+author: Gabriel de Jesus Pereira
+Date: 'today'
+execute:
+  refresh: true
+  warning: false
+  error: false
+  eval: true
+  echo: true
+revealjs-plugins:
+  - attribution 
+  - roughnotation
+  - pointer
+format: 
+  revealjs:
+    theme: [default, style.scss]
+    embed-resources: true
+    transition: slide
+    background-transition: fade
+    scrollable: true
+    preview-links: auto
+editor:
+  markdown:
+    wrap: 72
+lang: pt-br
+---
+
+```{r echo=FALSE, warning=FALSE}
+library(modeltime)
+library(deflateBR)
+library(tseries)
+library(rlang)
+library(stats)
+library(forecast)
+library(seastests)
+library(tidyverse)
+library(timetk)
+```
+
+# Carregando a série temporal
+
+```{r}
+dados <- readxl::read_xls("series/atividade2/ipeadata[15-03-2024-10-52].xls") |> 
+  mutate(
+    Data = paste0(Data, ".01") |> 
+      as.Date(format = "%Y.%m.%d"),
+    Mês = factor(month(Data, label = TRUE)),
+    Ano = year(Data)
+    ) |> 
+  # filter(Ano >= 2000) |> 
+  mutate(Ano = factor(Ano))
+```
+
+# Sobre a série temporal
+
+A série temporal é do ICMS do estado do Rio de Janeiro, coletados no período de janeiro de 2000 a dezembro de 2023.
+
+# Análise da série temporal
+
+## A série temporal sem deflação
+
+::: {.panel-tabset}
+
+### Código
+
+```{r output=FALSE}
+Nao_deflacionado <- dados |> 
+  plot_time_series(
+    Data, 
+    ICMS,
+    .interactive = TRUE,
+    .title = ""
+    )
+```
+
+### Sem deflação
+
+```{r echo=FALSE}
+Nao_deflacionado
+```
+
+:::
+
+## A série temporal com deflação
+
+::: {.panel-tabset}
+
+### Código
+
+```{r output=FALSE}
+dados_deflacionado <- deflate(dados$ICMS, dados$Data, 
+                              "12/2023", "igpm") |> 
+  ts(start = c(1993, 1), frequency = 12) |> 
+  (\(x) {
+    tibble(
+      Data = time(x) |>
+        zoo::as.Date(),
+      ICMS = c(as.matrix(x))
+      ) |> 
+      mutate(
+        Ano = factor(year(Data)),
+        Mês = factor(month(Data, label = TRUE))
+      )
+  })()
+
+Deflacionado <- dados_deflacionado |> 
+  plot_time_series(
+    Data, 
+    ICMS,
+    .interactive = TRUE,
+    .title = ""
+    )
+```
+
+### Com deflação
+
+```{r echo=FALSE}
+Deflacionado
+```
+
+:::
+
+## Análise da série temporal com deflação
+
+- Nos anos 2000 o estado do Rio de Janeiro respondia por mais de 80% dos barris de petróleos produzidos pelo Brasil, podendo ser um dos motivos da alta arrecadação de ICMS entre 2000 e 2004;
+
+- Em 2016, ano da olimpíada, o estado do Rio de Janeiro declara estado de calamidade e ao mesmo tempo o país passa por uma crise política, podendo ser uma das causas da baixa arrecadação entre 2016 e 2018. 
+
+- Ocorreu uma queda na arrecadação no ano de 2020, ocasionada pela Covid-19, já que o consumo diminui durante o período de pandemia;
+
+- Houve um aumento da arrecadação do ICMS em 2023, possivelmente influenciado pelo programa de Remessa Conforme e a necessidade de aumentar o ICMS após a isenção de impostos federais dos combústiveis em período eleitoral.
+
+## Análise dos meses
+
+::: {.panel-tabset}
+
+### Código
+
+```{r output=FALSE}
+Meses <- dados_deflacionado |> 
+  ggplot(
+    aes(
+      x = Mês, 
+      y = `ICMS` / 1e6, 
+      group = Ano,
+      color = Ano
+      )
+    ) +
+  geom_line() +
+  theme_bw() +
+  labs(y = "Arrecadação do ICMS (milhões)", x = "") +
+  scale_color_manual(values = viridis::mako(33))
+```
+
+### Meses de cada ano
+
+```{r echo=FALSE}
+Meses
+```
+:::
+
+## Análise dos meses
+
+Podemos perceber que os meses de alguns anos possuem uma certa sazonalidade, principalmente quando olhamos para maio, que é o mês que acontece o dia das mães. É possível perceber também um aumento na arrecadação na chegada do mês de dezembro, que é o mês que ocorre o natal.
+
+# Teste para estacionariedade e sazonalidade
+
+## Teste para estacionariedade sem deflação
+
+::: {.panel-tabset}
+
+### Código
+
+```{r output=FALSE}
+Teste.Adf <- dados |> 
+  pull(ICMS) |>
+  adf.test()
+
+Teste.Kpss <- dados |>
+  pull(ICMS) |>
+  kpss.test()
+```
+
+### Resultados
+
+|                 | Estatística | $p-valor$ |
+|:---------------:|:-----------:|:---------:|
+|  Dickey-Fuller  |   -4.7466   |    0.01   |
+|       KPSS      |    3.6155   |    0.01   |
+
+:::
+
+## Teste para estacionariedade sem deflação
+
+Vemos que sem fazer a deflação da série, ao nível de 5% de significância, o teste de não estacionariedade passa apenas no KPSS, com $p-valor = 0.01$. Já para o teste ADF, rejeitamos a hipótese nula de não estacionariedade.
+
+## Teste para estacionariedade com deflação
+
+::: {.panel-tabset}
+
+### Código
+
+```{r output=FALSE}
+Teste.Adf <- dados_deflacionado |> 
+  pull(ICMS) |>
+  adf.test()
+
+Teste.Kpss <- dados_deflacionado |>
+  pull(ICMS) |>
+  kpss.test()
+```
+
+
+
+### Resultados
+
+|                 | Estatística | $p-valor$ |
+|:---------------:|:-----------:|:---------:|
+|  Dickey-Fuller  |   -2.9794   |   0.1634  |
+|       KPSS      |    0.7157   |   0.0121  |
+:::
+
+## Teste para estacionariedade com deflação
+
+Agora, considerando a série após a deflação, ao nível de 5% de significância, vemos que a hipótese de estacionariedade passa no teste KPSS e ADF.
+
+## Teste para sazonalidade
+
+:::: {.columns}
+
+::: {.column width="50%"}
+```{r}
+Teste.Kw <- dados_deflacionado |>
+  pull(ICMS) |>
+  isSeasonal(
+    freq = 12, 
+    test = "kw"
+    )
+
+Teste.Kw
+```
+
+:::
+
+::: {.column width="50%"}
+```{r}
+Teste.Fried <- dados_deflacionado |>
+  pull(ICMS) |>
+  isSeasonal(
+    freq = 12, 
+    test = "fried"
+    )
+
+Teste.Fried
+```
+
+:::
+
+::::
+
+# Decomposição da série
+
+##  Código para decomposição STL
+
+```{r output=FALSE}
+data_ts <- dados_deflacionado |> 
+  pull(ICMS) |> 
+  ts(frequency = 12, 
+     start = c(2000, 01), 
+     end = c(2023, 12)
+     )
+
+STL <- stl(data_ts, s.window = "periodic", robust = TRUE)
+```
+
+## Decomposição STL
+
+::: {.panel-tabset}
+### Código
+
+```{r output=FALSE}
+STL |> 
+  autoplot(
+    labels = c("Tendência", "Sazonalidade", "Ruído")
+    ) +
+  xlab("") +
+  theme_bw() +
+  geom_line(color = "#4c83b6")
+```
+
+
+### STL
+
+```{r echo=FALSE}
+STL |> 
+  autoplot(
+    labels = c("Tendência", "Sazonalidade", "Ruído"),
+    ) +
+  xlab("") +
+  theme_bw() +
+  geom_line(color = "#4c83b6")
+```
+:::
+
+## Decomposição STL
+
+Observando a componente de sazonalidade, percebemos pela barra cinza que a sazonalidade é a componente com a menor variação, comparado a variação dos dados. Podemos perceber também a alta nos resíduos no período em que a remessa conforme pode ter ocasionado a alta na arrecadação do ICMS no ano de 2023. Além disso, podemos ver também que a tendência é uma das componentes que mais representa a variação na série.
+
+## Referências
+
+- Arrecadação de ICMS do Estado do Rio de Janeiro: Uma análise do período de 1997 a 2019 utilizando o conceit de elasticidade <https://downloads.editoracientifica.org/articles/201102075.pdf>
+
+- Collection of ICMS from the State of Rio de Janeiro: The elasticity of the economic sectors and their use in improving the fiscal and financial situation of the State
+
+- Petróleo e Desenvolvimento Regional: O Rio de Janeiro no Pós-Boom das Commodities (Robson Dias da Silva e Manuel Victor Martins de Matos)
+
+- O Efeito da Inflação Sobre a Arrecadação do ICMS (Alfredo Meneghetti Neto)
