@@ -28,11 +28,13 @@ lang: pt-br
 
 ```{r echo=FALSE, warning=FALSE}
 library(modeltime)
+library(dygraphs)
 library(deflateBR)
 library(tseries)
 library(rlang)
 library(stats)
 library(forecast)
+library(lmtest)
 library(seastests)
 library(tidyverse)
 library(timetk)
@@ -267,7 +269,7 @@ Teste.Fried
 data_ts <- dados_deflacionado |> 
   pull(ICMS) |> 
   ts(frequency = 12, 
-     start = c(2000, 01), 
+     start = c(1993, 01), 
      end = c(2023, 12)
      )
 
@@ -306,6 +308,30 @@ STL |>
 ## Decomposição STL
 
 Observando a componente de sazonalidade, percebemos pela barra cinza que a sazonalidade é a componente com a menor variação, comparado a variação dos dados. Podemos perceber também a alta nos resíduos no período em que a remessa conforme pode ter ocasionado a alta na arrecadação do ICMS no ano de 2023. Além disso, podemos ver também que a tendência é uma das componentes que mais representa a variação na série.
+
+# Encontrando a ordem para modelo Arima
+
+## Selecionando ordem do modelo pelo AIC
+
+```{r} 
+ordem.AIC <- auto.arima(data_ts, ic = "aic", trace = TRUE)
+```
+
+## Selecionando ordem do modelo pelo AIC
+
+```{r} 
+ordem.AIC <- auto.arima(data_ts, ic = "bic", trace = TRUE)
+```
+
+## Diagnósticos
+
+```{r} 
+fitSARIMA <- arima(data_ts, order = c(0, 1, 1), seasonal = list(order = c(0, 0, 1)))
+coeftest(fitSARIMA)
+Box.test(fitSARIMA$residuals, type = "Box-Pierce")
+checkresiduals(fitSARIMA)
+tsdiag(fitSARIMA)
+```
 
 ## Referências
 
