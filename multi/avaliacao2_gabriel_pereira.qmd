@@ -1,7 +1,8 @@
 ---
-title: Molusco abalone
+title: Molusco abalone - O retorno
 author: Gabriel de Jesus Pereira
 date: '`r Sys.Date()`'
+cache: true
 execute:
   refresh: true
   warning: false
@@ -99,7 +100,7 @@ set.seed(42)
 
 # Objetivo
 
-Analisar os dados de abalones utilizando métodos descritivos, fatoriais e de componentes principais.
+Utilizar técnicas de classificação hierárquica, não-hierárquica e agrupamento paramétrico com dados de moluscos abalone.
 
 # Leitura dos dados
 
@@ -115,130 +116,9 @@ data <- readr::read_csv("abalone.csv") |>
   select(- Rings)
 ```
 
-# Análise Exploratória
+# Classificação Hierárquica
 
-## Valores ausentes
-
-::: {.panel-tabset}
-
-### Código
-
-```{r}
-Ausentes <- data |> 
-  vis_dat() +
-  labs(
-    y = "Observações"
-    ) +
-  scale_fill_manual(
-    values = viridis::mako(10)[5:7],
-    labels = c("Qualitativa", "Quantitativa")
-    ) +
-  theme(
-    legend.position = "bottom",
-    legend.title = element_blank(),
-  )
-```
-
-### Valores ausentes
-
-```{r echo=FALSE}
-Ausentes
-```
-
-:::
-
-## Valores ausentes
-
-- Observando todas as variáveis do banco de dados pelo gráfico, vemos que o banco de dados não possui valores ausentes;
-
-- Podemos também ver o tipo de cada uma das variáveis do banco de dados.
-
-## Frequência de cada sexo
-
-::: {.panel-tabset}
-
-### Código
-
-```{r}
-Frequência <- data |> 
-  ggplot(aes(x = forcats::fct_infreq(Sex))) +
-  geom_bar(
-        aes(
-          y = after_stat(count) / sum(after_stat(count)), 
-          fill = Sex
-          ),
-        show.legend = FALSE,
-  ) +
-  theme_bw() +
-  theme(axis.title.x = element_blank()) +
-  scale_fill_manual(
-    values = viridis::mako(10)[5:7]
-    ) +
-  labs(y = NULL, x = NULL) 
-```
-
-### Frequência
-
-```{r echo=FALSE}
-Frequência
-```
-
-:::
-
-## Frequência de cada sexo
-
-- O sexo mais frequente é o macho, seguido pela fêmea em terceiro lugar, com 31,29%, enquanto o macho apresenta 36,58%. Os filhotes representam 32,12%;
-
-- O filhote é considerado como um sexo separado pois não é possível afirmar se é macho ou fêmea.
-
-## Distribuições
-
-::: {.panel-tabset}
-
-### Código
-
-```{r}
-Distribuição <- data |>
-  pivot_longer(
-    !Sex,
-    names_to = "variable",
-    values_to = "values"
-  ) |>
-  ggplot(
-    aes(
-      x = values, 
-      fill = Sex
-      )
-    ) +
-  geom_violin(
-    aes(y = variable),
-    draw_quantiles = c(0.25, 0.5, 0.75),
-    ) +
-  labs(x = "", y = "") +
-  facet_wrap(vars(variable), scales = "free") +
-  scale_fill_manual(
-    values = viridis::mako(10)[5:7], 
-    name = "Sexo"
-    ) +
-  theme_bw() +
-  theme(axis.text.y = element_blank())
-```
-
-### Distribuição
-
-```{r echo=FALSE}
-Distribuição
-```
-
-:::
-
-## Distribuições
-
-- Com exceção do diâmetro e do comprimento da concha, a maioria das variáveis apresenta assimetria positiva;
-
-- O molusco macho é aquele que possuí as maiores medidas e, como é de se esperar, o filhote tem as menores;
-
-## Correlação
+## Dendograma
 
 ::: {.panel-tabset}
 
@@ -257,62 +137,6 @@ data <- data |>
        cbind(scaled)
   })()
 
-data |>
-  select_if(is.numeric) |>
-  cor() |>
-  corrplot(
-      method = "circle",
-      col = paletteer_c("ggthemes::Classic Blue", 200),
-      diag = FALSE,
-      addgrid.col = "#00000040",
-      tl.pos = "l",
-      tl.cex = 0.6,
-      tl.col = "black",
-      tl.offset = 0.25,
-      cl.length = 9,
-      cl.cex = 0.6,
-      cl.ratio = 0.25,
-      family = "mono"
-  )
-```
-
-### Matriz de correlação
-
-```{r echo=FALSE}
-data |>
-  select_if(is.numeric) |>
-  cor() |>
-  corrplot(
-      method = "circle",
-      col = paletteer_c("ggthemes::Classic Blue", 200),
-      diag = FALSE,
-      addgrid.col = "#00000040",
-      tl.pos = "l",
-      tl.cex = 0.6,
-      tl.col = "black",
-      tl.offset = 0.25,
-      cl.length = 9,
-      cl.cex = 0.6,
-      cl.ratio = 0.25,
-      family = "mono"
-  )
-```
-
-:::
-
-## Correlação
-
-As variáveis têm uma correlação significativa entre si, sendo o comprimento da concha e o diâmetro as mais correlacionadas. Além disso, perceba que a relação entre as medidas corporais do molusco é diretamente proporcional.
-
-# Classificação Hierárquica
-
-## Dendograma
-
-::: {.panel-tabset}
-
-### Código
-
-```{r output=FALSE}
 Mdist <- dist(data |> select_if(is.numeric), method = "euclidean")
 CH1 <- hclust(Mdist)
 plot(CH1,
@@ -339,31 +163,80 @@ rect.hclust(CH1, k = 3, border = c("#002951","#005129","#a0000a"))
 
 ## Seleção do modelo
 
-```{r}
-m <- c( "average", "single", "complete", "ward")
-ac.m <- data.frame(metodo=m,Criterio=rep(0,length(m)))
-for (i in 1:length(m)) {
-  ac.m[i, 2] <- agnes(data, method = m[i])$ac
+::: {.panel-tabset}
+
+### Código
+
+```{r output=FALSE}
+Métodos <- c(
+  "average", "single",
+  "complete", "ward"
+  )
+
+Resultados <- data.frame(Método=Métodos , Critério = rep(0, length(Métodos)))
+
+for (i in 1:length(Métodos)) {
+  Resultados[i, 2] <- agnes(data, method = Métodos[i])$ac
 }
 ```
 
-```{r}
-CHward <- agnes(data, method = "ward")
-CHward <- as.hclust(CHward)
-plot(CHward, main=" ",labels = substr(data$Sex, 1, 2), ylab = NULL, ann = FALSE)
+### Método selecionado
+
+|  Metodo  | Criterio |
+|:--------:|:--------:|
+|  Average |  0.9866  |
+|  Single  |  0.9829  |
+| Complete |  0.9881  |
+|   Ward   |  0.9982  |
+
+:::
+
+
+## Dendograma do médodo selecionado
+
+::: {.panel-tabset}
+
+### Código
+
+```{r output=FALSE}
+CHward <- agnes(data, method = "ward") |> 
+  as.hclust()
+plot(CHward, main=" ", labels = substr(data$Sex, 1, 2), ylab = NULL, ann = FALSE)
 rect.hclust(CHward, k = 3, border = c("#002951","#005129","#a0000a"))
-###
-# CORTANDO EM K=3
 corte3 <- cutree(CHward , k = 3)
 ```
 
+### Dendograma
 
-```{r}
-# Biplot
+```{r echo=FALSE}
+CHward <- agnes(data, method = "ward") |> 
+  as.hclust()
+plot(CHward, main=" ", labels = substr(data$Sex, 1, 2), ylab = NULL, ann = FALSE)
+rect.hclust(CHward, k = 3, border = c("#002951","#005129","#a0000a"))
+corte3 <- cutree(CHward , k = 3)
+```
+
+:::
+
+## Biplot do método selecionado
+
+::: {.panel-tabset}
+
+### Código
+
+```{r output=FALSE}
 mdados <- as.matrix(data |> select_if(is.numeric))
 rownames(mdados) <- paste(substr(data$Sex,1,2), 1:length(corte3))
 fviz_cluster(list(data = mdados, cluster = corte3, show_labels = FALSE))
 ```
+
+### Biplot
+
+```{r echo=FALSE}
+fviz_cluster(list(data = mdados, cluster = corte3, show_labels = FALSE))
+```
+
+:::
 
 # Classificação Não-Hierárquica
 
@@ -391,8 +264,40 @@ fviz_cluster(list(data = mdados, cluster = km$cluster,show_labels = FALSE))
 # Agrupamento paramétrico
 
 ```{r}
-BIC <- mclustBIC(data[,-1])
+BIC <- mclustBIC(data[,-1], G = 3)
 plot(BIC)
 summary(BIC)
 ```
 
+```{r}
+mod1 <- Mclust(data |> select_if(is.numeric), x = BIC)
+summary(mod1)
+```
+
+```{r}
+gg <- mod1$classification
+table(data.frame(grupos=gg,especies=data$Sex))
+```
+
+```{r}
+plot(mod1, what = "classification",col=c("#002951","#a0000a"))
+mdados <- as.matrix(data |> select_if(is.numeric))
+rownames(mdados) <- paste(substr(data$Sex,1,2),1:dim(data)[1])
+fviz_cluster(list(data = mdados, cluster = gg,show_labels = FALSE))
+```
+
+```{r}
+mod2 <- Mclust(data |> select_if(is.numeric), G=3, modelNames = "VVV")
+summary(mod2, parameters = TRUE)
+```
+
+```{r}
+gg <- mod2$classification
+table(data.frame(grupos=gg,especies=data$Sex))
+```
+
+```{r}
+mdados <- as.matrix(data |> select_if(is.numeric))
+rownames(mdados) <- paste(substr(data$Sex,1,2),1:dim(data)[1])
+fviz_cluster(list(data = mdados, cluster = gg, show_labels = FALSE))
+```
