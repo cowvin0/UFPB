@@ -31,15 +31,21 @@ set.seed(42)
 library(dplyr)
 library(GGally)
 library(visdat)
+library(paletteer)
 library(tidyr)
+library(dendextend)
 library(viridis)
 library(hrbrthemes)
 library(tibble)
+library(cluster)
 library(ggridges)
 library(factoextra)
+library(mclust)
 library(ggplot2)
+library(RVAideMemoire)
 library(corrplot)
 library(ggfortify)
+set.seed(42)
 ```
 
 
@@ -105,7 +111,8 @@ data <- readr::read_csv("abalone.csv") |>
       Sex == "M" ~ "Macho",
       TRUE ~ "Filhote"
       )
-    )
+    ) |> 
+  select(- Rings)
 ```
 
 # Análise Exploratória
@@ -184,34 +191,6 @@ Frequência
 
 - O filhote é considerado como um sexo separado pois não é possível afirmar se é macho ou fêmea.
 
-## Os anéis do molusco
-
-::: {.panel-tabset}
-
-### Código
-
-```{r}
-Anéis <- data |>
-  ggplot(aes(x = Rings, fill = Sex)) + 
-  geom_density(alpha = 0.79) +
-  scale_fill_manual(
-    values = viridis::mako(10)[5:7],
-    name = "Sexo"
-  ) +
-  labs(y = "Densidade", x = "Anéis") +
-  theme_bw()
-```
-
-### Anéis
-
-```{r echo=FALSE}
-Anéis
-```
-
-:::
-
-## Os anéis do molusco
-
 ## Distribuições
 
 ::: {.panel-tabset}
@@ -220,7 +199,6 @@ Anéis
 
 ```{r}
 Distribuição <- data |>
-  select(- Rings) |> 
   pivot_longer(
     !Sex,
     names_to = "variable",
@@ -325,3 +303,96 @@ data |>
 ## Correlação
 
 As variáveis têm uma correlação significativa entre si, sendo o comprimento da concha e o diâmetro as mais correlacionadas. Além disso, perceba que a relação entre as medidas corporais do molusco é diretamente proporcional.
+
+# Classificação Hierárquica
+
+## Dendograma
+
+::: {.panel-tabset}
+
+### Código
+
+```{r output=FALSE}
+Mdist <- dist(data |> select_if(is.numeric), method = "euclidean")
+CH1 <- hclust(Mdist)
+plot(CH1,
+     main=" ",
+     labels = data$Sex,
+     ylab = NULL, 
+     ann = FALSE)
+```
+
+### Dendograma
+
+```{r echo=FALSE}
+Mdist <- dist(data |> select_if(is.numeric), method = "euclidean")
+CH1 <- hclust(Mdist)
+plot(CH1,
+     main=" ",
+     labels = data$Sex,
+     ylab = NULL, 
+     ann = FALSE)
+rect.hclust(CH1, k = 3, border = c("#002951","#005129","#a0000a"))
+```
+
+:::
+
+## Seleção do modelo
+
+```{r}
+m <- c( "average", "single", "complete", "ward")
+ac.m <- data.frame(metodo=m,Criterio=rep(0,length(m)))
+for (i in 1:length(m)) {
+  ac.m[i, 2] <- agnes(data, method = m[i])$ac
+}
+```
+
+```{r}
+CHward <- agnes(data, method = "ward")
+CHward <- as.hclust(CHward)
+plot(CHward, main=" ",labels = substr(data$Sex, 1, 2), ylab = NULL, ann = FALSE)
+rect.hclust(CHward, k = 3, border = c("#002951","#005129","#a0000a"))
+###
+# CORTANDO EM K=3
+corte3 <- cutree(CHward , k = 3)
+```
+
+
+```{r}
+# Biplot
+mdados <- as.matrix(data |> select_if(is.numeric))
+rownames(mdados) <- paste(substr(data$Sex,1,2), 1:length(corte3))
+fviz_cluster(list(data = mdados, cluster = corte3, show_labels = FALSE))
+```
+
+# Classificação Não-Hierárquica
+
+## K-means
+
+```{r}
+semente <- round(aggregate(data |> select_if(is.numeric), by=list(cluster = data$Sex), mean)[,-1], 2)
+```
+
+```{r}
+km <- kmeans(data |> select_if(is.numeric), centers = semente)
+```
+
+```{r}
+table(data.frame(Especie=data$Sex, Classes=km$cluster))
+```
+
+```{r}
+mdados <- as.matrix(data |> select_if(is.numeric))
+rownames(mdados) <- paste(substr(data$Sex, 1, 2),1:dim(data)[1])
+fviz_cluster(list(data = mdados, cluster = km$cluster,show_labels = FALSE))
+```
+
+
+# Agrupamento paramétrico
+
+```{r}
+BIC <- mclustBIC(data[,-1])
+plot(BIC)
+summary(BIC)
+```
+

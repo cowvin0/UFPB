@@ -43,14 +43,14 @@ library(timetk)
 # Carregando a série temporal
 
 ```{r}
-dados <- readxl::read_xls("series/atividade2/ipeadata[15-03-2024-10-52].xls") |> 
+dados <- readxl::read_xls("ipeadata[15-03-2024-10-52].xls") |> 
   mutate(
     Data = paste0(Data, ".01") |> 
       as.Date(format = "%Y.%m.%d"),
     Mês = factor(month(Data, label = TRUE)),
     Ano = year(Data)
     ) |> 
-  # filter(Ano >= 2000) |> 
+  filter(Ano >= 1994) |>
   mutate(Ano = factor(Ano))
 ```
 
@@ -93,7 +93,7 @@ Nao_deflacionado
 ```{r output=FALSE}
 dados_deflacionado <- deflate(dados$ICMS, dados$Data, 
                               "12/2023", "igpm") |> 
-  ts(start = c(1993, 1), frequency = 12) |> 
+  ts(start = c(1994, 1), frequency = 12) |> 
   (\(x) {
     tibble(
       Data = time(x) |>
@@ -269,7 +269,7 @@ Teste.Fried
 data_ts <- dados_deflacionado |> 
   pull(ICMS) |> 
   ts(frequency = 12, 
-     start = c(1993, 01), 
+     start = c(1994, 01), 
      end = c(2023, 12)
      )
 
@@ -326,9 +326,9 @@ ordem.AIC <- auto.arima(data_ts, ic = "bic", trace = TRUE)
 ## Diagnósticos
 
 ```{r} 
-fitSARIMA <- arima(data_ts, order = c(0, 1, 1), seasonal = list(order = c(0, 0, 1)))
+fitSARIMA <- arima(data_ts, order = c(1, 1, 1), seasonal = list(order = c(0, 0, 1)))
 coeftest(fitSARIMA)
-Box.test(fitSARIMA$residuals, type = "Box-Pierce")
+Box.test(fitSARIMA$residuals, type = "Ljung-Box")
 checkresiduals(fitSARIMA)
 tsdiag(fitSARIMA)
 ```
