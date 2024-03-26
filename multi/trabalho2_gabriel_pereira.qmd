@@ -1,0 +1,560 @@
+---
+title: Molusco abalone - O retorno
+author: Gabriel de Jesus Pereira
+date: '`r Sys.Date()`'
+cache: true
+execute:
+  refresh: true
+  warning: false
+  error: false
+  eval: true
+  echo: true
+revealjs-plugins:
+  - attribution 
+  - roughnotation
+  - pointer
+format: 
+  revealjs:
+    theme: [default, style.scss]
+    embed-resources: true
+    transition: slide
+    background-transition: fade
+    scrollable: true
+    preview-links: auto
+editor:
+  markdown:
+    wrap: 72
+lang: pt-b
+---
+
+```{r echo=FALSE}
+library(dplyr)
+library(GGally)
+library(visdat)
+library(ggdendro)
+library(paletteer)
+library(ClassDiscovery)
+library(tidyr)
+library(dendextend)
+library(viridis)
+library(hrbrthemes)
+library(tibble)
+library(cluster)
+library(ggridges)
+library(factoextra)
+library(mclust)
+library(ggplot2)
+library(RVAideMemoire)
+library(corrplot)
+library(ggfortify)
+set.seed(42)
+```
+
+
+# Introdução
+
+## O que são os abalones
+
+:::: {.columns}
+
+::: {.column width="50%"}
+- É um molusco gastrópode, podendo ser pequeno ou grande;
+
+- Servem como alimento e joias para os seres humanos, sendo a China o principal consumidor
+:::
+
+::: {.column width="50%"}
+![](https://www.e-fish.com/cdn/shop/files/1lbsabalone2.jpg?v=1696278727)
+:::
+
+::::
+
+## Sobre o banco de dados
+
+- É um banco de dados da área de biologia que contém medidas físicas de um abalone;
+
+- O banco de dados contém 4177 observações;
+
+- 8 colunas, sendo uma delas nominal e o restante numérica;
+
+- Foi criado por Warwick Nash, Tracy Sellers, Simon Talbot, Andrew Cawthorn, Wes Ford.
+
+## As variáveis do banco de dados {auto-animate="true"}
+
+- Sexo do abalone: variável nominal indicando se o abalone é macho ou filhote.
+
+- Medição do maior comprimento da concha
+
+- Diâmetro: perpendicular ao comprimento
+
+- Height: com carne na casca
+
+## As variáveis do banco de dados
+
+- Peso inteiro do abalone
+
+- Peso da carne do abalone
+
+- Peso das vísceras
+
+- Peso da concha sem carne
+
+# Objetivo
+
+Utilizar técnicas de classificação hierárquica, não-hierárquica e agrupamento paramétrico com dados de moluscos abalone.
+
+# Leitura dos dados
+
+```{r}
+data <- readr::read_csv("abalone.csv") |>
+  mutate(
+    Sex = case_when(
+      Sex == "F" ~ "Fêmea",
+      Sex == "M" ~ "Macho",
+      TRUE ~ "Filhote"
+      )
+    ) |> 
+  select(- Rings)
+```
+
+# Análise exploratória
+
+## Distribuições
+
+::: {.panel-tabset}
+
+### Código
+
+```{r}
+data <- data |>
+  (\(x) {
+     scaled <- x |>
+       select_if(is.numeric) |>
+       scale() |>
+       as_tibble()
+
+     x |>
+       select_if(is.character) |>
+       cbind(scaled)
+  })()
+
+Distribuição <- data |>
+  pivot_longer(
+    !Sex,
+    names_to = "variable",
+    values_to = "values"
+  ) |>
+  ggplot(
+    aes(
+      x = values, 
+      fill = Sex
+      )
+    ) +
+  geom_violin(
+    aes(y = variable),
+    draw_quantiles = c(0.25, 0.5, 0.75),
+    ) +
+  labs(x = "", y = "") +
+  facet_wrap(vars(variable), scales = "free") +
+  scale_fill_manual(
+    values = viridis::mako(5)[3:5], 
+    name = "Sexo"
+    ) +
+  theme_bw() +
+  theme(axis.text.y = element_blank())
+```
+
+### Distribuição
+
+```{r echo=FALSE}
+Distribuição
+```
+
+:::
+
+## Distribuições
+
+- Com exceção do diâmetro e do comprimento da concha, a maioria das variáveis apresenta assimetria positiva;
+
+- O molusco macho é aquele que possuí as maiores medidas e, como é de se esperar, o filhote tem as menores;
+
+
+# Classificação Hierárquica
+
+## Seleção do método
+
+::: {.panel-tabset}
+
+### Código
+
+```{r output=FALSE}
+Métodos <- c(
+  "average", "single",
+  "complete", "ward"
+  )
+
+Resultados <- tibble(
+  Método = Métodos, 
+  Critério = rep(0, length(Métodos))
+  )
+
+for (i in 1:length(Métodos)) {
+  Resultados[i, 2] <- agnes(data, method = Métodos[i], metric = "euclidian")$ac
+}
+```
+
+### Resultados dos métodos
+
+|  Método  | Critério |
+|:--------:|:--------:|
+|  Average |  0.9866  |
+|  Single  |  0.9829  |
+| Complete |  0.9881  |
+|   Ward   |  0.9982  |
+
+:::
+
+## Seleção do método
+
+Podemos ver na tabela que o melhor método foi o Ward, que será o método utilizado para análise inicial dos clusters.
+
+## Dendograma do método Ward
+
+::: {.panel-tabset}
+
+### Código
+
+```{r output=FALSE}
+CHWard <- agnes(data, method = "ward", metric = "euclidian") |> 
+  as.hclust() 
+  
+plotColoredClusters(
+    CHWard,
+    labs = case_match(
+        data$Sex,
+        "Macho" ~ "M",
+        "Filhote" ~ "P",
+        "Fêmea" ~ "F"
+    ),
+    cols = case_match(
+        data$Sex,
+        "Macho" ~ "#fdd402",
+        "Filhote" ~ "black",
+        "Fêmea" ~ "#9ff837"
+    ),
+    xlab = "",
+    ylab = "Distância"
+  )
+rect.hclust(CHWard, k = 3, border = c("red","red","red"))
+```
+
+### Dendograma
+
+```{r echo=FALSE}
+plotColoredClusters(
+    CHWard,
+    labs = case_match(
+        data$Sex,
+        "Macho" ~ "M",
+        "Filhote" ~ "P",
+        "Fêmea" ~ "F"
+    ),
+    cols = case_match(
+        data$Sex,
+        "Macho" ~ "#fdd402",
+        "Filhote" ~ "black",
+        "Fêmea" ~ "#9ff837"
+    ),
+    xlab = "",
+    ylab = "Distância"
+  )
+rect.hclust(CHWard, k = 3, border = c("red", "red", "red"))
+```
+
+:::
+
+## Dendograma do método Ward
+
+*Os filhotes são representados pelo preto, as fêmeas pelo verde e o macho pelo amarelo.*
+
+Observando o dendrograma, podemos perceber que os filhotes estão bastante concentrados no primeiro e segundo clusters. Ainda, é possível perceber que as classes de sexo de abalone aparecem em distâncias pequenas, mostrando o nível de similaridade entre as classes. Os filhotes apresentam grandes similaridades com a fêmea no primeiro grupo, mas as fêmeas também apresentam similaridades com os machos. As classes apresentam homogeneidade.
+
+## Biplot do método Ward
+
+::: {.panel-tabset}
+
+### Código
+
+```{r output=FALSE}
+Corte3 <- cutree(CHWard , k = 3)
+mdados <- data |> 
+  select_if(is.numeric)
+rownames(mdados) <- paste(substr(data$Sex, 1, 2), 1:length(Corte3))
+
+Biplot <- fviz_cluster(
+  list(data = mdados, cluster = Corte3, show_labels = FALSE), 
+  geom = c("point"), repel = TRUE, legend = NULL, shape = NULL) +
+  labs(title = "") +
+  scale_shape_manual("", values = c(1, 1, 1), guide = "none") +
+  scale_color_brewer("", palette = "Set2") +
+  scale_fill_brewer("", palette = "Set2", guide = "none") +
+  guides(fill = "none")
+
+Biplot + 
+  geom_point(
+    data = Biplot$data |>
+      mutate(Sex = data$Sex),
+    aes(x = x, y = y, colour = Sex),
+    alpha = 0.7,
+    size = 2.3
+    ) +
+  theme_bw()
+```
+
+### Biplot
+
+```{r echo=FALSE}
+Biplot + 
+  geom_point(
+    data = Biplot$data |>
+      mutate(Sex = data$Sex),
+    aes(x = x, y = y, colour = Sex),
+    alpha = 0.7,
+    size = 2.3
+    ) +
+  theme_bw()
+```
+
+:::
+
+## Biplot do método Ward
+
+Podemos perceber também a homogeneidade entre os filhotes, machos e fêmeas através do biplot do método Ward.
+
+## Tabela de contigência
+
+```{r}
+(table(data.frame(Abalone = data$Sex, Classes = Corte3)) / nrow(data)) |> 
+  knitr::kable()
+```
+
+## Tabela de contigência
+
+Pela tabela vemos que há uma maior frequência de filhotes no primeiro e segundo grupo, talvez sendo aqueles grupos relacionados a menores medidas. Já os machos estão representados mais no terceiro quadrante, podendo se aquele grupo com as maiores medidas.
+
+# Classificação Não-Hierárquica
+
+## K-means
+
+::: {.panel-tabset}
+
+### Código
+
+```{r output=FALSE}
+semente <- round(aggregate(data |> select_if(is.numeric), 
+                           by = list(cluster = data$Sex), mean)[,-1], 2)
+km <- kmeans(data |> select_if(is.numeric), centers = semente)
+  
+Biplot <- fviz_cluster(
+  list(data = mdados, cluster = km$cluster, show_labels = FALSE), 
+  geom = c("point"), repel = TRUE, legend = NULL, shape = NULL) +
+  labs(title = "") +
+  scale_shape_manual("", values = c(1, 1, 1), guide = "none") +
+  scale_color_brewer("", palette = "Set2") +
+  scale_fill_brewer("", palette = "Set2", guide = "none") +
+  guides(fill = "none")
+
+Biplot + 
+  geom_point(
+    data = Biplot$data |>
+      mutate(Sex = data$Sex),
+    aes(x = x, y = y, colour = Sex),
+    alpha = 0.7,
+    size = 2.3
+    ) +
+  theme_bw()
+```
+
+### Biplot
+
+```{r echo=FALSE}
+Biplot + 
+  geom_point(
+    data = Biplot$data |>
+      mutate(Sex = data$Sex),
+    aes(x = x, y = y, colour = Sex),
+    alpha = 0.7,
+    size = 2.3
+    ) +
+  theme_bw()
+```
+
+:::
+
+## K-means
+
+Podemos ver pelo K-Means ainda que as classes dos abalones acabam caindo em variados grupos, mostrando mais uma vez a homogeneidade entre as medidas corporais dos abalones.
+
+## Tabela de contigência
+
+```{r}
+(table(data.frame(Abalone = data$Sex, Classes = km$cluster)) / nrow(data)) |> 
+  knitr::kable()
+```
+
+## Tabela de contigência
+
+Diferente da tabela anterior, vemos que existem muitos filhotes classificados no terceiro quadrante, e muitos no segundo quadrante. 
+
+# Agrupamento paramétrico
+
+## BIC
+
+::: {.panel-tabset}
+
+### Código
+
+```{r output=FALSE}
+BIC <- mclustBIC(data[,-1])
+plot(BIC)
+```
+
+### BIC para cada método
+
+```{r echo=FALSE}
+plot(BIC)
+```
+
+:::
+
+## BIC
+
+Vemos que de acordo com o pacote, o modelo VVV é aquele que melhor classifica. No entanto, serão testado dois modelos, o VVV e o EII.
+
+## Biplot com modelo VVV
+
+::: {.panel-tabset}
+
+### Código
+
+```{r output=FALSE}
+Modelo1 <- data |> 
+  select_if(is.numeric) |> 
+  Mclust(x = BIC, G = 3)
+
+Biplot <- fviz_cluster(
+  list(data = mdados, cluster = Modelo1$classification, show_labels = FALSE), 
+  geom = c("point"), repel = TRUE, legend = NULL, shape = NULL) +
+  labs(title = "") +
+  scale_shape_manual("", values = c(1, 1, 1), guide = "none") +
+  scale_color_brewer("", palette = "Set2") +
+  scale_fill_brewer("", palette = "Set2", guide = "none") +
+  guides(fill = "none")
+
+Biplot + 
+  geom_point(
+    data = Biplot$data |>
+      mutate(Sex = data$Sex),
+    aes(x = x, y = y, colour = Sex),
+    alpha = 0.7,
+    size = 2.3
+    ) +
+  theme_bw()
+```
+
+### Biplot
+
+```{r echo=FALSE}
+Biplot + 
+  geom_point(
+    data = Biplot$data |>
+      mutate(Sex = data$Sex),
+    aes(x = x, y = y, colour = Sex),
+    alpha = 0.7,
+    size = 2.3
+    ) +
+  theme_bw()
+```
+
+:::
+
+## Biplot com modelo VVV
+
+Vemos que o modelo VVV não classificou bem os filhotes, fêmeas e machos, incluindo boa parte das três classes no primeiro grupo. 
+
+## Tabela de contigência VVV
+
+```{r}
+(table(data.frame(Abalone = data$Sex, Classes = Modelo1$classification)) / nrow(data)) |> 
+  knitr::kable()
+```
+
+## Tabela de contigência VVV
+
+Observando o biplot anteriormente e analisando a tabela de contigência, vemos que o modelo VVV não parece estar classificando bem os abalones.
+
+## Biplot com modelo EII
+
+::: {.panel-tabset}
+
+### Código
+
+```{r output=FALSE}
+Modelo2 <- data |> 
+  select_if(is.numeric) |> 
+  Mclust(G=3, modelNames = "EEI")
+
+Biplot <- fviz_cluster(
+  list(data = mdados, cluster = Modelo2$classification, show_labels = FALSE), 
+  geom = c("point"), repel = TRUE, legend = NULL, shape = NULL) +
+  labs(title = "") +
+  scale_shape_manual("", values = c(1, 1, 1), guide = "none") +
+  scale_color_brewer("", palette = "Set2") +
+  scale_fill_brewer("", palette = "Set2", guide = "none") +
+  guides(fill = "none")
+
+Biplot + 
+  geom_point(
+    data = Biplot$data |>
+      mutate(Sex = data$Sex),
+    aes(x = x, y = y, colour = Sex),
+    alpha = 0.7,
+    size = 2.3
+    ) +
+  theme_bw()
+```
+
+### Biplot
+
+```{r echo=FALSE}
+Biplot + 
+  geom_point(
+    data = Biplot$data |>
+      mutate(Sex = data$Sex),
+    aes(x = x, y = y, colour = Sex),
+    alpha = 0.7,
+    size = 2.3
+    ) +
+  theme_bw()
+```
+
+:::
+
+## Biplot com modelo EII
+
+Vemos agora que o modelo *EII* parece estar classificando melhor que o modelo *VVV*, separando melhor os grupos, concentrando boa parte dos filhotes no segundo grupo.
+
+## Tabela de contigência EII
+
+```{r}
+(table(data.frame(Abalone = data$Sex, Classes = Modelo2$classification)) / nrow(data)) |> 
+  knitr::kable()
+```
+
+## Tabela de contigência EII
+
+Podemos ver que as fêmeas e os machos estão bastante representados no primeiro e segundo grupo, mostrando a homogeneidade entre esses abalones. Já os filhotes tem maior frequência no terceiro grupo, possívelmente sendo aquele grupo com as menores medidas.
+
+# Conclusão
+
+Vimos pelo dendrograma e os gráficos biplot que foi possível detectar a similaridade entre os filhotes, fêmeas e machos. Podemos também atráves das tabelas de contigência e biplots, detectar que os filhotes são aqueles com as menores medidas.
