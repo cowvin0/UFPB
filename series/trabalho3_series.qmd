@@ -1,0 +1,125 @@
+---
+title: Trabalhinho Tatiene
+author: Gabriel de Jesus Pereira
+Date: today
+execute:
+  refresh: true
+  warning: false
+  error: false
+  eval: true
+  echo: true
+revealjs-plugins:
+  - attribution 
+  - roughnotation
+  - pointer
+format: 
+  revealjs:
+    theme: [default, style.scss]
+    embed-resources: true
+    transition: slide
+    background-transition: fade
+    scrollable: true
+    preview-links: auto
+editor:
+  markdown:
+    wrap: 72
+lang: pt-br
+---
+
+
+```{r echo=FALSE}
+library(modeltime)
+library(tseries)
+library(rlang)
+library(yardstick)
+library(stats)
+library(tidyverse)
+library(smooth)
+library(forecast)
+library(tidymodels)
+library(seastests)
+library(tidyverse)
+library(timetk)
+```
+
+# Série temporal
+
+```{r}
+
+carro_dado <- read_csv("../../cars_mobi/cars_scrape/fortaleza.csv") |> 
+  filter(carroceria != "Coupé") |> 
+  mutate(
+    direcao = ifelse(direcao == "Suspensão", "Não informado", direcao),
+    ano = stringr::str_split(ano, "/") |> 
+      sapply(FUN = \(x) unlist(x)[2]) |> 
+      as.numeric()
+    ) |> 
+  select(
+    -c(nome_carro, url, direcao, cor, marca_carro,
+       combustivel, cambio, tanque,
+       velocidade_maxima, largura, comprimento)
+  )
+
+splits <- initial_split(carro_dado)
+train <- training(splits)
+test <- testing(splits)
+
+workflow <- workflow() |> 
+    add_model(linear_reg(), formula = car_price ~ .) |> 
+    add_recipe(
+      train |> 
+        recipe(car_price ~ .) |>
+        step_impute_knn(all_numeric_predictors()) |> 
+        # step_sqrt(car_price) |>
+        step_YeoJohnson(motorizacao, km_andado) #|>
+        # step_mutate(tempo2 = tempo^2, tempo3 = tempo^3) |> 
+        # step_rm(tempo)
+    )
+
+model <- workflow |> 
+    fit(carro_dado) |> 
+    extract_fit_engine()
+
+data <- read_csv("drinks.csv") |>
+    rename(date = DATE, sales = S4248SM144NCEN) |> 
+    filter(year(date) < 2020)
+antes <- data |>
+    filter(year(date) < 2019)
+depois <- data |>
+    filter(year(date) == 2019)
+```
+
+# Random Walk with drift
+
+##
+
+# Tendência global
+
+## Sobre a tendência global
+
+$$
+y_t = a_0 + a_1t + \episilon_t
+$$
+
+$$
+\hat y_{t + h} = a_0 + a_1(t + h)
+$$
+
+```{r}
+modelo <- alm(sales ~ trend, data, subset=c(1:100))
+previsao <- forecast(antes$sales, h = 12)
+tendencia_global <- depois |> 
+  mutate(sales = as.vector(previsao$mean))
+plot(previsao)
+```
+
+
+```{r}
+rmse_vec(depois$sales, tendencia_global$sales)
+mae_vec(depois$sales, tendencia_global$sales)
+rsq_vec(depois$sales, tendencia_global$sales)
+```
+
+# Alisamento exponencial
+
+## Suavização exponencial de Holt (S)
