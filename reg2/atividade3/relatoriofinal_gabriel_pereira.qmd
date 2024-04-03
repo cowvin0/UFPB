@@ -1,0 +1,28 @@
+---
+format: pdf
+documentclass: scrreprt
+lang: pt
+urlcolor: SeaGreen
+linkcolor: SeaGreen
+title: ColocaTitulo
+subtitle: Universidade Federal da Paraíba - CCEN
+author: Gabriel de Jesus Pereira - 20200121424
+date: today
+date-format: long
+warning: false
+echo: false
+cache: true
+monofont: "Ubuntu Mono"
+monofontoptions: Scale = 1
+fig-cap-location: top
+---
+
+```{r echo=FALSE} 
+library(tidymodels)
+```
+
+```{r} 
+data <- readr::read_csv("reg2/comb.txt")
+readr::read_csv("https://raw.githubusercontent.com/m-clark/generalized-additive-models/master/data/pisasci2006.csv")
+modeldata::
+```
