@@ -1,28 +1,67 @@
 ---
-format: pdf
+format: 
+    pdf:
+      toc: true
+      toc-depth: 3
+      toc-title: Sumário
+header-includes:
+  - \usepackage{fancyhdr}
+  - \usepackage{graphicx}
+  - \usepackage{eso-pic}
+  - \usepackage{tikz}
+  - \AtBeginDocument{\thispagestyle{empty}\begin{tikzpicture}[remember picture,overlay]
+          \node at (current page.south) [yshift=20cm] {\includegraphics[width=0.15\paperwidth,height=0.15\paperheight,keepaspectratio]{logo1.png}};
+          \node at (current page.center) [yshift=4cm] [anchor=north,yshift=-2cm] {\Huge\textbf{Aplicação de modelos GAMs na}};
+          \node at (current page.center) [yshift=3cm] [anchor=north,yshift=-2cm] {\Huge\textbf{modelagem da pontuação geral em ciências}};
+          \node at (current page.center) [yshift=1.5cm] [anchor=north,yshift=-2cm] {\LARGE\textbf{Universidade Federal da Paraíba - UFPB}};
+          \node at (current page.south) [yshift=5cm] [anchor=north,yshift=-2cm] {\large\textbf{Abril 2024}};
+          \end{tikzpicture}\clearpage}
 documentclass: scrreprt
 lang: pt
 urlcolor: SeaGreen
 linkcolor: SeaGreen
-title: ColocaTitulo
-subtitle: Universidade Federal da Paraíba - CCEN
 author: Gabriel de Jesus Pereira - 20200121424
 date: today
 date-format: long
 warning: false
 echo: false
-cache: true
 monofont: "Ubuntu Mono"
 monofontoptions: Scale = 1
 fig-cap-location: top
 ---
 
-```{r echo=FALSE} 
+```{r} 
 library(tidymodels)
 ```
 
 ```{r} 
-data <- readr::read_csv("reg2/comb.txt")
-readr::read_csv("https://raw.githubusercontent.com/m-clark/generalized-additive-models/master/data/pisasci2006.csv")
-modeldata::
+data <- readr::read_csv("https://raw.githubusercontent.com/m-clark/generalized-additive-models/master/data/pisasci2006.csv") |> 
+    select(- Country) |> 
+    rename(
+        geral = Overall,
+        interesse = Interest,
+        explicação = Explain,
+        apoio = Support,
+        renda = Income,
+        saude = Health,
+        educacao = Edu,
+        idh = HDI
+    )
+splits <- initial_split(data, prop = 0.65)
+train <- training(splits)
+test <- testing(splits)
 ```
+
+\newpage
+
+# Introdução
+
+
+
+# Metodologia
+
+# Análises e Resultados
+
+# Conclusões
+
+# Anexos
