@@ -31,23 +31,13 @@ fig-cap-location: top
 ---
 
 ```{r} 
+library(tidyverse)
 library(tidymodels)
 ```
 
 ```{r} 
-data <- readr::read_csv("https://raw.githubusercontent.com/m-clark/generalized-additive-models/master/data/pisasci2006.csv") |> 
-    select(- Country) |> 
-    rename(
-        geral = Overall,
-        interesse = Interest,
-        explicação = Explain,
-        apoio = Support,
-        renda = Income,
-        saude = Health,
-        educacao = Edu,
-        idh = HDI
-    )
-splits <- initial_split(data, prop = 0.65)
+data <- ISLR::Default
+splits <- initial_split(data, prop = 0.80)
 train <- training(splits)
 test <- testing(splits)
 ```
@@ -56,11 +46,69 @@ test <- testing(splits)
 
 # Introdução
 
+Na jornada de uma criança, a educação desempenha um papel crucial, moldando a mente dos jovens e preparando indivíduos para enfrentar os desafios do mundo. Dentro deste vasto campo educacional, as ciências assumem um papel central e fundamental. Através da educação científica, as crianças não apenas adquirem conhecimento sobre os princípios básicos do universo, mas também desenvolvem habilidades críticas, como pensamento análitico, resolução de problemas. Além disso, ao integrar as ciências na educação das crianças, estamos preparando o terreno para um futuro sustentável e inovador.
 
+Neste contexto, o presente trabalho tem como objetivo utilizar técnicas de Modelo Aditivo Generalizado, fazendo uso de um banco de dados sobre educação. Utilizando esse banco de dados, foi modelada a nota de disciplinas de ciências de crianças de 15 anos. As outras variáveis que estão no banco de dados é a **explicação**, a pontuação ao se explicar o fenômeno científico, **interesse** em ciência, **apoio** a pesquisa científica, **renda**, índice de **educação** e o **IDH**.
 
 # Metodologia
 
-# Análises e Resultados
+As análises foram feitas utilizando a linguagem de programação R (R Core Team 2023) com o framework de modelagem estatística *tidymodels* (Kuhn e Wickham 2020). Além disso, os documentos do relatório e a apresentação foram feitos com o Quarto (Allaire et al. 2022), um sistema de escrita e publicação científica.
+
+## Análise exploratória
+
+Um dos primeiros passos para qualquer estudo estatístico, é fazer a análise exploratória dos dados. Dessa forma, esse foi o primeiro passo tomado nesse projeto, utilizando medidas de tendência central e de dispersão, como média, mediana, desvio-padrão e coeficiente de correlação, além da utilização de gráficos e tabelas com o objetivo de caracterizar e compreender melhor os eventos em questão. Além disso, foram elaborados gráficos para observar o comportamento da variável resposta e das variáveis preditoras.
+
+## Construção do modelo
+
+
+
+```{r} 
+workflow <- workflow() |>
+  add_model(logistic_reg(), formula = default ~ .) |>
+  add_recipe(train |>
+               recipe(default ~ .) |> 
+               step_YeoJohnson(income)
+               )
+
+model <- workflow |>
+  fit(train)
+```
+
+
+# Resultados
+
+## Exploração dos dados
+
+```{r}
+data |> 
+  pivot_longer(
+    c(balance, income),
+    names_to = "variable",
+    values_to = "values"
+  ) |>
+  ggplot(aes(x = values, fill = default)) +
+  geom_density() +
+  facet_wrap(
+    vars(variable), 
+    scales = "free",
+    labeller = as_labeller(
+      c(`balance` = "Balança",
+        `income` = "Renda")
+      )
+    ) +
+  scale_fill_brewer(name = "Inadimplência", labels = c("Não", "Sim")) +
+  labs(x = "", y = "") +
+  theme_bw()
+```
+
+## Construção do modelo
+
+```{r}
+metricas <- model |> 
+  extract_fit_engine() |> 
+  summary()
+```
+
 
 # Conclusões
 
