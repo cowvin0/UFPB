@@ -1,0 +1,32 @@
+---
+title: O cimento de Portland
+author: Gabriel de Jesus Pereira
+documentclass: scrreprt
+execute:
+  refresh: true
+  warning: false
+  error: false
+  eval: true
+  echo: true
+format: 
+  pdf
+editor:
+  markdown:
+    wrap: 72
+lang: pt-br
+subtitle: Universidade Federal da Paraíba - CCEN
+date: today
+date-format: long
+monofont: "Ubuntu Mono"
+monofontoptions: Scale = 1
+fig-cap-location: top
+---
+
+```{r output=FALSE} 
+library(tidyverse)
+library(agricolae)
+library(ibd)
+library(moments)
+library(lmtest)
+library(nortest)
+```
