@@ -1,7 +1,6 @@
 ---
-title: O cimento de Portland
-author: Gabriel de Jesus Pereira
-documentclass: scrreprt
+title: Segundo trabalho de Planejamento de Experimentos
+author: Gabriel de Jesus Pereira - 20200121424
 execute:
   refresh: true
   warning: false
@@ -22,11 +21,217 @@ monofontoptions: Scale = 1
 fig-cap-location: top
 ---
 
+# Pacotes utilizados
+
 ```{r output=FALSE} 
 library(tidyverse)
-library(agricolae)
-library(ibd)
-library(moments)
-library(lmtest)
+library(ggplot2)
 library(nortest)
+library(rstatix)
+library(lmtest)
+library(ggpubr)
+library(ExpDes)
 ```
+
+
+
+# Quadrado latino
+
+## O modelo para um quadrado latino
+
+O modelo para um quadrado latino é:
+
+$$
+y_{ijk} = \mu + \alpha_i + \tau_j + \beta_k + \epsilon_{ijk}, \ i, \ j, \ k  = 1, ..., p
+$$
+
+Em que o $y_{ijk}$ é a observação na i-th linha k-th coluna para o j-th tratamento, $\mu$ é a média geral, $\alpha_i$ é o efeito na ith linha, $\tau_j$ é o efeito do jth tratamento, $\beta_k$ é o kth efeito na coluna e $\epsilon_{ijk}$ é o erro aleatório.
+
+Por fim, chegamos a seguinte tabela de análise de variância:
+
+|  Variaçao | Soma dos quadrados | Gl | MSE | $F_0$ |
+|:---:|:---:|:---:|:---:|:---:|
+| Tratamentos | $\frac{1}{p}\sum_{j=1}^p y^2_{.j.} - \frac{y^2_{..}}{N}$ | $p - 1$ | $\frac{SS_{Tratamentos}}{p - 1}$ | $\frac{MS_{Tratamentos}}{MS_E}$ |
+| Linhas | $\frac{1}{p}\sum_{i=1}^p y^2_{i..} - \frac{y^2_{...}}{N}$ | $p-1$ | $\frac{SS_{Linhas}}{p-1}$ | $\frac{MS_{Linhas}}{MS_E}$ |
+| Colunas | $\frac{1}{p}\sum_{k=1}^p y^2_{..k} - \frac{y^2_{...}}{N}$ | $p-1$ | $\frac{SS_{Colunas}}{p-1}$ | $\frac{MS_{Colunas}}{MS_E}$ |
+| Erro | $S_E = SS_T - SS_{Linhas} - SS_{Colunas} - SS_{Tratamentos}$ | $\left(p-2\right)\left(p-1\right)$ | $\frac{SS_{E}}{\left(p-2\right)\left(p-1\right)}$ |  |
+| Total | $\sum_i \sum_j \sum_k y^2_{ijk} - \frac{y^2_{...}}{N}$ | $p^2 - 1$ |  |  |
+
+Com essa tabela de análise de variância poderemos verificar o efeito entre as linhas, colunas e os tratamentos.
+
+## Os dados
+
+The effect of ﬁve different ingredients (A, B, C, D, E) on the reaction time of a chemical process is being studied. Each batch of new material is only large enough to permit ﬁve runs to be made. Furthermore, each run requires approximately 12 hours, so only ﬁve runs can be made in one day. The exper imenter decides to run the experiment as a Latin square so that day and batch effects may be systematically controlled. She obtains the data that follow. Analyze the data from this experiment (use $\alpha$ 0.05) and draw conclusions.
+
+Os dados são do problema **4.22** do livro do Montgomery, e se trata do efeito de 5 ingredientes no tempo de reação de um processo químico que está sendo estudado.
+
+```{r echo=FALSE}
+lsdata<-c("A=8","B=7","D=1","C=7","E=8",
+          "C=11","E=2","A=7","D=3","B=8",
+          "B=4","A=9","C=10","E=1","D=5",
+          "D=6","C=8","E=6","B=6","A=10",
+          "E=4","D=2","B=3","A=8","C=8")
+
+rownames = c("Batch 1", "Batch 2","Batch 3","Batch 4","Batch 5")
+colnames = c("Day 1","Day 2","Day 3","Day 4","Day 5")
+dataTable<- matrix(lsdata, nrow = 5, byrow = TRUE, dimnames = list(rownames, colnames))
+
+knitr::kable(dataTable,
+ caption = "Chemical Process Latin Square")
+```
+
+## Aplicando o quadrado latino
+
+Pelo resultado que se segue abaixo, podemos ver pelo p-valor dos tratamentos (0.00049) que, ao nível de 5% de significância, há um efeito significativo dos ingredientes nos tempos médios de reação dos produtos químicos. É possível ver também que não há um efeito significativo nem na coluna e nem nas linhas, com p-valor 0.347 e 0.455, respectivamente. Ou seja, o dia e o batch não tem um impacto significativo nas observações, ao nível de 5%.
+
+```{r}
+Obs <- c(8,7,1,7,3,11,2,7,3,8,4,9,10,1,5,6,8,6,6,10,4,2,3,8,8)
+Batch <- as.factor(rep(1:5, each = 5))
+Day <- as.factor(rep(seq(1,5),5))
+Ingredient <- as.factor(c(1,2,4,3,5,3,5,1,4,2,2,1,3,5,4,4,3,5,2,1,5,4,2,1,3))
+dados1 <- data.frame(Obs, Batch, Day, Ingredient)
+
+QuadradoLatino = latsd(
+  treat = Ingredient, 
+  row = Batch, 
+  column = Day, 
+  resp = Obs,
+  sigT = 0.05, 
+  sigF = 0.05
+  )
+```
+
+## Verificando normalidade
+
+Considerando um nível de significância de 5% foram realizados 3 testes para verificar normalidade dos resíduos: Shapiro-Wilk, Lilliefors e Anderson-Darling. Os três testes confirmam a suposição de normalidade dos resíduos.
+
+```{r}
+shapiro.test(QuadradoLatino$residuals)
+lillie.test(QuadradoLatino$residuals)
+ad.test(QuadradoLatino$residuals)
+```
+
+## Verificando homogeneidade
+
+Agora considerendo o teste de Levene e o de Bartlett e um nível de 5% de confiança para testar a homogeneidade das variâncias, vemos que pelos dois testes de hipóteses é indicado a homogeneidade das variâncias.
+
+```{r}
+dados1 |> 
+  levene_test(Obs ~ Ingredient)
+
+bartlett.test(Obs ~ Ingredient, data = dados1)
+```
+
+# Anova com medidas repetidas
+
+## Sobre medidas repetidas
+
+O modelo para uma análise de variância com medidas repetidas é:
+
+$$
+y_{ij} = \mu + \tau_i + \beta_j + \epsilon_{ij}
+$$
+Em que $y_{ij}$ representa a resposta do sujeito j ao tratamento i. Em que $\tau_i$ é o efeito do ith tratamento e $\beta_j$ é um parâmetro associado com o jth sujeito.
+
+Assim, chegamos a seguinte tabela de análise de variância:
+
+|  Variaçao | Soma dos quadrados | Gl | MSE | $F_0$ |
+|:---:|:---:|:---:|:---:|:---:|
+| Dentre sujeitos | $\sum_{j=1}^n \frac{y^2_{.j}}{a} - \frac{y^2_{..}}{an}$ | $n - 1$ |  | $\frac{MS_{Tratamentos}}{MS_E}$ |
+| Intra sujeitos | $\sum_{i = 1}^a \sum_{j=1}^n y^2_{ij} - \sum{j=1}^n \frac{y^2_{.j}}{a}$ | $n\left(a - 1\right)$ |  | $\frac{MS_{Linhas}}{MS_E}$ |
+| Tratamentos | $\sum_{i=1}^a \frac{y_{i.}^2}{n} - \frac{y^2_{..}}{an}$ | $a-1$ | $\frac{SS_{Tratamentos}}{a-1}$ | $\frac{MS_{Colunas}}{MS_E}$ |
+| Erro | $(2) \ - \ (3)$ | $\left(a - 1\right)\left(n - 1\right)$ | $\frac{SS_E}{\left(a-1\right)\left(n-1\right)}$ |  |
+| Total | $\sum_{i = 1}^a \sum_{j=1}^n y^2_{ij} - \frac{y^2_{..}}{an}$ | $an - 1$ |  |  |
+
+## Os dados
+
+15.21. Three different Pinot Noir wines were evaluated by a panel of eight judges. The judges are considered a random panel of all possible judges. The wines are evaluated on a 100 point scale. The wines were presented in random order to each judge, and the following results obtained.
+
+Analyze the data from this experiment. Is there a difference in wine quality? Analyze the residuals and comment on model adequacy. 
+
+Os dados para a Anova com medidas repetidas foi retirado do livro do Montgomery, exercício **15.21**. O que o enunciado da questão nos pede é para testar se há diferença na qualidade do vinho que foi pontuado pelos jurados.
+
+```{r}
+dados2 <- tibble(
+  juiz = as.factor(rep(1:8, each = 3)),
+  vinho = as.factor(rep(1:3, 8)),
+  obs = c(
+    85, 88, 93,
+    90, 89, 94,
+    88, 90, 98,
+    91, 93, 96,
+    92, 92, 95,
+    89, 90, 95,
+    90, 91, 97,
+    91, 89, 98
+  )
+)
+```
+
+
+# Suposições
+
+## Normalidade
+
+Para a suposição de normalidade foram realizados 3 testes: Shapiro-Wilk, Lilliefors e Anderson-Darling. Todos os testes escolhidos não rejeitaram a suposição de normalidade, ao nível de 5% de significância.
+
+```{r}
+modelo2 <- aov(obs ~ Error(juiz) + vinho, data = dados2)
+
+dados2 |> 
+  group_by(vinho) |> 
+  do(tidy(shapiro.test(.$obs))) |> 
+  knitr::kable()
+
+dados2 |> 
+  group_by(vinho) |> 
+  do(tidy(lillie.test(.$obs))) |> 
+  knitr::kable()
+
+dados2 |> 
+  group_by(vinho) |> 
+  do(tidy(ad.test(.$obs))) |> 
+  knitr::kable()
+```
+
+## Homogeneidade
+
+Para a suposição de homogeneidade, ao nível de 5% de significância, foram realizados dois testes de hipóteses: Levene e Bartlett. Os dois testes não rejeitam a hipótese de homogeneidade entre as variâncias. O p-valro do teste de Bartlett foi de 0.764 e o de Levene foi de 0.895.
+
+```{r}
+dados2 |> 
+  levene_test(obs ~ vinho)
+
+bartlett.test(obs ~ vinho, data = dados2)
+```
+
+## Cronbach's Alpha
+
+O código abaixo calcula o Cronbach's Alpha. Podemos ver que chegamos num alpha de 69.8%, o que indica uma medida de confiabilidade razoável. Dessa forma, a consistência interna dessa pesquisa de vinhos é razoável.
+
+```{r}
+conb_data <- dados2 |> 
+  pivot_wider(names_from = vinho, values_from = obs)
+ltm::cronbach.alpha(conb_data[2:4], CI = TRUE, standardized = FALSE, B = 1000)
+```
+
+# Resultado do modelo de medidas repetidas
+
+Dessa forma, ao nível de 5% de significância, chegamos ao resultado de que a qualidade do vinho é significantemente diferente pela pontuação dada por cada juiz aos vinhos.
+
+```{r}
+summary(modelo2)
+```
+
+# Teste de Bonferroni
+
+Pelo teste de Bonferroni, podemos ver que o grupo 1 e 2 são os únicos grupos não significantemente diferentes.
+
+```{r}
+dados2 |> 
+  pairwise_t_test(
+    obs ~ vinho, paired = TRUE,
+    p.adjust.method = "bonferroni"
+    )
+```
+
