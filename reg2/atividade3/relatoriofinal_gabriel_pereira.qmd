@@ -33,11 +33,13 @@ fig-cap-location: top
 ```{r} 
 library(tidyverse)
 library(tidymodels)
+library(caret)
+library(pROC)
 ```
 
 ```{r} 
 data <- ISLR::Default
-splits <- initial_split(data, prop = 0.80)
+splits <- initial_split(data, prop = 0.80, strat = default)
 train <- training(splits)
 test <- testing(splits)
 ```
@@ -61,19 +63,12 @@ Um dos primeiros passos para qualquer estudo estatístico, é fazer a análise e
 ## Construção do modelo
 
 
+## Formas de avaliação do modelo
 
-```{r} 
-workflow <- workflow() |>
-  add_model(logistic_reg(), formula = default ~ .) |>
-  add_recipe(train |>
-               recipe(default ~ .) |> 
-               step_YeoJohnson(income)
-               )
 
-model <- workflow |>
-  fit(train)
-```
+### Erro quadrático médio
 
+### Coeficiente de determinação
 
 # Resultados
 
@@ -87,7 +82,7 @@ data |>
     values_to = "values"
   ) |>
   ggplot(aes(x = values, fill = default)) +
-  geom_density() +
+  geom_density(alpha = 0.4) +
   facet_wrap(
     vars(variable), 
     scales = "free",
@@ -96,19 +91,72 @@ data |>
         `income` = "Renda")
       )
     ) +
-  scale_fill_brewer(name = "Inadimplência", labels = c("Não", "Sim")) +
+  scale_fill_brewer(palette = "Set1", name = "Inadimplência", 
+                    labels = c("Não", "Sim"), direction = -1) +
   labs(x = "", y = "") +
   theme_bw()
 ```
 
+```{r}
+data |> 
+  ggplot(aes(balance, income, color = default)) +
+  geom_point(alpha = .4, size = 3.3) +
+  scale_color_brewer(palette = "Set1", labels = c("Não", "Sim"), 
+                     direction = -1, name = "Inadimplência") +
+  theme_bw() +
+  labs(y = "Renda", x = "Saldo")
+```
+```{r}
+data |> 
+  ggplot(aes(x = forcats::fct_infreq(default))) +
+  geom_bar(
+        aes(
+          y = after_stat(count) / sum(after_stat(count)), 
+          fill = default
+          ),
+        show.legend = FALSE,
+  ) +
+  theme_bw() +
+  theme(axis.title.x = element_blank()) +
+  scale_fill_brewer(palette = "Set1") +
+  labs(y = NULL, x = NULL) 
+```
+```{r}
+data |> 
+  ggplot(aes(x = forcats::fct_infreq(student))) +
+  geom_bar(
+        aes(
+          y = after_stat(count) / sum(after_stat(count)), 
+          fill = student
+          ),
+        show.legend = FALSE,
+  ) +
+  theme_bw() +
+  theme(axis.title.x = element_blank()) +
+  scale_fill_brewer(palette = "Set1") +
+  labs(y = NULL, x = NULL) 
+```
+
+
 ## Construção do modelo
 
 ```{r}
+workflow <- workflow() |>
+  add_model(logistic_reg(), formula = default ~ .) |>
+  add_recipe(train |>
+               recipe(default ~ .) |> 
+               step_dummy(all_nominal_predictors())
+               )
+
+model <- workflow |>
+  fit(train)
+
 metricas <- model |> 
   extract_fit_engine() |> 
   summary()
-```
 
+probs_previstas <- predict(model, new_data = test, type = "class")
+```
 
 # Conclusões
 

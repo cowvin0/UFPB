@@ -16,6 +16,8 @@ format:
   revealjs:
     theme: [default, style.scss]
     embed-resources: true
+    self-contained: true
+    self-contained-math: true
     transition: slide
     background-transition: fade
     scrollable: true
@@ -28,6 +30,7 @@ lang: pt-br
 
 ```{r echo=FALSE, warning=FALSE}
 library(modeltime)
+library(tidymodels)
 library(dygraphs)
 library(deflateBR)
 library(tseries)
@@ -46,17 +49,42 @@ library(timetk)
 dados <- readxl::read_xls("ipeadata[15-03-2024-10-52].xls") |> 
   mutate(
     Data = paste0(Data, ".01") |> 
-      as.Date(format = "%Y.%m.%d"),
-    Mês = factor(month(Data, label = TRUE)),
-    Ano = year(Data)
+      as.Date(format = "%Y.%m.%d")
     ) |> 
-  filter(Ano >= 1994) |>
-  mutate(Ano = factor(Ano))
+  filter(year(Data) >= 1997 & (year(Data) < 2019 | (year(Data) == 2019 & month(Data) <= 4)))
+
+dados2 <- vroom::vroom("STP-20240419184423222.csv", delim = ";") |>
+  mutate(Data = paste0("01/", Data) |>
+           as.Date(format = "%d/%m/%Y"),
+         )
+
+dados3 <- vroom::vroom("STI-20240416154018232.csv", delim = ";") |>
+  mutate(Data = paste0("01/", Data) |>
+           as.Date(format = "%d/%m/%Y"),
+         ) |>
+  filter(year(Data) >= 1997 & (year(Data) < 2019 | (year(Data) == 2019 & month(Data) <= 4))) |> 
+  left_join(dados2, by = join_by(Data == Data))
+
+dados4 <- vroom::vroom("STP-20240420130016063.csv", delim = ";") |>
+  mutate(Data = paste0("01/", Data) |>
+           as.Date(format = "%d/%m/%Y"),
+         ) |>
+  filter(year(Data) >= 1997 & (year(Data) < 2019 | (year(Data) == 2019 & month(Data) <= 4))) |>
+  left_join(dados3, by = join_by(Data == Data))
+
+dados <- dados |> 
+  left_join(dados4, by = join_by(Data == Data)) |> 
+  mutate(Transferências = Transferências * 5.2,
+         Exportação = Exportação * 5.2,
+         Importação = Importação * 5.2,
+         `Alta do Trimestre` = quarter(Data),
+         `Alta do Mês` = month(Data)
+         )
 ```
 
 # Sobre a série temporal
 
-A série temporal é do ICMS do estado do Rio de Janeiro, coletados no período de janeiro de 2000 a dezembro de 2023.
+A série temporal foi coletada no site do Banco central. Ela vai do momento inicial de janeiro de 1997 e vai até abril de 2019. Além da série principal do ICMS, foram coletadas também a arrecadação do ICMS do setor primário, secundário, terciário, energia e de petróleo. Todas as séries adicionais também foram coletadas no site do Banco central e estão no mesmo período.
 
 # Análise da série temporal
 
@@ -69,8 +97,8 @@ A série temporal é do ICMS do estado do Rio de Janeiro, coletados no período 
 ```{r output=FALSE}
 Nao_deflacionado <- dados |> 
   plot_time_series(
-    Data, 
-    ICMS,
+    Data,
+    ICMS / 1e6,
     .interactive = TRUE,
     .title = ""
     )
@@ -90,21 +118,24 @@ Nao_deflacionado
 
 ### Código
 
+<!-- # dados_deflacionado <- tibble( -->
+<!-- #   Data = seq(as.Date("1997-01-01"), as.Date("2019-04-01"), by = "months"), -->
+<!-- #   ICMS = deflate(dados$ICMS, dados$Data, "04/2019", "igpm"), -->
+<!-- #   Primário = deflate(dados$Primário, dados$Data, "04/2019", "igpm"), -->
+<!-- #   Secundário = deflate(dados$Secundário, dados$Data, "04/2019", "igpm"), -->
+<!-- #   Terciário = deflate(dados$Terciário, dados$Data, "04/2019", "igpm"), -->
+<!-- #   Energia = deflate(dados$Energia, dados$Data, "04/2019", "igpm"), -->
+<!-- #   Petróleo = deflate(dados$Petróleo, dados$Data, "04/2019", "igpm"), -->
+<!-- #   Transferências = deflate(dados$Transferências, dados$Data, "04/2019", "igpm"), -->
+<!-- #   Exportação = deflate(dados$Exportação, dados$Data, "04/2019", "igpm"), -->
+<!-- #   Importação = deflate(dados$Importação, dados$Data, "04/2019", "igpm"), -->
+<!-- #   `Alta do Mês` = dados$`Alta do Mês`, -->
+<!-- #   `Alta do Trimestre` = dados$`Alta do Trimestre` -->
+<!-- #   ) -->
+
 ```{r output=FALSE}
-dados_deflacionado <- deflate(dados$ICMS, dados$Data, 
-                              "12/2023", "igpm") |> 
-  ts(start = c(1994, 1), frequency = 12) |> 
-  (\(x) {
-    tibble(
-      Data = time(x) |>
-        zoo::as.Date(),
-      ICMS = c(as.matrix(x))
-      ) |> 
-      mutate(
-        Ano = factor(year(Data)),
-        Mês = factor(month(Data, label = TRUE))
-      )
-  })()
+dados_deflacionado <- dados |> 
+  mutate(across(-c(Data, starts_with("Alta")), \(x) deflate(x, Data, "04/2019", "igpm")))
 
 Deflacionado <- dados_deflacionado |> 
   plot_time_series(
@@ -127,11 +158,53 @@ Deflacionado
 
 - Nos anos 2000 o estado do Rio de Janeiro respondia por mais de 80% dos barris de petróleos produzidos pelo Brasil, podendo ser um dos motivos da alta arrecadação de ICMS entre 2000 e 2004;
 
+- Além disso, no final do ano de 2004, foi aprovado a diminuição do ICMS sobre os combustível como uma tentativa de diminuir a sonegação fiscal. Isso, juntamente com o crescimento do setor terciário, pode ter sido uma das causas do crescimento quase constante da arrecadação de 2005 até 2013.
+
 - Em 2016, ano da olimpíada, o estado do Rio de Janeiro declara estado de calamidade e ao mesmo tempo o país passa por uma crise política, podendo ser uma das causas da baixa arrecadação entre 2016 e 2018. 
 
-- Ocorreu uma queda na arrecadação no ano de 2020, ocasionada pela Covid-19, já que o consumo diminui durante o período de pandemia;
+## ICMS sob a ótica de outras séries
 
-- Houve um aumento da arrecadação do ICMS em 2023, possivelmente influenciado pelo programa de Remessa Conforme e a necessidade de aumentar o ICMS após a isenção de impostos federais dos combústiveis em período eleitoral.
+::: {.panel-tabset}
+
+### Código
+
+```{r output=FALSE}
+dados_deflacionado |> 
+  select(-c(Exportação, Transferências, Importação)) |> 
+  pivot_longer(
+    -Data,
+    names_to = "Série",
+    values_to = "Reais"
+  ) |> 
+  ggplot(aes(x = Data, y = Reais / 1e6, color = Série)) +
+  geom_line() +
+  scale_color_viridis_d() +
+  labs(y = "Reais (milhões)") +
+  theme_bw()
+```
+
+### Séries
+
+```{r echo=FALSE}
+dados_deflacionado |> 
+  select(-c(Exportação, Transferências, Importação)) |> 
+  pivot_longer(
+    -Data,
+    names_to = "Série",
+    values_to = "Reais"
+  ) |> 
+  ggplot(aes(x = Data, y = Reais / 1e6, color = Série)) +
+  geom_line() +
+  scale_color_viridis_d() +
+  labs(y = "Reais (milhões)") +
+  theme_bw()
+```
+
+:::
+
+## ICMS sob a ótica de outras séries
+
+É possível ver que a alta arrecadação no ICMS no ano de 2004 é ocasionada por uma alta arrecadação no ICMS do petróleo. Além disso, é possível ver que depois do ano de 2004 a arrecadação cresce preticamente de forma contínua, com o setor terciário acompanhando esse crescimento.
 
 ## Análise dos meses
 
@@ -143,16 +216,16 @@ Deflacionado
 Meses <- dados_deflacionado |> 
   ggplot(
     aes(
-      x = Mês, 
+      x = month(Data, label = TRUE), 
       y = `ICMS` / 1e6, 
-      group = Ano,
-      color = Ano
+      group = as.factor(year(Data)),
+      color = as.factor(year(Data))
       )
     ) +
   geom_line() +
   theme_bw() +
   labs(y = "Arrecadação do ICMS (milhões)", x = "") +
-  scale_color_manual(values = viridis::mako(33))
+  scale_color_manual(name = "Ano", values = viridis::mako(33))
 ```
 
 ### Meses de cada ano
@@ -165,6 +238,37 @@ Meses
 ## Análise dos meses
 
 Podemos perceber que os meses de alguns anos possuem uma certa sazonalidade, principalmente quando olhamos para maio, que é o mês que acontece o dia das mães. É possível perceber também um aumento na arrecadação na chegada do mês de dezembro, que é o mês que ocorre o natal.
+
+## Análise sazonal
+
+::: {.panel-tabset}
+
+### Código
+
+```{r output=FALSE}
+dados_deflacionado |> 
+  plot_seasonal_diagnostics(
+    .date_var = Data, 
+    .value = ICMS,
+    .interactive = FALSE,
+    .title = "")
+```
+
+### Gráfico sazonal
+
+```{r echo=FALSE}
+dados_deflacionado |> 
+  plot_seasonal_diagnostics(
+    .date_var = Data, 
+    .value = ICMS,
+    .interactive = FALSE,
+    .title = "")
+```
+:::
+
+## Análise sazonal
+
+É possível perceber que o quarto e o segundo trimestre são aqueles que tem a maior arrecadação do ICMS. 
 
 # Teste para estacionariedade e sazonalidade
 
@@ -188,14 +292,14 @@ Teste.Kpss <- dados |>
 
 |                 | Estatística | $p-valor$ |
 |:---------------:|:-----------:|:---------:|
-|  Dickey-Fuller  |   -4.7466   |    0.01   |
-|       KPSS      |    3.6155   |    0.01   |
+|  Dickey-Fuller  |   -2.7516   |   0.2594  |
+|       KPSS      |    4.4769   |    0.01   |
 
 :::
 
 ## Teste para estacionariedade sem deflação
 
-Vemos que sem fazer a deflação da série, ao nível de 5% de significância, o teste de não estacionariedade passa apenas no KPSS, com $p-valor = 0.01$. Já para o teste ADF, rejeitamos a hipótese nula de não estacionariedade.
+Vemos que sem fazer a deflação da série, ao nível de 5% de significiância, os testes não discordam entre si sobre a não estacionariedade da série. Dessa forma, não rejeitamos a hipótese nula de não estacionariedade.
 
 ## Teste para estacionariedade com deflação
 
@@ -213,21 +317,19 @@ Teste.Kpss <- dados_deflacionado |>
   kpss.test()
 ```
 
-
-
 ### Resultados
 
 |                 | Estatística | $p-valor$ |
 |:---------------:|:-----------:|:---------:|
-|  Dickey-Fuller  |   -2.9794   |   0.1634  |
-|       KPSS      |    0.7157   |   0.0121  |
+|  Dickey-Fuller  |   -2.8340   |   0.2247  |
+|       KPSS      |    2.8128   |    0.1    |
 :::
 
 ## Teste para estacionariedade com deflação
 
-Agora, considerando a série após a deflação, ao nível de 5% de significância, vemos que a hipótese de estacionariedade passa no teste KPSS e ADF.
+Agora, considerando a série após a deflação, ao nível de 5% de significância, vemos que a hipótese de não estacionariedade passa no teste KPSS e ADF.
 
-## Teste para sazonalidade
+## Teste para sazonalidade com deflação
 
 :::: {.columns}
 
@@ -261,19 +363,88 @@ Teste.Fried
 
 ::::
 
+
+## Teste para sazonalidade
+
+Considerando o teste de Kruskall-wallis e de Friedman, vemos que os dois testes não rejeitam a hipótese de sazonalidade na série de arrecadação do ICMS.
+
+## ACF e PACF
+
+::: {.panel-tabset}
+### Código
+
+```{r output=FALSE}
+ACF_PACF <- dados |> 
+  plot_acf_diagnostics(
+    Date,
+    ICMS,
+    .interactive = TRUE,
+    .title = "", 
+    .y_lab = ""
+  )
+```
+
+
+### ACF e PACF
+
+```{r echo=FALSE}
+ACF_PACF
+```
+:::
+
+## ACF e PACF
+
+Observando os gráficos de ACF e PACF, podemos notar um padrão em que o ACF decresce geometricamente até um ponto em que o lag é não significativo. Podemos perceber também a tendência presente na série observando o ACF, além de ser possível ver a sazonalidade, com algums lags tendo autocorrelações maiores que outros de forma periódica
+
+
 # Decomposição da série
+
+## Código para decomposição clássica
+
+```{r}
+data_ts <- dados_deflacionado |> 
+  select(- Data) |> 
+  ts(frequency = 12, 
+     start = c(1997, 01),
+     )
+
+Clássica <- data_ts[,1] |> 
+  decompose(type = "additive") 
+```
+
+## Decomposição Clássica
+
+::: {.panel-tabset}
+### Código
+
+```{r output=FALSE}
+Clássica |> 
+  autoplot(
+    labels = c("Tendência", "Sazonalidade", "Ruído")
+    ) +
+  labs(title = "") +
+  xlab("") +
+  theme_bw()
+```
+
+
+### Clássica
+
+```{r echo=FALSE}
+Clássica |> 
+  autoplot(
+    labels = c("Tendência", "Sazonalidade", "Ruído")
+    ) +
+  labs(title = "") +
+  xlab("") +
+  theme_bw()
+```
+:::
 
 ##  Código para decomposição STL
 
 ```{r output=FALSE}
-data_ts <- dados_deflacionado |> 
-  pull(ICMS) |> 
-  ts(frequency = 12, 
-     start = c(1994, 01), 
-     end = c(2023, 12)
-     )
-
-STL <- stl(data_ts, s.window = "periodic", robust = TRUE)
+STL <- stl(data_ts[,1], s.window = "periodic", robust = TRUE)
 ```
 
 ## Decomposição STL
@@ -288,7 +459,7 @@ STL |>
     ) +
   xlab("") +
   theme_bw() +
-  geom_line(color = "#4c83b6")
+  geom_line(color = "black")
 ```
 
 
@@ -301,44 +472,946 @@ STL |>
     ) +
   xlab("") +
   theme_bw() +
-  geom_line(color = "#4c83b6")
+  geom_line(color = "black")
 ```
 :::
 
-## Decomposição STL
+## Comentários sobre a decomposição STL e Clássica
 
-Observando a componente de sazonalidade, percebemos pela barra cinza que a sazonalidade é a componente com a menor variação, comparado a variação dos dados. Podemos perceber também a alta nos resíduos no período em que a remessa conforme pode ter ocasionado a alta na arrecadação do ICMS no ano de 2023. Além disso, podemos ver também que a tendência é uma das componentes que mais representa a variação na série.
+Observando a componente de sazonalidade, percebemos pela barra cinza que a sazonalidade é a componente com a menor variação, comparado a variação da série. Podemos também perceber a alta nos resíduos no ano de 2004, momento que coincide com a alta arrecadação do ICMS pelo petróleo. Além disso, podemos ver também que os resíduos é a componente que mais representa a variação na série.
 
-# Encontrando a ordem para modelo Arima
+# Previsões do ICMS
 
-## Selecionando ordem do modelo pelo AIC
+# Naive Sazonal
 
-```{r} 
-ordem.AIC <- auto.arima(data_ts, ic = "aic", trace = TRUE)
+O método de Naïve sazonal é bastante semelhante ao Naïve, mas invés de tomar o último valor mais recente, utiliza o último valor do mesmo período de uma temporada atrás para fazer previsões.
+
+Assim, as previsões são feitas com:
+
+$$
+\hat y_t = y_{t - m}
+$$
+
+em que $m$ é a frequência sazonal.
+
+## Gráfico de Previsões
+
+::: {.panel-tabset}
+### Código
+
+```{r output=FALSE}
+splits <- time_series_split(dados_deflacionado, assess = "24 months", cumulative = TRUE)
+
+model_fit_snaive <- naive_reg(seasonal_period = 12) |>
+  set_engine("snaive") |>
+  fit(ICMS ~ Data, data = training(splits)) |> 
+  modeltime_calibrate(new_data = training(splits))
+  
+forecast_snaive24 <- model_fit_snaive |> 
+  modeltime_forecast(
+    h = "24 months",
+    actual_data = testing(splits)
+  ) |> 
+  mutate(.which = ifelse(.model_desc == "ACTUAL", NA, "2 anos")) 
+
+forecast_snaive12 <- model_fit_snaive |> 
+  modeltime_forecast(
+    h = "12 months",
+    actual_data = testing(splits)
+  ) |> 
+  mutate(.which = ifelse(.model_desc == "ACTUAL", NA, "1 ano"))
+
+forecast_snaive6 <- model_fit_snaive |> 
+  modeltime_forecast(
+    h = "6 months",
+    actual_data = testing(splits)
+  ) |> 
+  mutate(.which = ifelse(.model_desc == "ACTUAL", NA, "6 meses")) 
+
+junto_snaive <- Reduce(rbind, list(forecast_snaive24, forecast_snaive12, forecast_snaive6)) |> 
+  select(-c(.model_id, .model_desc, .key)) |> 
+  drop_na(.which)
+
+junto_snaive |> 
+  ggplot(aes(x = .index, y = .value, color = .which)) +
+  geom_line() +
+  geom_line(data = dados_deflacionado,
+            mapping = aes(x = Data, y = ICMS, color = "Série real"), 
+            color = "black") +
+  scale_color_manual(name = "Previsão", values = c("#1000b5", "red", "green")) +
+  theme_bw() +
+  labs(x = "Data", y = "ICMS")
 ```
 
-## Selecionando ordem do modelo pelo AIC
 
-```{r} 
-ordem.AIC <- auto.arima(data_ts, ic = "bic", trace = TRUE)
+### Previsões
+
+```{r echo=FALSE}
+junto_snaive |> 
+  ggplot(aes(x = .index, y = .value, color = .which)) +
+  geom_line() +
+  geom_line(data = dados_deflacionado,
+            mapping = aes(x = Data, y = ICMS, color = "Série real"), 
+            color = "black") +
+  scale_color_manual(name = "Previsão", values = c("#1000b5", "red", "green")) +
+  theme_bw() +
+  labs(x = "Data", y = "ICMS")
+```
+:::
+
+## Métricas Naive sazonal
+
+::: {.panel-tabset}
+### Código
+
+```{r output=FALSE}
+junto_snaive |> 
+  rename(Data = .index, ICMS = .value) |> 
+  select(-c(.conf_lo, .conf_hi)) |> 
+  rbind(
+    dados_deflacionado |> 
+      select(c(Data, ICMS)) |> 
+      mutate(.which = "Série real")
+    ) |> 
+  pivot_wider(
+    names_from = .which, 
+    values_from = ICMS
+    ) |> 
+  pivot_longer(
+    cols = c("2 anos", "1 ano", "6 meses"),
+    names_to = "Período",
+    values_to = "Previsões"
+  ) |> 
+  group_by(Período) |>
+  summarise(
+    RMSE = rmse_vec(`Série real`, Previsões),
+    MAPE = mape_vec(`Série real`, Previsões),
+    R2 = rsq_vec(`Série real`, Previsões),
+  ) |> 
+  arrange(RMSE) |> 
+  knitr::kable()
 ```
 
-## Diagnósticos
+### Métricas
 
-```{r} 
-fitSARIMA <- arima(data_ts, order = c(1, 1, 1), seasonal = list(order = c(0, 0, 1)))
-coeftest(fitSARIMA)
-Box.test(fitSARIMA$residuals, type = "Ljung-Box")
-checkresiduals(fitSARIMA)
-tsdiag(fitSARIMA)
+```{r echo=FALSE}
+metricas_snaive <- junto_snaive |> 
+  rename(Data = .index, ICMS = .value) |> 
+  select(-c(.conf_lo, .conf_hi)) |> 
+  rbind(
+    dados_deflacionado |> 
+      select(c(Data, ICMS)) |> 
+      mutate(.which = "Série real")
+    ) |> 
+  pivot_wider(
+    names_from = .which, 
+    values_from = ICMS
+    ) |> 
+  pivot_longer(
+    cols = c("2 anos", "1 ano", "6 meses"),
+    names_to = "Período",
+    values_to = "Previsões"
+  ) |> 
+  group_by(Período) |>
+  summarise(
+    RMSE = rmse_vec(`Série real`, Previsões),
+    MAPE = mape_vec(`Série real`, Previsões),
+    R2 = rsq_vec(`Série real`, Previsões),
+  ) |> 
+  arrange(RMSE) |> 
+  mutate(Método = "Naïve sazonal")
+
+metricas_snaive |> 
+  select(- Método) |> 
+  knitr::kable()
 ```
+:::
+
+## Métricas Naïve sazonal
+
+O Naïve sazonal não consegue fazer boas previsões do ICMS pois a série é bastante aleatória, dependendo do momento em que o estado vive.
+
+# Médias móveis simples {.smaller}
+
+O método de Naïve é um caso particular de médias móveis, quando se é utilizado a última observação mais recente para se fazer previsões. As Médias móveis consiste em calcular uma média aritmética das **r** observações mais recentes. Dessa forma, as previsões são feitas com:
+
+
+$$
+\hat Z_t\left(h\right) = M_t = \frac{Z_t + Z_{t - 1} + ... + Z_{t - r - 1}}{r}, \ \forall h > 0 
+$$
+
+Em que $r$ são as observações mais recentes da série.
+
+Assim, as médias móveis não consegue ponderar as observações mais antigas, além também de não conseguir captar a tendência e sazonalidade.
+
+
+## Gráfico de previsões
+
+::: {.panel-tabset}
+### Código
+
+```{r output=FALSE}
+mms24 <- smooth::sma(training(splits)$ICMS, order = 12, h = 24)$forecast
+mms12 <- smooth::sma(training(splits)$ICMS, order = 12, h = 12)$forecast
+mms6 <- smooth::sma(training(splits)$ICMS, order = 12, h = 6)$forecast
+
+plot_stats_mms <- function() {
+  tibble(
+    Data = c(
+      dados$Data, 
+      testing(splits)$Data[1:6],
+      testing(splits)$Data[1:12],
+      testing(splits)$Data
+      ),
+    ICMS = c(
+      dados_deflacionado$ICMS,
+      as.vector(mms6),
+      as.vector(mms12),
+      as.vector(mms24)
+    ),
+    Previsão = c(
+      rep("Série real", nrow(dados)),
+      rep("6 meses", 6),
+      rep("1 ano", 12),
+      rep("2 anos", 24)
+      ),
+    )
+}
+
+plot_stats_mms() |> 
+  ggplot(aes(x = Data, y = ICMS, color = Previsão)) +
+  geom_line(alpha = .7) +
+  scale_color_manual(name = "Previsão", values = c("blue", "orange", "red", "black")) +
+  theme_bw()
+```
+
+### Previsões
+
+```{r echo=FALSE}
+plot_stats_mms() |> 
+  ggplot(aes(x = Data, y = ICMS, color = Previsão)) +
+  geom_line(alpha = .7) +
+  scale_color_manual(name = "Previsão", values = c("blue", "orange", "red", "black")) +
+  theme_bw()
+```
+:::
+
+## Métricas MMS
+
+::: {.panel-tabset}
+### Código
+```{r output=FALSE}
+plot_stats_mms() |> 
+  pivot_wider(names_from = Previsão, values_from = ICMS) |> 
+  pivot_longer(
+    cols = c("6 meses", "1 ano", "2 anos"),
+    names_to = "Período", 
+    values_to = "Previsões"
+    ) |> 
+  group_by(Período) |>
+  drop_na() |>
+  summarise(
+    RMSE = rmse_vec(`Série real`, Previsões),
+    MAPE = mape_vec(`Série real`, Previsões),
+    R2 = rsq_vec(`Série real`, Previsões),
+  ) |>
+  arrange(RMSE) |> 
+  knitr::kable()
+```
+
+### Métricas
+
+```{r echo=FALSE}
+metricas_mms <- plot_stats_mms() |> 
+  pivot_wider(names_from = Previsão, values_from = ICMS) |> 
+  pivot_longer(
+    cols = c("6 meses", "1 ano", "2 anos"),
+    names_to = "Período", 
+    values_to = "Previsões"
+    ) |> 
+  group_by(Período) |>
+  drop_na() |>
+  summarise(
+    RMSE = rmse_vec(`Série real`, Previsões),
+    MAPE = mape_vec(`Série real`, Previsões),
+    R2 = rsq_vec(`Série real`, Previsões),
+  ) |>
+  arrange(RMSE) |> 
+  mutate(Método = "MMS")
+  
+metricas_mms |> 
+  knitr::kable()
+```
+:::
+
+## Métricas MMS
+
+O método de Médias Móveis Simples não se ajusta bem à série, pois não pondera as observações mais antigas. Além disso, não consegue captar nem a tendência e nem a sazonalidade que estão presenta na série.
+
+# Holt-Winters {.smaller}
+
+O método de Holt-Winters, diferente da suavização de Holt, consegue captar as diferenças sazonais e as tendências. Este método pode funcionar para casos de série sazonal multiplicativa ou aditiva. Nesse caso, foi utilizado a multiplicativa.
+
+As previsões são feitas da seguinte forma:
+
+$$
+\hat Z_{t + 1} (h - 1) = (\bar Z_{t + 1} + (h - 1) \hat T_{t + 1}) \hat F_{t + 1 + h - 2s}
+$$
+
+em que $\hat T_{t + 1}$, $\bar Z_{t + 1}$ e $\hat F$ é a estimativa da tendência, nível e do fator sazonal, respectivamente.
+
+$$
+\hat F_{t + 1} = D \frac{Z_{t + 1}}{\bar Z_{t + 1}} + (1 - D) \hat F_{t + 1 - s}
+$$
+
+$$
+\bar Z_{t + 1} = A \frac{Z_{t + 1}}{\bar F_{t + 1 - s}} + (1 - A) (\bar Z_t + \hat T_t),
+$$
+
+$$
+\hat T_{t + 1} = C (\bar Z_{t + 1} - \bar Z_t) + (1 - C) \hat T_t,
+$$
+
+A, C e D são componentes de suavização.
+
+## Gráfico de previões
+
+::: {.panel-tabset}
+### Código
+
+```{r output=FALSE}
+splits_ts_train <- training(splits) |> 
+  select(- Data) |> 
+  ts(start = c(1997, 1), end = c(2017, 4), frequency = 12)
+splits_ts_teste <- testing(splits) |> 
+  select(- Data) |> 
+  ts(start = c(2017, 5), end = c(2019, 4), frequency = 12)
+
+model_hw <- HoltWinters(splits_ts_train[,1], seasonal = "multiplicative")
+
+plot_stats <- function(f1, f2, f3) {
+  tibble(
+    Data = c(
+      dados$Data, 
+      zoo::as.Date(f1$mean),
+      zoo::as.Date(f2$mean),
+      zoo::as.Date(f3$mean)
+      ),
+    ICMS = c(
+      dados_deflacionado$ICMS,
+      f1$mean,
+      f2$mean,
+      f3$mean
+    ),
+    Previsão = c(
+      rep("Série real", nrow(dados)),
+      rep("6 meses", 6),
+      rep("1 ano", 12),
+      rep("2 anos", 24)
+      ),
+    )
+}
+
+forecast_hw24 <- forecast(model_hw, h = 24)
+forecast_hw12 <- forecast(model_hw, h = 12)
+forecast_hw6 <- forecast(model_hw, h = 6)
+
+plot_stats(forecast_hw6, forecast_hw12, forecast_hw24) |> 
+  ggplot(aes(x = Data, y = ICMS, color = Previsão)) +
+  geom_line(alpha = .7) +
+  scale_color_manual(name = "Previsão", values = c("blue", "orange", "red", "black")) +
+  theme_bw()
+```
+
+### Previsões
+
+```{r echo=FALSE}
+plot_stats(forecast_hw6, forecast_hw12, forecast_hw24) |> 
+  ggplot(aes(x = Data, y = ICMS, color = Previsão)) +
+  geom_line(alpha = .7) +
+  scale_color_manual(name = "Previsão", values = c("blue", "orange", "red", "black")) +
+  theme_bw()
+```
+:::
+
+## Métricas Holt-Winters
+
+::: {.panel-tabset}
+### Código
+
+```{r output=FALSE}
+plot_stats(forecast_hw6, forecast_hw12, forecast_hw24) |> 
+  pivot_wider(names_from = Previsão, values_from = ICMS) |> 
+  pivot_longer(
+    cols = c("6 meses", "1 ano", "2 anos"),
+    names_to = "Período", 
+    values_to = "Previsões"
+    ) |> 
+  group_by(Período) |>
+  drop_na() |>
+  summarise(
+    RMSE = rmse_vec(`Série real`, Previsões),
+    MAPE = mape_vec(`Série real`, Previsões),
+    R2 = rsq_vec(`Série real`, Previsões),
+  ) |>
+  arrange(RMSE) |> 
+  knitr::kable()
+```
+
+### Métricas
+
+```{r echo=FALSE}
+metricas_hw <- plot_stats(forecast_hw6, forecast_hw12, forecast_hw24) |> 
+  pivot_wider(names_from = Previsão, values_from = ICMS) |> 
+  pivot_longer(
+    cols = c("6 meses", "1 ano", "2 anos"),
+    names_to = "Período", 
+    values_to = "Previsões"
+    ) |> 
+  group_by(Período) |>
+  drop_na() |>
+  summarise(
+    RMSE = rmse_vec(`Série real`, Previsões),
+    MAPE = mape_vec(`Série real`, Previsões),
+    R2 = rsq_vec(`Série real`, Previsões),
+  ) |>
+  arrange(RMSE) |> 
+  mutate(Método = "Holt-Winters")
+  
+metricas_hw |> 
+  select(- Método) |> 
+  knitr::kable()
+```
+:::
+
+## Métricas Holt-Winters
+
+Podemos ver que o método de Holt-Winters consegue captar a tendência e sazonalidade contida na série. No entanto, como o comportamento do ICMS é bastante aleatório, ele acaba não conseguindo acompanhar aumentos ou caídas bruscas.
+
+# SARIMA
+
+Os modelos ARIMA/SARIMA, diferente dos algoritmos de alisamento exponencial que são baseados numa descrição da tendência e sazonalidade contida na série, os modelos ARIMA procuram descrever as autocorrelações.
+
+## Seleção do modelo
+
+A função auto.arima foi utilizada para estimar os parâmetros do modelo Sarima, para isso foi utilizado o critério de seleção BIC. Além disso, foi realizado uma transformação logarítmica para estabilizar a variância da série.
+
+
+```{r}
+sarima_model <- auto.arima(log(splits_ts_train[,1]), ic = "bic")
+```
+
+Dessa forma, pelo método BIC, foi estimado um modelo $ARIMA\left(0, 1, 1\right)\left(2, 0, 0\right)\left[12\right]$.
+
+## Significância dos coeficientes
+
+```{r}
+coeftest(sarima_model)
+```
+
+## Significância dos coeficientes
+
+Testando a significância dos coeficiantes do modelo, vemos que todos os coeficientes são significantes. 
+
+## Independência dos resíduos
+
+```{r}
+Box.test(sarima_model$residuals, type = "Ljung-Box")
+Box.test(sarima_model$residuals, type = "Box-Pierce")
+```
+
+## Independência dos resíduos
+
+Ao nível de 5% de significância, vemos que os resíduos são independentes pois não rejeitam a hipótese nula de independência dos resíduos. Isso acontece para o teste de Ljung-Box e para o Box-Pierce, que tem as mesmas hipóteses.
+
+## Teste para normalidade dos resíduos
+
+```{r}
+shapiro.test(sarima_model$residuals)
+nortest::lillie.test(sarima_model$residuals)
+jarque.bera.test(sarima_model$residuals)
+```
+
+## Teste para normalidade dos resíduos
+
+Para verificar a normalidade dos resíduos foram realizados três testes, de Jarque Bera, que testa se a curtose e a assimetria se assemelha a de uma distribuição normal, e o Shapiro-Wilk e Lilliefors. A suposição de normalidade não passou em nenhum dos testes.
+
+## Gráfico dos resíduos
+
+::: {.panel-tabset}
+### Código
+
+```{r output=FALSE}
+checkresiduals(sarima_model, smooth = TRUE, theme = theme_bw(), test = FALSE)
+```
+
+### Gráficos
+
+```{r echo=FALSE}
+checkresiduals(sarima_model, smooth = TRUE, theme = theme_bw(), test = FALSE)
+```
+:::
+
+## Gráfico para teste de Ljung-Box
+
+::: {.panel-tabset}
+### Código
+
+```{r output=FALSE}
+LSTS::Box.Ljung.Test(sarima_model$residuals) +
+  labs(y = "P-Valor", title = "")
+```
+
+### Ljung-Box
+
+```{r echo=FALSE}
+LSTS::Box.Ljung.Test(sarima_model$residuals) +
+  labs(y = "P-valor", title = "")
+```
+:::
+
+## Gráfico para teste de Ljung-Box
+
+Pelo gráfico do teste de Ljung-Box, podemos ver que não tem problemas com a independência dos resíduos, pois nenhum deles ficam abaixo da linha horizontal.
+
+## Previsões
+
+::: {.panel-tabset}
+### Código
+
+```{r output=FALSE}
+forecast_sarima24 <- forecast(sarima_model, h = 24)
+forecast_sarima12 <- forecast(sarima_model, h = 12)
+forecast_sarima6 <- forecast(sarima_model, h = 6)
+
+plot_stats(forecast_sarima6, forecast_sarima12, forecast_sarima24) |> 
+  ggplot(aes(x = Data, y = ifelse(Previsão != "Série real", exp(ICMS), ICMS), color = Previsão)) +
+  geom_line(alpha = .7) +
+  labs(y = "ICMS") +
+  scale_color_manual(name = "Previsão", values = c("blue", "orange", "red", "black")) +
+  theme_bw()
+```
+
+### Previsões
+
+```{r echo=FALSE}
+forecast_sarima24 <- forecast(sarima_model, h = 24)
+forecast_sarima12 <- forecast(sarima_model, h = 12)
+forecast_sarima6 <- forecast(sarima_model, h = 6)
+
+plot_stats(forecast_sarima6, forecast_sarima12, forecast_sarima24) |> 
+  ggplot(aes(x = Data, y = ifelse(Previsão != "Série real", exp(ICMS), ICMS), color = Previsão)) +
+  geom_line(alpha = .7) +
+  labs(y = "ICMS") +
+  scale_color_manual(name = "Previsão", values = c("blue", "orange", "red", "black")) +
+  theme_bw()
+```
+:::
+
+## Métricas Sarima
+
+::: {.panel-tabset}
+### Código
+
+```{r output=FALSE}
+plot_stats(forecast_sarima6, forecast_sarima12, forecast_sarima24) |>
+  mutate(ICMS = ifelse(Previsão != "Série real", exp(ICMS), ICMS)) |> 
+  pivot_wider(names_from = Previsão, values_from = ICMS) |> 
+  pivot_longer(
+    cols = c("6 meses", "1 ano", "2 anos"),
+    names_to = "Período", 
+    values_to = "Previsões"
+    ) |> 
+  group_by(Período) |>
+  drop_na() |>
+  summarise(
+    RMSE = rmse_vec(`Série real`, Previsões),
+    MAPE = mape_vec(`Série real`, Previsões),
+    R2 = rsq_vec(`Série real`, Previsões),
+  ) |>
+  arrange(RMSE) |> 
+  knitr::kable()
+```
+
+### Métricas
+
+```{r echo=FALSE}
+metricas_sarima <- plot_stats(forecast_sarima6, forecast_sarima12, forecast_sarima24) |> 
+  mutate(ICMS = ifelse(Previsão != "Série real", exp(ICMS), ICMS)) |> 
+  pivot_wider(names_from = Previsão, values_from = ICMS) |> 
+  pivot_longer(
+    cols = c("6 meses", "1 ano", "2 anos"),
+    names_to = "Período", 
+    values_to = "Previsões"
+    ) |> 
+  group_by(Período) |>
+  drop_na() |>
+  summarise(
+    RMSE = rmse_vec(`Série real`, Previsões),
+    MAPE = mape_vec(`Série real`, Previsões),
+    R2 = rsq_vec(`Série real`, Previsões),
+  ) |>
+  arrange(RMSE) |> 
+  mutate(Método = "SARIMA")
+  
+metricas_sarima |> 
+  select(- Método) |> 
+  knitr::kable()
+```
+:::
+
+## Métricas Sarima
+
+Como aconteceu para os métodos anteriores, o SARIMA consegue fazer melhores previsões para os primeiros 6 meses. Conseguiu se ajustar um pouco melhor aos dados que o algoritmo de Holt-Wilters.
+
+# ETS
+
+Os modelos ETS são modelos estatísticos que fundamentam os métodos de alisamento exponencial. Por exemplo, o alisamento exponencial simples é ótimo se as previsões forem geradas por um $ARIMA\left(0, 1, 1\right)$, e a suavização exponencial de Holt é ótimo se as previsões forem geradas por um processo $ARIMA\left(0, 2, 2\right)$. No entanto, esses modelos permitem uma maior flexibilidade para poder descrever o nível, sazonalide e tendência presente na série que está sendo modelada.
+
+# ETS
+
+No caso da série de ICMS, foi estimado um modelo $ETS$ com erro aditivo, sem tendência e sazonalidade aditiva. Dessa forma, $ETS\left(A, N, A\right)$ Além disso, assim como no modelo $SARIMA$, foi feita uma transformação log na série de ICMS.
+
+## Gráfico de previsões
+
+::: {.panel-tabset}
+### Código
+
+```{r output=FALSE}
+model_fit_ets <- exp_smoothing(seasonal_period = 12) |>
+  set_engine("ets") |>
+  fit(log(ICMS) ~ Data, data = training(splits)) |> 
+  modeltime_calibrate(new_data = training(splits))
+
+forecast_ets24 <- model_fit_ets |> 
+  modeltime_forecast(
+    h = "24 months",
+    actual_data = testing(splits)
+  ) |> 
+  mutate(.which = ifelse(.model_desc == "ACTUAL", NA, "2 anos")) 
+
+forecast_ets12 <- model_fit_ets |> 
+  modeltime_forecast(
+    h = "12 months",
+    actual_data = testing(splits)
+  ) |> 
+  mutate(.which = ifelse(.model_desc == "ACTUAL", NA, "1 ano"))
+
+forecast_ets6 <- model_fit_ets |> 
+  modeltime_forecast(
+    h = "6 months",
+    actual_data = testing(splits)
+  ) |> 
+  mutate(.which = ifelse(.model_desc == "ACTUAL", NA, "6 meses")) 
+
+junto_ets <- Reduce(rbind, list(forecast_ets24, forecast_ets12, forecast_ets6)) |> 
+  select(-c(.model_id, .model_desc, .key)) |> 
+  drop_na()
+
+junto_ets |> 
+  mutate(.value = exp(.value)) |> 
+  ggplot(aes(x = .index, y = .value, color = .which)) +
+  geom_line() +
+  geom_line(data = dados_deflacionado,
+            mapping = aes(x = Data, y = ICMS, color = "Série real"), 
+            color = "black") +
+  scale_color_manual(name = "Previsão", values = c("#1000b5", "red", "green")) +
+  theme_bw() +
+  labs(x = "Data", y = "ICMS")
+```
+
+
+### Previsões
+
+```{r echo=FALSE}
+junto_ets |> 
+  mutate(.value = exp(.value)) |> 
+  ggplot(aes(x = .index, y = .value, color = .which)) +
+  geom_line() +
+  geom_line(data = dados_deflacionado,
+            mapping = aes(x = Data, y = ICMS, color = "Série real"), 
+            color = "black") +
+  scale_color_manual(name = "Previsão", values = c("#1000b5", "red", "green")) +
+  theme_bw() +
+  labs(x = "Data", y = "ICMS")
+```
+:::
+
+## Métricas ETS
+
+::: {.panel-tabset}
+### Código
+
+```{r output=FALSE}
+junto_ets |> 
+  mutate(.value = exp(.value)) |> 
+  rename(Data = .index, ICMS = .value) |> 
+  select(-c(.conf_lo, .conf_hi)) |> 
+  rbind(
+    dados_deflacionado |> 
+      select(c(Data, ICMS)) |> 
+      mutate(.which = "Série real")
+    ) |> 
+  pivot_wider(
+    names_from = .which, 
+    values_from = ICMS
+    ) |> 
+  pivot_longer(
+    cols = c("2 anos", "1 ano", "6 meses"),
+    names_to = "Período",
+    values_to = "Previsões"
+  ) |> 
+  group_by(Período) |>
+  summarise(
+    RMSE = rmse_vec(`Série real`, Previsões),
+    MAPE = mape_vec(`Série real`, Previsões),
+    R2 = rsq_vec(`Série real`, Previsões),
+  ) |> 
+  arrange(RMSE) |> 
+  knitr::kable()
+```
+
+### Métricas
+
+```{r echo=FALSE}
+metricas_ets <- junto_ets |> 
+  mutate(.value = exp(.value)) |> 
+  rename(Data = .index, ICMS = .value) |> 
+  select(-c(.conf_lo, .conf_hi)) |> 
+  rbind(
+    dados_deflacionado |> 
+      select(c(Data, ICMS)) |> 
+      mutate(.which = "Série real")
+    ) |> 
+  pivot_wider(
+    names_from = .which, 
+    values_from = ICMS
+    ) |> 
+  pivot_longer(
+    cols = c("2 anos", "1 ano", "6 meses"),
+    names_to = "Período",
+    values_to = "Previsões"
+  ) |> 
+  group_by(Período) |>
+  summarise(
+    RMSE = rmse_vec(`Série real`, Previsões),
+    MAPE = mape_vec(`Série real`, Previsões),
+    R2 = rsq_vec(`Série real`, Previsões),
+  ) |> 
+  arrange(RMSE) |> 
+  mutate(Método = "ETS")
+
+metricas_ets |> 
+  select(- Método) |> 
+  knitr::kable()
+```
+:::
+
+## Métricas ETS
+
+As métricas obtidas do modelo ETS foram as melhores agora, pois consegue captar bem as componentes do erro e sazonalidade, que são as mais representativas na série.
+
+# SARIMAX
+
+O modelo SARIMAX faz uso de variáveis exógenas, ou variáveis externas, para modelas a série. No caso da série do ICMS foram utilizadas duas variáveis, os trimestres e os meses do ano.
+
+## Seleção do modelo
+
+Assim como no modelo SARIMA, a função **auto.arima** foi utilizada para estimar os parâmetros do modelo SARIMAX. Para o SARIMAX foram utilizadas variáveis dummies com os meses e trimestres com maior arrecadação do ICMS. Além disso, foi feito também uma transformação logarítmica para estabilizar a variância da série.
+
+```{r}
+sarimax_model <- auto.arima(log(splits_ts_train[,1]), ic = "bic", xreg = splits_ts_train[, c(10, 11)])
+```
+
+Dessa forma, pelo método BIC, foi estimado um modelo $ARIMA\left(0, 1, 1\right)\left(0, 0, 2\right)\left[12\right]$.
+
+## Significância dos coeficientes
+
+Todos os coeficientes do modelo são significantes.
+
+```{r}
+coeftest(sarimax_model)
+```
+
+## Independência dos resíduos
+
+```{r}
+Box.test(sarimax_model$residuals, type = "Ljung-Box")
+Box.test(sarimax_model$residuals, type = "Box-Pierce")
+```
+
+## Independência dos resíduos
+
+Assim como no SARIMA, ao nível de 5% de significância, vemos que os resíduos são independentes pois não rejeitam a hipótese nula de independência dos resíduos. Isso acontece para o teste de Ljung-Box e para o Box-Pierce, que tem as mesmas hipóteses.
+
+## Teste para normalidade dos resíduos
+
+```{r}
+shapiro.test(sarimax_model$residuals)
+nortest::lillie.test(sarimax_model$residuals)
+jarque.bera.test(sarimax_model$residuals)
+```
+
+## Teste para normalidade dos resíduos
+
+Para verificar a normalidade dos resíduos foram realizados três testes, de Jarque Bera, que testa se a curtose e a assimetria se assemelha a de uma distribuição normal, e o Shapiro-Wilk e Lilliefors. A suposição de normalidade não passou em nenhum dos testes.
+
+## Gráfico dos resíduos
+
+::: {.panel-tabset}
+### Código
+
+```{r output=FALSE}
+checkresiduals(sarimax_model, smooth = TRUE, theme = theme_bw(), test = FALSE)
+```
+
+### Gráficos
+
+```{r echo=FALSE}
+checkresiduals(sarimax_model, smooth = TRUE, theme = theme_bw(), test = FALSE)
+```
+:::
+
+## Gráfico para teste de Ljung-Box
+
+::: {.panel-tabset}
+### Código
+
+```{r output=FALSE}
+LSTS::Box.Ljung.Test(sarimax_model$residuals) +
+  labs(y = "P-Valor", title = "")
+```
+
+### Ljung-Box
+
+```{r echo=FALSE}
+LSTS::Box.Ljung.Test(sarimax_model$residuals) +
+  labs(y = "P-valor", title = "")
+```
+:::
+
+## Gráfico para teste de Ljung-Box
+
+Pelo gráfico do teste de Ljung-Box, podemos ver que não tem problemas com a independência dos resíduos, pois nenhum deles ficam abaixo da linha horizontal.
+
+
+## Previsões
+
+::: {.panel-tabset}
+### Código
+
+```{r output=FALSE}
+forecast_sarimax24 <- forecast(sarimax_model, xreg = splits_ts_teste[, c(10, 11)])
+forecast_sarimax12 <- forecast(sarimax_model, xreg = splits_ts_teste[1:12, c(10, 11)])
+forecast_sarimax6 <- forecast(sarimax_model, xreg = splits_ts_teste[1:6, c(10, 11)])
+
+plot_stats(forecast_sarimax6, forecast_sarimax12, forecast_sarimax24) |> 
+  ggplot(aes(x = Data, y = ifelse(Previsão != "Série real", exp(ICMS), ICMS), color = Previsão)) +
+  geom_line(alpha = .7) +
+  labs(y = "ICMS") +
+  scale_color_manual(name = "Previsão", values = c("blue", "orange", "red", "black")) +
+  theme_bw()
+```
+
+### Previsões
+
+```{r echo=FALSE}
+plot_stats(forecast_sarimax6, forecast_sarimax12, forecast_sarimax24) |> 
+  ggplot(aes(x = Data, y = ifelse(Previsão != "Série real", exp(ICMS), ICMS), color = Previsão)) +
+  geom_line(alpha = .7) +
+  labs(y = "ICMS") +
+  scale_color_manual(name = "Previsão", values = c("blue", "orange", "red", "black")) +
+  theme_bw()
+```
+:::
+
+## Métricas SARIMAX
+
+::: {.panel-tabset}
+### Código
+
+```{r output=FALSE}
+plot_stats(forecast_sarimax6, forecast_sarimax12, forecast_sarimax24) |>
+  mutate(ICMS = ifelse(Previsão != "Série real", exp(ICMS), ICMS)) |>
+  pivot_wider(names_from = Previsão, values_from = ICMS) |> 
+  pivot_longer(
+    cols = c("6 meses", "1 ano", "2 anos"),
+    names_to = "Período", 
+    values_to = "Previsões"
+    ) |> 
+  group_by(Período) |>
+  drop_na() |>
+  summarise(
+    RMSE = rmse_vec(`Série real`, Previsões),
+    MAPE = mape_vec(`Série real`, Previsões),
+    R2 = rsq_vec(`Série real`, Previsões),
+  ) |>
+  arrange(RMSE) |> 
+  knitr::kable()
+```
+
+### Métricas
+
+```{r echo=FALSE}
+metricas_sarimax <- plot_stats(forecast_sarimax6, forecast_sarimax12, forecast_sarimax24) |> 
+  mutate(ICMS = ifelse(Previsão != "Série real", exp(ICMS), ICMS)) |>
+  pivot_wider(names_from = Previsão, values_from = ICMS) |> 
+  pivot_longer(
+    cols = c("6 meses", "1 ano", "2 anos"),
+    names_to = "Período", 
+    values_to = "Previsões"
+    ) |> 
+  group_by(Período) |>
+  drop_na() |>
+  summarise(
+    RMSE = rmse_vec(`Série real`, Previsões),
+    MAPE = mape_vec(`Série real`, Previsões),
+    R2 = rsq_vec(`Série real`, Previsões),
+  ) |>
+  arrange(RMSE) |> 
+  mutate(Método = "SARIMAX")
+  
+metricas_sarimax |> 
+  knitr::kable()
+```
+:::
+
+## Métricas SARIMAX
+
+O modelo SARIMAX foi um dos pior se ajustou aos dados, mesmo utilizando outras variáveis para fazer previsão do ICMS. Isso é devido a aleatoriedade contida na série do ICMS, com aumentos ou quedas bruscas.
+
+# Conclusão {.smaller}
+
+```{r echo=FALSE}
+Reduce(rbind, 
+       list(metricas_sarima, 
+            metricas_sarimax, 
+            metricas_snaive, 
+            metricas_mms, 
+            metricas_ets, 
+            metricas_hw)
+       ) |> 
+  pivot_wider(names_from = Período,
+              values_from = c(RMSE, MAPE, R2)) |>
+  knitr::kable()
+```
+
+# Conclusão
+
+As melhores previsões para os períodos considerados foram obtidos pelo modelo ETS. O segundo melhor foi o MMS e o terceiro melhor foi o de Holt-Winters. Comparando o Holt-Winters com o SARIMA e SARIMAX, vemos que ele produz previsões piores para os primeiros 6 meses, mas tem previsões melhores que os dois para períodos maiores que 6 meses.
 
 ## Referências
 
-- Arrecadação de ICMS do Estado do Rio de Janeiro: Uma análise do período de 1997 a 2019 utilizando o conceit de elasticidade <https://downloads.editoracientifica.org/articles/201102075.pdf>
+- Arrecadação de ICMS do Estado do Rio de Janeiro: Uma análise do período de 1997 a 2019 utilizando o conceito     de elasticidade <https://downloads.editoracientifica.org/articles/201102075.pdf>
 
 - Collection of ICMS from the State of Rio de Janeiro: The elasticity of the economic sectors and their use in improving the fiscal and financial situation of the State
 
 - Petróleo e Desenvolvimento Regional: O Rio de Janeiro no Pós-Boom das Commodities (Robson Dias da Silva e Manuel Victor Martins de Matos)
 
 - O Efeito da Inflação Sobre a Arrecadação do ICMS (Alfredo Meneghetti Neto)
+
+- AMARAL, Rafael Gãneme. Tributação ao álcool combustível no Brasil. Rio de Janeiro: PUC, 2004
+
+- Análise de Séries Temporais.  Pedro A. Morettin.
+
+- Forecasting: Principles and Practice (3rd ed). Rob J Hyndman and George Athanasopoulos

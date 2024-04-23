@@ -202,7 +202,7 @@ Levando em consideração apenas as últimas $m$ variáveis, é possível prever
 ```{r}
 n <- nrow(data)
 media_movel <- depois
-media_movel$sales <- smooth::sma(antes$sales, order = 6, h = 12)$forecast
+media_movel$sales <- smooth::sma(media_movel$sales, order = 6, h = 12)$forecast
 ```
 
 ```{r}
