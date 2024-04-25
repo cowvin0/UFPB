@@ -32,16 +32,20 @@ fig-cap-location: top
 
 ```{r} 
 library(tidyverse)
+library(mgcv)
+library(gamlss)
+library(boot)
+library(pROC)
 library(tidymodels)
 library(caret)
 library(pROC)
 ```
 
 ```{r} 
-data <- ISLR::Default
-splits <- initial_split(data, prop = 0.80, strat = default)
-train <- training(splits)
-test <- testing(splits)
+data <- ISLR::Default |> 
+  mutate(
+    default = ifelse(default == "Yes", "Sim", "Não"),
+    student = ifelse(student == "Yes", "Sim", "Não"))
 ```
 
 \newpage
@@ -54,27 +58,77 @@ Neste contexto, o presente trabalho tem como objetivo utilizar técnicas de Mode
 
 # Metodologia
 
-As análises foram feitas utilizando a linguagem de programação R (R Core Team 2023) com o framework de modelagem estatística *tidymodels* (Kuhn e Wickham 2020). Além disso, os documentos do relatório e a apresentação foram feitos com o Quarto (Allaire et al. 2022), um sistema de escrita e publicação científica.
+## A base de dados
+
+O banco de dados de dados utilizado contém informações de inadimplência de clientes de cartão de crédito. Na base de dados temos 4 variáveis, das quais 2 são nominais e 2 são numéricas. Dessa forma, temos as seguintes variáveis:
+
+- **Inadimplência** : Esta variável representa se o cliente entrou em inadimplência no cartão de crédito ou não. É uma das variáveis nominais com dois níveis: "Não", indicando que o cliente não entrou em inadimplência, e "Sim", indicando que o cliente entrou em inadimplência. Esta será a variável dependente para a modelagem com regressão logística, em que o objetivo será classificar se um cliente entrará em inadimplência em sua dívida no cartão de crédito com base em outras características no conjunto de dados.
+
+- **Estudante**: A variável *Estudante* é a segunda variável nominal e ela indica se o cliente é ou não estudante. Ela possui dois níveis: "Não", indicando que o cliente não é estudante, e "Sim", indicando que é estudante. Esta variável independente pode ser importante para discriminar o comportamento de um cliente que é estudante para um que não é estudante, pois isso poderia significar diferentes perfis de risco.
+
+- **Saldo**: O Saldo é uma das variáveis contínua numérica representa o saldo médio que o cliente tem remanescente em seu cartão de crédito após efetuar o pagamento mensal. O saldo reflete o valor da dívida no cartão de crédito que o cliente carrega em média. Saldos mais altos podem indicar níveis mais elevados de dívida e potencialmente maior risco de inadimplência.
+
+- **Renda**: Por último, temos a renda do cliente, que é a última variável numérica do banco de dados. A renda é um fator importante na avaliação de solvência, já que indivíduos com rendas mais altas podem ser mais propensos a pagar dívidas pontualmente. Maiores rendas podem indicar um menor risco de inadimplência, embora isso possa variar dependendo de outros fatores.
+
+Além disso, este banco de dados contém 10.000 observações. 20% foram reservados para teste, enquanto os outros 80% foram usados para ajustar um modelo de regressão logística.
+
+## Recursos computacionais
+
+Para realizar a modelagem, a exploração dos dados e todas as outras análises que estão presente nesse trabalho, foi utilizada a linguagem de programação R. Como produto da linguagem R, foram utilizados pacotes para modelagem estatística e criação de gráficos. Para a modelagem estatística foi utilizado o framework *tidymodels* e para a visualização de gráficos, foi utilizado o *ggplot2*. Além disso, foi também utilizado o Quarto, que serve para fazer apresentaçãos e documentos de escrita, o que é o caso desse documento.
 
 ## Análise exploratória
 
 Um dos primeiros passos para qualquer estudo estatístico, é fazer a análise exploratória dos dados. Dessa forma, esse foi o primeiro passo tomado nesse projeto, utilizando medidas de tendência central e de dispersão, como média, mediana, desvio-padrão e coeficiente de correlação, além da utilização de gráficos e tabelas com o objetivo de caracterizar e compreender melhor os eventos em questão. Além disso, foram elaborados gráficos para observar o comportamento da variável resposta e das variáveis preditoras.
 
-## Construção do modelo
+## Construção do modelo e métricas para sua validação
+
+Uma das etapas mais importantes para a validação de um modelo, é a escolha de métricas para analisar a sua performance e formas de verificar se as variáveis que estão sendo utilizadas para a modelagem são estatisticamente significantes. Nesse caso, para a análise da regressão logística, foram escolhidas métricas que são geradas a partir de uma matriz de confusão e a escolha das variáveis foi feita pelo teste de significância dos coeficientes da regressão. Por fim, foi analisado como o modelo de regressão estava performando durante a classificação.
 
 
-## Formas de avaliação do modelo
+### Sensitividade
+
+A sensitividade, também chamado de frequência de verdadeiros positivos, é calculado como a quantidade verdadeiros positivos dividido pela quantidade total de positivos. Dessa forma, temos que:
+
+$$
+Sensitividade = \frac{TP}{TP + FN}
+$$
+
+em que $TP$ é a quantidade de verdadeiros positivos e $FN$ é a quantidade de falsos negativos. Ainda, a melhor sensitividade seria 1, enquanto a pior seria 0. 
 
 
-### Erro quadrático médio
+### Especificidade
 
-### Coeficiente de determinação
+Frequência de verdadeiros negativos ou especificidade, é calculado como a quantidade de verdadeiros negativos dividido pelo total de negativos. Portanto, temos que:
+
+$$
+Especificidade = \frac{TN}{TN + FP}
+$$
+
+o $TN$ é a quantidade de verdadeiros negativos e $FP$ é a quantidade de falsos positivos. Temos também que a melhor sensitividade para o modelo de regressão logística se apróxima de 1, enquanto a pior se aproxima de 0.
+
+### Acurácia
+
+A acurácia, que também foi utilizada para analisar a performance do modelo, é definida como a quantidade de todas as corretas classificações dividido pela total do banco de dados. Assim, temos que:
+
+$$
+Acurácia = \frac{TP + TN}{TP + TN + FN + FP}
+$$
+
+É importante saber também que quanto mais próximo de 1 está a acurácia, mais o modelo está classificando bem.
+
+## Área Sob a Curva ROC (AUC)
+
+AUC significa Área Sob a Curva ROC. É uma métrica bastante conhecida para avaliar o desempenho de um modelo de classificação binária. A curva ROC plota a frequência de verdadeiros positivos **(sensibilidade)** contra a taxa de falsos positivos **(1 - especificidade)**  para diferentes valores de limiar. A métrica de AUC quantifica o poder discriminativo geral do modelo em todos os valores de limiar possíveis. A interpretação do AUC é feita de forma bastante simples. Um AUC igual a 1 indica um classificador perfeito que separa perfeitamente as instâncias positivas e negativas. A curva ROC alcança o canto superior esquerdo, significando alta sensibilidade e especificidade. 
 
 # Resultados
 
 ## Exploração dos dados
 
 ```{r}
+#| fig-cap: Distribuição da Renda e Saldo do cliente
+#| label: fig-densi
+#| fig-height: 3.8
+#| out-width: 100%
 data |> 
   pivot_longer(
     c(balance, income),
@@ -87,7 +141,7 @@ data |>
     vars(variable), 
     scales = "free",
     labeller = as_labeller(
-      c(`balance` = "Balança",
+      c(`balance` = "Saldo",
         `income` = "Renda")
       )
     ) +
@@ -97,16 +151,34 @@ data |>
   theme_bw()
 ```
 
+Pelo gráfico acima podemos perceber que os clientes que estão ou não em situação de inadimplência tem uma distribuição de renda bastante parecida, tendo bastante interseção entre os dois níveis. No entanto, os clientes que não estão em situação de inadimplência, tem uma frequência de renda maior, o que faz sentido, já que esses clientes tem mais condições de arcar com as suas dívidas. Já na distribuição do saldo dos clientes, podemos ver que os clientes com saldos menores tendem a não não estar inadimplentes, enquanto os que estão em situação de inadimplência tem saldos maiores. Isto faz sentido, pois saldos mais altos podem indicar níveis mais elevados de dívida.
+
 ```{r}
+#| fig-cap: Renda em função do saldo do cliente
+#| label: fig-scat
+#| fig-height: 3.8
+#| out-width: 100%
 data |> 
   ggplot(aes(balance, income, color = default)) +
   geom_point(alpha = .4, size = 3.3) +
-  scale_color_brewer(palette = "Set1", labels = c("Não", "Sim"), 
-                     direction = -1, name = "Inadimplência") +
+  scale_color_brewer(
+    palette = "Set1",
+    direction = -1,
+    # name = "Inadimplência"
+    ) +
   theme_bw() +
   labs(y = "Renda", x = "Saldo")
 ```
+
+Assim como foi observado anteriormente no gráfico de densidade, a renda dos clientes não parecem indicar diferenças em situação de inadimplência. No entando, podemos observar novamente analizando apenas o eixo das abscissas, que saldos maiores parecem caracterizar aqueles clientes que costumam estar mais endividados.
+
+\newpage
+
 ```{r}
+#| fig-cap: Frequência dos clientes em inadimplência
+#| label: fig-bar1
+#| fig-height: 3.8
+#| out-width: 100%
 data |> 
   ggplot(aes(x = forcats::fct_infreq(default))) +
   geom_bar(
@@ -121,7 +193,16 @@ data |>
   scale_fill_brewer(palette = "Set1") +
   labs(y = NULL, x = NULL) 
 ```
+
+O gráfico acima nos entrega a informação da porcentagem de clientes em situação de inadimplência. Dessa forma, podemos ver que 96,67% dos clientes não estão em situação de inadimplência. Isso pode significar que o modelo de regressão linear talvez fique melhor para classificar aqueles clientes que não estão em situação de inadimplência, pois a classe que está sendo modelada tem níveis desbalanceados.
+
+\newpage
+
 ```{r}
+#| fig-cap: Frequência dos clientes que são ou não estudantes
+#| label: fig-bar2
+#| fig-height: 3.8
+#| out-width: 100%
 data |> 
   ggplot(aes(x = forcats::fct_infreq(student))) +
   geom_bar(
@@ -137,14 +218,25 @@ data |>
   labs(y = NULL, x = NULL) 
 ```
 
+Agora observando a porcentagem porcentagem dos clientes que são estudantes, vemos que o banco de dados é composto por maioria de clientes não estudantes, com 70,56% não sendo estudantes.
 
-## Construção do modelo
+## Construção do modelo 
 
 ```{r}
+splits <- initial_split(
+  data |> mutate(
+    default = as.factor(ifelse(default == "Sim", "Yes", "No")),
+    student = as.factor(ifelse(student == "Sim", "Yes", "No"))), 
+  prop = 0.80, 
+  strat = default)
+train <- training(splits) 
+test <- testing(splits)
+
 workflow <- workflow() |>
   add_model(logistic_reg(), formula = default ~ .) |>
   add_recipe(train |>
                recipe(default ~ .) |> 
+               step_rm(income) |> 
                step_dummy(all_nominal_predictors())
                )
 
@@ -155,8 +247,126 @@ metricas <- model |>
   extract_fit_engine() |> 
   summary()
 
-probs_previstas <- predict(model, new_data = test, type = "class")
+phi1 <- metricas$dispersion
+desvio1 <- metricas$deviance / phi1
+q.quadr1 <- qchisq(0.95, desvio1)
+
+classes_previstas <- predict(model, new_data = test, type = "class") |>
+  _$.pred_class
+
+probs_previstas <- predict(model, new_data = test, type = "prob")
+
+cm <- confusionMatrix(table(classes_previstas, test$default))
+
+results <- test |> 
+  select(default) |> 
+  bind_cols(classes_previstas, probs_previstas)
 ```
+
+```{r output=FALSE}
+cm
+```
+
+```{r}
+roc_obj <- roc(results$default, results$.pred_No)
+plot(roc_obj, main = "")
+abline(0, 1, lty = 2, col = "black")
+```
+
+## Envelope
+
+```{r}
+modelo1 <- glm(default ~ ., 
+               family = binomial(link = "logit"), 
+               data = train |> select(-income))
+
+
+
+# par(mfrow=c(1,1))
+# X <- model.matrix(modelo1)
+# n <- nrow(X)
+# p <- ncol(X)
+# w <- modelo1$weights
+# W <- diag(w)
+# H <- solve(t(X)%*%W%*%X)
+# H <- sqrt(W)%*%X%*%H%*%t(X)%*%sqrt(W)
+# h <- diag(H)
+# td <- resid(modelo1,type="deviance")/sqrt(1-h)
+# e <- matrix(0,n,100)
+# #
+# for(i in 1:100){
+# dif <- runif(n) - fitted(modelo1)
+# dif[dif >= 0 ] <- 0
+# dif[dif<0] <- 1
+# nresp <- dif
+# fit <- glm(nresp ~ X, family=binomial)
+# w <- fit$weights
+# W <- diag(w)
+# H <- solve(t(X)%*%W%*%X)
+# H <- sqrt(W)%*%X%*%H%*%t(X)%*%sqrt(W)
+# h <- diag(H)
+# e[,i] <- sort(resid(fit,type="deviance")/sqrt(1-h))}
+# #
+# e1 <- numeric(n)
+# e2 <- numeric(n)
+# #
+# for(i in 1:n){
+#   eo <- sort(e[i,])
+# e1[i] <- (eo[2]+eo[3])/2
+# e2[i] <- (eo[97]+eo[98])/2}
+# #
+# med <- apply(e,1,mean)
+# faixa <- range(td,e1,e2)
+# par(pty="s")
+# qqnorm(td,xlab="Percentil da N(0,1)",
+# ylab="Componente do Desvio", ylim=faixa, pch=16)
+# #
+# par(new=T)
+# #
+# qqnorm(e1,axes=F,xlab="",ylab="",type="l",ylim=faixa,lty=1)
+# par(new=T)
+# qqnorm(e2,axes=F,xlab="",ylab="", type="l",ylim=faixa,lty=1)
+# par(new=T)
+# qqnorm(med,axes=F,xlab="", ylab="", type="l",ylim=faixa,lty=2)
+```
+
+```{r}
+confint(modelo1, level = 0.9)
+```
+
+
+```{r output = FALSE}
+metricas |> 
+  _$coefficients |> 
+  as.data.frame() |> 
+  rename(
+    Coeficiente = Estimate,
+    `Erro Padrão` = `Std. Error`,
+    Estatística = `z value`) |> 
+  knitr::kable()
+```
+
+## Antes
+
+|            | Coeficiente| Erro Padrão| Estatística| $Pr\left(>||z||\right)$|
+|:-----------|-----------:|-----------:|-----------:|-----------------------:|
+|(Intercept) |    -10.8854|   0.5468227| -19.9067650|       $3.555 x10^{-88}$|
+|balance     |      0.0056|   0.0002555|  22.2072284|      $2.924 x10^{-109}$|
+|income      |$6.6 x 10^{6}$|   0.0000091|   0.7263696|                  0.4676|
+|student_Yes |  -   0.6545|   0.2652104|  -2.4680278|                  0.0135|
+
+## Depois
+
+|            | Coeficiente| Erro Padrão| Estatística| $Pr\left(>||z||\right)$|
+|:-----------|-----------:|-----------:|-----------:|-----------------------:|
+|(Intercept) |    -10.6228|      0.4051|    -26.2187|     $1.6259 x10^{-151}$|
+|balance     |      0.0056|      0.0002|     22.2254|     $1.9479 x10^{-109}$|
+|student_Yes |     -0.8041|      0.1660|     -4.8418|       $1.2864 x10^{-6}$|
+
+|               | Resultado Final |
+|:-------------:|:---------------:|
+|$Desvio / \phi$|     1271.217    |
+|   $\chi ^ 2$  |     1355.276    |
 
 # Conclusões
 
