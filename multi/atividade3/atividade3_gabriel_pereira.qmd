@@ -1,0 +1,202 @@
+---
+title: Apresentação 3
+author: Gabriel de Jesus Pereira
+date: today
+cache: true
+execute:
+  refresh: true
+  warning: false
+  error: false
+  eval: true
+  echo: true
+revealjs-plugins:
+  - attribution 
+  - roughnotation
+  - pointer
+format: 
+  revealjs:
+    theme: [default, style.scss]
+    embed-resources: true
+    transition: slide
+    background-transition: fade
+    scrollable: true
+    preview-links: auto
+editor:
+  markdown:
+    wrap: 72
+lang: pt-b
+---
+
+```{r echo=FALSE, output=FALSE}
+library(tidyverse)
+library(yacca)
+library(CCA)
+library(CCP)
+library(klaR)
+library(psych)
+library(tidymodels)
+set.seed(42)
+```
+
+
+## Carregando banco de dados
+
+```{r}
+data <- read_csv("../abalone.csv") |> 
+  mutate(
+    Sex = ifelse(Sex == "M" | Sex == "F", "A", Sex) |>
+      as.factor()
+    ) |> 
+  dplyr::select(-c(Rings, Height))
+
+splits <- initial_split(data)
+train <- training(splits)
+test <- testing(splits)
+```
+## Sobre o banco de dados
+
+- É um banco de dados da área de biologia que contém medidas físicas de um abalone;
+
+- O banco de dados contém 4177 observações;
+
+- 7 colunas, sendo uma delas nominal e o restante numérica;
+
+- Foi criado por Warwick Nash, Tracy Sellers, Simon Talbot, Andrew Cawthorn, Wes Ford.
+
+## As variáveis do banco de dados {auto-animate="true"}
+
+- Sexo do abalone: variável nominal indicando se o abalone é macho ou filhote.
+
+- Medição do maior comprimento da concha
+
+- Diâmetro: perpendicular ao comprimento
+
+- Peso inteiro do abalone
+
+## As variáveis do banco de dados {auto-animate="true"}
+
+- Peso da carne do abalone
+
+- Peso das vísceras
+
+- Peso da concha sem carne
+
+# Análise de correlação canônica
+
+## Seleção do conjunto de variáveis
+
+O primeiro conjunto de variáveis escolhidas foi a *medição do maior comprimento da concha*, o *diamêtro* e a *altura do abalone com a casca*. Já o segundo é composto pelo *peso total*, *peso da carne*, *peso das vísceras* e *peso da concha sem carne*.
+
+## Correlação entre o conjunto de variáveis
+
+::: {.panel-tabset}
+
+### Código
+
+```{r}
+X <- data |> 
+  dplyr::select(Length, Diameter, `Whole weight`)
+Y <- data |> 
+  dplyr::select(-c(Length, Diameter, Sex, `Whole weight`))
+
+correl <- matcor(X, Y)
+```
+
+### Correlação
+
+```{r echo=FALSE}
+img.matcor(correl)
+```
+
+:::
+
+## Obtendo as correlações canônicas
+
+## Correlação entre o conjunto de variáveis {.smaller}
+
+
+
+```{r}
+cca.fit <- cca(X, Y)
+cca.fit$corr
+
+barplot(cca.fit$corr, xlab = "Dimensão", ylab = "Correlação canônica", names.arg = 1:3, ylim = c(0, 1))
+```
+
+
+
+
+##
+
+```{r}
+res.cc <- cc(X, Y)
+cca.fit |> plot()
+
+plt.cc(res.cc ,type = "v", var.label = TRUE)
+```
+
+##
+
+```{r}
+plt.cc(res.cc, type = "i", ind.names = train$Sex)
+```
+
+
+```{r}
+rho <- res.cc$cor
+nn <- dim(X)[1]; pp <- dim(X)[2]; qq <- dim(Y)[2]
+assintotico <- p.asym(rho, N=nn, p=pp, q=qq, tstat = "Hotelling")
+```
+
+## Análise de discriminante
+
+```{r}
+pairs.panels(
+  data[2:7], hist.col = "#a0000a",
+  gap = 0,
+  bg = ifelse(data$Sex == "A","#1199ff", "#cccccc"),
+  pch = ifelse(data$Sex == "A", 21, 22)
+  )
+```
+## Linear
+
+```{r}
+linear <- lda(Sex ~ ., training(splits), prior = c(1,1)/2, CV = TRUE)
+colnames(train) <- make.names(colnames(train))
+colnames(test) <- make.names(colnames(test))
+
+pairs.panels(train[,2:7], hist.col = "#a0000a",
+             gap = 0,
+             bg = ifelse(linear$class == "A", "#1199ff", "#cccccc"),
+             pch = ifelse(linear$class == "A", 21, 22)
+             )
+
+
+partimat(Sex ~ ., data = train, method = "lda",
+         image.colors = c("#1199ff", "#cccccc")
+         )
+
+table(train$Sex, linear$class)
+```
+
+## Quadrático
+
+```{r}
+quadratico <- qda(Sex ~ ., train, prior = c(1,1)/2, CV = TRUE)
+
+pairs.panels(
+  train[2:7],
+  hist.col = "#a0000a",
+  gap = 0,
+  bg = ifelse(quadratico$class =="A","#1199ff", "#cccccc"),
+  pch = ifelse(quadratico$class == "A",21,22)
+  )
+```
+##
+
+```{r}
+partimat(Sex ~ ., data = train, method = "lda",
+         image.colors = c("#1199ff", "#cccccc")
+         )
+```
+

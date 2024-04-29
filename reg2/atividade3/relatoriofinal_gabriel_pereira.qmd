@@ -11,8 +11,8 @@ header-includes:
   - \usepackage{tikz}
   - \AtBeginDocument{\thispagestyle{empty}\begin{tikzpicture}[remember picture,overlay]
           \node at (current page.south) [yshift=20cm] {\includegraphics[width=0.15\paperwidth,height=0.15\paperheight,keepaspectratio]{logo1.png}};
-          \node at (current page.center) [yshift=4cm] [anchor=north,yshift=-2cm] {\Huge\textbf{Aplicação de modelos GAMs na}};
-          \node at (current page.center) [yshift=3cm] [anchor=north,yshift=-2cm] {\Huge\textbf{modelagem da pontuação geral em ciências}};
+          \node at (current page.center) [yshift=4cm] [anchor=north,yshift=-2cm] {\Huge\textbf{Aplicação de regressão logística para a}};
+          \node at (current page.center) [yshift=3cm] [anchor=north,yshift=-2cm] {\Huge\textbf{classificação de clientes inadimplentes}};
           \node at (current page.center) [yshift=1.5cm] [anchor=north,yshift=-2cm] {\LARGE\textbf{Universidade Federal da Paraíba - UFPB}};
           \node at (current page.south) [yshift=5cm] [anchor=north,yshift=-2cm] {\large\textbf{Abril 2024}};
           \end{tikzpicture}\clearpage}
@@ -39,22 +39,35 @@ library(pROC)
 library(tidymodels)
 library(caret)
 library(pROC)
+set.seed(42)
 ```
 
 ```{r} 
 data <- ISLR::Default |> 
   mutate(
     default = ifelse(default == "Yes", "Sim", "Não"),
-    student = ifelse(student == "Yes", "Sim", "Não"))
+    student = ifelse(student == "Yes", "Sim", "Não")
+    ) |> 
+  as_tibble() |> 
+  rename(
+    Inadimplência = default,
+    Estudante = student,
+    Saldo = balance,
+    Renda = income
+  )
 ```
 
 \newpage
 
 # Introdução
 
-Na jornada de uma criança, a educação desempenha um papel crucial, moldando a mente dos jovens e preparando indivíduos para enfrentar os desafios do mundo. Dentro deste vasto campo educacional, as ciências assumem um papel central e fundamental. Através da educação científica, as crianças não apenas adquirem conhecimento sobre os princípios básicos do universo, mas também desenvolvem habilidades críticas, como pensamento análitico, resolução de problemas. Além disso, ao integrar as ciências na educação das crianças, estamos preparando o terreno para um futuro sustentável e inovador.
+A inadimplência em dívidas de cartão de crédito é um problema financeiro significativo que afeta tanto os consumidores quanto as instituições financeiras. A capacidade de prever e mitigar a inadimplência é crucial para manter a estabilidade financeira e reduzir os riscos associados ao crédito.
 
-Neste contexto, o presente trabalho tem como objetivo utilizar técnicas de Modelo Aditivo Generalizado, fazendo uso de um banco de dados sobre educação. Utilizando esse banco de dados, foi modelada a nota de disciplinas de ciências de crianças de 15 anos. As outras variáveis que estão no banco de dados é a **explicação**, a pontuação ao se explicar o fenômeno científico, **interesse** em ciência, **apoio** a pesquisa científica, **renda**, índice de **educação** e o **IDH**.
+A importância desse problema reside na sua ampla repercussão econômica e social. A inadimplência pode levar a uma série de consequências adversas, tanto para os consumidores quanto para as instituições financeiras. Para os consumidores, a inadimplência pode resultar em penalidades financeiras, danos à sua pontuação de crédito e dificuldades financeiras prolongadas. Para as instituições financeiras, a inadimplência representa perdas financeiras, aumento dos custos de empréstimos e uma diminuição da confiança do mercado.
+
+Além disso, a inadimplência pode ser um indicador de problemas financeiros mais amplos, como desemprego, recessão econômica ou má administração financeira pessoal. Portanto, entender os fatores que contribuem para a inadimplência em dívidas de cartão de crédito é essencial para desenvolver estratégias eficazes de mitigação de riscos e políticas de crédito responsáveis.
+
+Dessa forma, com base num banco de dados com informações de crédito de clientes, o presente trabalho busca utilizar técnicas de regressão logística para classificar clientes quanto a sua situação financeira. A base de dados contém informações sobre o saldo do cliente, a renda e se o cliente é ou não um estudante.
 
 # Metodologia
 
@@ -79,6 +92,8 @@ Para realizar a modelagem, a exploração dos dados e todas as outras análises 
 ## Análise exploratória
 
 Um dos primeiros passos para qualquer estudo estatístico, é fazer a análise exploratória dos dados. Dessa forma, esse foi o primeiro passo tomado nesse projeto, utilizando medidas de tendência central e de dispersão, como média, mediana, desvio-padrão e coeficiente de correlação, além da utilização de gráficos e tabelas com o objetivo de caracterizar e compreender melhor os eventos em questão. Além disso, foram elaborados gráficos para observar o comportamento da variável resposta e das variáveis preditoras.
+
+## Regressão logística
 
 ## Construção do modelo e métricas para sua validação
 
@@ -120,6 +135,10 @@ $$
 
 AUC significa Área Sob a Curva ROC. É uma métrica bastante conhecida para avaliar o desempenho de um modelo de classificação binária. A curva ROC plota a frequência de verdadeiros positivos **(sensibilidade)** contra a taxa de falsos positivos **(1 - especificidade)**  para diferentes valores de limiar. A métrica de AUC quantifica o poder discriminativo geral do modelo em todos os valores de limiar possíveis. A interpretação do AUC é feita de forma bastante simples. Um AUC igual a 1 indica um classificador perfeito que separa perfeitamente as instâncias positivas e negativas. A curva ROC alcança o canto superior esquerdo, significando alta sensibilidade e especificidade. 
 
+## Análise dos diagnóstico
+
+A análise de diagnósticos é um dos passos mais importantes para confirmar a situação do modelo, suas suposições e o quão bem ele está classificando ou fazendo estimativas. Uma das suposições a ser verificada pela análise de dignósticos é a normalidade dos resíduos, que pode ser feita utilizando um gráfico *QQ-plot* ou testes como *Shapiro-Wilk* ou *Lilliefors*. Ainda, com a análise dos diagnósticos, é possível verificar a suposição de heterocedasticidade, identificar pontos aberrantes, alavanca ou influentes.
+
 # Resultados
 
 ## Exploração dos dados
@@ -131,18 +150,18 @@ AUC significa Área Sob a Curva ROC. É uma métrica bastante conhecida para ava
 #| out-width: 100%
 data |> 
   pivot_longer(
-    c(balance, income),
+    c(Saldo, Renda),
     names_to = "variable",
     values_to = "values"
   ) |>
-  ggplot(aes(x = values, fill = default)) +
+  ggplot(aes(x = values, fill = Inadimplência)) +
   geom_density(alpha = 0.4) +
   facet_wrap(
     vars(variable), 
     scales = "free",
     labeller = as_labeller(
-      c(`balance` = "Saldo",
-        `income` = "Renda")
+      c(`Saldo` = "Saldo",
+        `Renda` = "Renda")
       )
     ) +
   scale_fill_brewer(palette = "Set1", name = "Inadimplência", 
@@ -159,7 +178,7 @@ Pelo gráfico acima podemos perceber que os clientes que estão ou não em situa
 #| fig-height: 3.8
 #| out-width: 100%
 data |> 
-  ggplot(aes(balance, income, color = default)) +
+  ggplot(aes(Saldo, Renda, color = Inadimplência)) +
   geom_point(alpha = .4, size = 3.3) +
   scale_color_brewer(
     palette = "Set1",
@@ -180,11 +199,11 @@ Assim como foi observado anteriormente no gráfico de densidade, a renda dos cli
 #| fig-height: 3.8
 #| out-width: 100%
 data |> 
-  ggplot(aes(x = forcats::fct_infreq(default))) +
+  ggplot(aes(x = forcats::fct_infreq(Inadimplência))) +
   geom_bar(
         aes(
           y = after_stat(count) / sum(after_stat(count)), 
-          fill = default
+          fill = Inadimplência
           ),
         show.legend = FALSE,
   ) +
@@ -204,11 +223,11 @@ O gráfico acima nos entrega a informação da porcentagem de clientes em situa�
 #| fig-height: 3.8
 #| out-width: 100%
 data |> 
-  ggplot(aes(x = forcats::fct_infreq(student))) +
+  ggplot(aes(x = forcats::fct_infreq(Estudante))) +
   geom_bar(
         aes(
           y = after_stat(count) / sum(after_stat(count)), 
-          fill = student
+          fill = Estudante
           ),
         show.legend = FALSE,
   ) +
@@ -220,23 +239,21 @@ data |>
 
 Agora observando a porcentagem porcentagem dos clientes que são estudantes, vemos que o banco de dados é composto por maioria de clientes não estudantes, com 70,56% não sendo estudantes.
 
-## Construção do modelo 
-
 ```{r}
 splits <- initial_split(
   data |> mutate(
-    default = as.factor(ifelse(default == "Sim", "Yes", "No")),
-    student = as.factor(ifelse(student == "Sim", "Yes", "No"))), 
+    Inadimplência = as.factor(ifelse(Inadimplência == "Sim", "Yes", "No")),
+    Estudante = as.factor(ifelse(Estudante == "Sim", "Yes", "No"))), 
   prop = 0.80, 
-  strat = default)
+  strat = Inadimplência)
 train <- training(splits) 
 test <- testing(splits)
 
 workflow <- workflow() |>
-  add_model(logistic_reg(), formula = default ~ .) |>
+  add_model(logistic_reg(), formula = Inadimplência ~ .) |>
   add_recipe(train |>
-               recipe(default ~ .) |> 
-               step_rm(income) |> 
+               recipe(Inadimplência ~ .) |> 
+               step_rm(Renda) |>
                step_dummy(all_nominal_predictors())
                )
 
@@ -256,11 +273,16 @@ classes_previstas <- predict(model, new_data = test, type = "class") |>
 
 probs_previstas <- predict(model, new_data = test, type = "prob")
 
-cm <- confusionMatrix(table(classes_previstas, test$default))
+cm <- confusionMatrix(table(classes_previstas, test$Inadimplência))
 
 results <- test |> 
-  select(default) |> 
+  dplyr::select(Inadimplência) |> 
   bind_cols(classes_previstas, probs_previstas)
+
+modelo1 <- glm(Inadimplência ~ ., 
+               family = binomial(link = "logit"), 
+               data = train |> dplyr::select(-Renda)
+               )
 ```
 
 ```{r output=FALSE}
@@ -268,20 +290,223 @@ cm
 ```
 
 ```{r}
-roc_obj <- roc(results$default, results$.pred_No)
+roc_obj <- roc(results$Inadimplência, results$.pred_No)
+```
+
+## Construção do modelo 
+
+### Escolha das variáveis e adequação do modelo
+
+O modelo foi inicialmente ajustado considerando todas as variáveis do banco de dados. Isto é, *Estudante*, *Saldo* e *Renda*. No entanto, após o ajuste do modelo foi contastado que uma das variáveis é não significativa para a regressão logística, tendo sido obtido a seguinte tabela para teste de significância dos coeficientes do modelo: 
+
+: Significância dos coeficientes de antigo modelo ajustado
+
+|            | Coeficiente| Erro Padrão| Estatística| $Pr\left(>||z||\right)$|
+|:-----------|-----------:|-----------:|-----------:|-----------------------:|
+|(Intercept) |    -11.06|   0.5502| -20.096|       $2 x10^{-16}$|
+|Saldo     |      0.0057|   $2.616 x 10^{4}$|  22.132|      $2 x10^{-16}$|
+|Renda      |$6.526 x 10^{6}$|   $9.037 x 10^{6}$|   0.722|                  0.4702|
+|Estudante_Sim |  -   0.5244|   0.2630|  -1.994|                  0.0461|
+
+A partir da análise da tabela, podemos ver que apenas a variável *Renda* não é significativa para a classificação da situação de um cliente. Dessa forma, a variável renda foi removida e foi verificada novamente a significância de suas variáveis:
+
+: Significância dos coeficientes de novo modelo ajustado
+
+|            | Coeficiente| Erro Padrão| Estatística| $Pr\left(>||z||\right)$|
+|:-----------|-----------:|-----------:|-----------:|-----------------------:|
+|(Intercept) |    -10.80|      0.4144|    -26.06|     $2 x10^{-16}$|
+|Saldo     |      0.0057|      0.0002|     22.16|     $2 x10^{-16}$|
+|Estudante_Sim |     -0.6720|      0.1643|     -4.09|       $4.31 x10^{-5}$|
+
+Com a remoção da variável renda, é possível ver que todas as variáveis são significativas. Assim, chegamos no seguinte modelo para regressão logística:
+
+$$
+\log\left(\frac{\pi_i}{1 - \pi_i}\right) = -10.6228 + 0.0056Saldo_i -0.8041Estudante\_Sim_i
+$$
+
+Agora, para verificar a adequabilidade do modelo, foi feito um teste de hipóteses ao nível de 5% de significância. Logo, temos a seguinte tabela: 
+
+: Teste para adequabilidade do modelo
+
+|               | Resultado Final |
+|:-------------:|:---------------:|
+|$Desvio / \phi$|     1271.217    |
+|   $\chi ^ 2$  |     1355.276    |
+
+Portanto, como o desvio é menor que o quantil $\chi ^ 2$, o modelo é indicado para classificar a situação do cliente quanto ao cumprimento dos prazos.
+
+### Análise de diagnósticos
+
+\newpage
+
+```{r}
+#| fig-cap: Q-Q plot dos resíduos padronizados do modelo
+#| label: fig-norm
+#| fig-height: 3.3
+#| out-width: 100%
+
+train |> 
+  ggplot(aes(sample = rstandard(modelo1))) + 
+  geom_qq(size = 4, color="#21908C", alpha = 0.25) +
+  geom_abline(alpha = 0.6) +
+  coord_obs_pred() +
+  labs(x = "Qualtil teórico", y = "Quantil observado") +
+  theme_bw(10, "serif")
+```
+
+O gráfico de QQ-plot, que serve para verificar a normalidade dos resíduos do modelo, não parece indicar normalidade dos resíduos padronizados.
+
+\newpage
+
+```{r}
+#| fig-cap: Pontos influentes
+#| label: fig-cook
+#| fig-height: 3.3
+#| out-width: 100%
+
+train |> 
+ggplot(aes(x = 1:nrow(train), y = glm.diag(modelo1)$cook)) + 
+  geom_point(size=4, color='#21908C', alpha = 0.25) +
+  geom_abline(
+    intercept = qchisq(0.1, 3)/3,
+    slope = 0, 
+    color='#001132',
+    alpha = 0.6
+    ) +
+  theme(
+    axis.title.x = element_text(colour = '#001132'),
+    axis.text.x = element_text(colour = '#001132'),
+    axis.title.y = element_text(colour = '#001132'),
+    axis.text.y = element_text(colour = '#001132')
+    ) +
+  labs(y = "Distância de Cook", x = "Índice") +
+  theme_bw(10, "serif")
+```
+
+A partir da análise do gráfico com a distância de Cook, vemos que o modelo não possui pontos influentes.
+
+\newpage
+
+```{r}
+#| fig-cap: Pontos de alavanca
+#| label: fig-influ
+#| fig-height: 3.3
+#| out-width: 100%
+
+train |> 
+ggplot(aes(x=1:nrow(train), y=glm.diag(modelo1)$h)) + 
+  geom_point(size=4, color='#21908C', alpha = 0.25) +
+  geom_abline(
+    intercept = 2*(length(modelo1$coefficients)/nrow(train)),
+    slope = 0, color='#001132',
+    alpha = 0.6
+    ) +
+  theme(
+    axis.title.x = element_text(colour = '#001132'), 
+    axis.text.x = element_text(colour = '#001132'),
+    axis.title.y = element_text(colour = '#001132'), 
+    axis.text.y = element_text(colour = '#001132')
+    ) +
+  labs(y = "h", x = "Índice") +
+  theme_bw(10, "serif")
+```
+
+Apesar do modelo não possuir pontos influentes, vemos que possui muitos pontos de alavanca, o que pode prejudicar ao fazer as predições. Além disso, o gráfico abaixo identifica os pontos aberrantes que podem estar presentes. É possível ver que há muitos pontos aberrantes, pois algumas observações ultrapassam aquele limite superior e inferior.
+
+\newpage
+
+```{r}
+#| fig-cap: Pontos aberrantes
+#| label: fig-abe
+#| fig-height: 3.3
+#| out-width: 100%
+
+train |>
+  ggplot(aes(x=1:nrow(train), y=rstandard(modelo1))) +
+  geom_point(size=4, color='#21908C', alpha = 0.25) + 
+  geom_abline(intercept = -2, slope = 0, color='#001132', alpha = 0.6) +
+  geom_abline(intercept = 2, slope = 0, color='#001132', alpha = 0.6) + 
+  ylim(-4,4) + 
+  theme(
+    axis.title.x = element_text(colour = '#001132'), 
+    axis.text.x = element_text(colour = '#001132'), 
+    axis.title.y = element_text(colour = '#001132'),
+    axis.text.y = element_text(colour = '#001132')
+    ) +
+  labs(y = "Résiduos padronizados", x = "Índice") +
+  theme_bw(10, "serif")
+```
+
+\newpage
+
+```{r}
+#| echo: false
+#| out-width: 100%
+#| fig-height: 3.3
+#| fig-cap: "Resíduos padronizados versus valores ajustados"
+
+train |> 
+    ggplot(aes(x = fitted(modelo1), y = rstandard(modelo1))) +
+    geom_point(color = "#21908C") +
+    geom_hline(yintercept = 0, alpha = 0.25) +
+    labs(x = "Valores ajustados", y = "Resíduos padronizados") +
+    theme_bw()
+```
+
+É difícil notar algum padrão de mudança de variância dos resíduos dependentes dos valores ajustados. Dessa forma, os resíduos parecem ser homocedástico.
+
+#### Testes para normalidade e homocedasticidade
+
+```{r output=FALSE}
+# homocedasticidade
+lmtest::gqtest(modelo1)
+lmtest::bgtest(modelo1)
+
+# normalidade
+nortest::lillie.test(modelo1$residuals)
+nortest::ad.test(modelo1$residuals)
+```
+
+Foram realizados dois testes para a suposição de normalidade e homocedásticidade. Para suposição de normalidade, foram realizados os testes de Lilliefors e Anderson-Darling, já para a homocedásticidade foi o teste de Breusch-Godfrey e Goldfeld-Quandt. Assim como já foi identificado pelo qq-plot, vimos que a suposição de normalidade é rejeitada pelos dois testes escolhidos. Agora, para a homocedásticidade, os testes não rejeitam a suposição.
+
+| Teste |  Suposiçao | $p-valor$ |
+|:---:|:---:|:---:|
+| Lilliefors | Normalidade | 2.2e-16 |
+| Anderson-Darling | Normalidade | 2.2e-16 |
+| Breusch-Godfrey  | Homocedasticidade | 0.8126 |
+| Goldfeld-Quandt | Homocedasticidade | 0.9985 |
+
+### Avaliação do modelo final
+
+: Matriz de confusão
+
+|         |     |Observados|     |
+|:-------:|:---:|:--------:|:---:|
+|         |     |   Não    | Sim |
+|Previstos| Não |   1923   | 39  |
+|         | Sim |     14   | 24  |
+
+Pela matriz de confusão, vemos que 1923 dos clientes foram previstos corretamente como não sendo inadimplentes e 14 foram previstos como inadimplentes, mas não são. Já para os clientes inadimplentes os resultados ficaram um pouco piores, o que faz sentido já que a variável da situação dos clientes é bastante desbalanceada. Assim, podemos ver que 39 dos clientes inadimplentes foram incorretamente classificados como não sendo inadimplentes e 24 foram corretamente classificados como sendo inadimplentes. Ainda, o modelo final obtido teve uma acurácia de 97,35%, que é a proporção de classificações corretas da regressão logística. O modelo obteve uma sensibilidade de 99.28%, o que significa que 99.28% dos casos em que o cliente não é inadimplente foi corretamente classificado pelo modelo. Já para os clientes que são inadimplentes, apenas 38.10% foi classificado corretamente pelo modelo. 
+
+```{r}
+#| fig-cap: Curva ROC da regressão logística ajustada
+#| label: fig-roc
+#| fig-height: 3.8
+#| out-width: 100%
 plot(roc_obj, main = "")
 abline(0, 1, lty = 2, col = "black")
 ```
 
-## Envelope
+Observando a curva ROC, é possível ver que o modelo está classificando bem a situação de cada um dos clientes. Com a regressão logística final, foi possível chegar a um $AUC$ de 94.64%.
+
+\newpage
+
+### Interpretação da regressão logística
+
+Pela tabela 2 em que foi avaliada a significância dos coeficientes do modelo, temos que o coeficiente da variável *Estudante* e *Saldo* foi -0.6720 e 0.0057, respectivamente. Analisando somente a variável *Saldo*, vemos que se mantendo constante todas as variáveis, as chances de um cliente ser inadimplente diminui em 0.43% a cada dolár de saldo. Agora analisando a variável dicotômica *Estudante*, podemos calcular a probabilidade de um cliente que não é estudante ser inadimplente. Dessa forma, podemos prosseguir da seguinte maneira: primeiro consideramos o caso em que o cliente é um estudante, depois fazemos o mesmo para o caso em que não é um estudante. Assim, fixamos o saldo e fazemos a razão desses dois cenários. Logo, chegamos que $\exp\left(0.941389\right) = 2.56354$ a chance de um cliente que não é estudante ser inadimplente é 156.35% vezes maior que um cliente que é estudante. O que faz sentido, pois clientes que não são estudantes tendem a ter rendas maiores e isso pode levar a saldos maiores que, pelo que foi visto na análise exploratória, é um dos maiores motivos de inadimplência.
+
 
 ```{r}
-modelo1 <- glm(default ~ ., 
-               family = binomial(link = "logit"), 
-               data = train |> select(-income))
-
-
-
 # par(mfrow=c(1,1))
 # X <- model.matrix(modelo1)
 # n <- nrow(X)
@@ -330,7 +555,7 @@ modelo1 <- glm(default ~ .,
 # qqnorm(med,axes=F,xlab="", ylab="", type="l",ylim=faixa,lty=2)
 ```
 
-```{r}
+```{r output=FALSE}
 confint(modelo1, level = 0.9)
 ```
 
@@ -346,28 +571,12 @@ metricas |>
   knitr::kable()
 ```
 
-## Antes
-
-|            | Coeficiente| Erro Padrão| Estatística| $Pr\left(>||z||\right)$|
-|:-----------|-----------:|-----------:|-----------:|-----------------------:|
-|(Intercept) |    -10.8854|   0.5468227| -19.9067650|       $3.555 x10^{-88}$|
-|balance     |      0.0056|   0.0002555|  22.2072284|      $2.924 x10^{-109}$|
-|income      |$6.6 x 10^{6}$|   0.0000091|   0.7263696|                  0.4676|
-|student_Yes |  -   0.6545|   0.2652104|  -2.4680278|                  0.0135|
-
-## Depois
-
-|            | Coeficiente| Erro Padrão| Estatística| $Pr\left(>||z||\right)$|
-|:-----------|-----------:|-----------:|-----------:|-----------------------:|
-|(Intercept) |    -10.6228|      0.4051|    -26.2187|     $1.6259 x10^{-151}$|
-|balance     |      0.0056|      0.0002|     22.2254|     $1.9479 x10^{-109}$|
-|student_Yes |     -0.8041|      0.1660|     -4.8418|       $1.2864 x10^{-6}$|
-
-|               | Resultado Final |
-|:-------------:|:---------------:|
-|$Desvio / \phi$|     1271.217    |
-|   $\chi ^ 2$  |     1355.276    |
-
 # Conclusões
+
+A partir da análise exploratória foi possível identificar aquelas variáveis que são mais significantes para determinar a condição do cliente. Dessa forma, foi possível identificar que uma das únicas que representava alguma diferença foi o saldo, vimos que clientes com saldos maiores tem um risco maior de ser inadimplente. Foi possível confirmar também que os casos em que o cliente não era inadimplente, era melhor classificado pela regressão logística, o que pode ser explicado pelo desbalanceamento das classes da variável que está sendo modelada. Vimos que 96,67% dos clientes não eram inadimplentes, apenas 3,33% eram inadimplentes.
+
+Foi possível também chegar a uma boa regressão linear para o caso em que os clientes não são inadimplentes. Observamos que o modelo final obteve uma acurácia de 97.35%, que é a proporção de classificações corretas. Não obstante, alcançou também uma sensibilidade de 99.28%, significando que a regressão logística obteve uma performance muito boa ao classificar os clientes não inadimplentes, pois 99.28% deles foram corretamente classificados. Agora considerando os clientes inadimplentes, apenas 38.10% foram corretamente classificados pela regressão logística.
+
+Ainda, foi contastado que mesmo o modelo não tendo passado pela suposição de normalidade e ter muitos pontos de alavanca, foi possível obter boas classificações para o caso em que o cliente não é inadimplente. 
 
 # Anexos
