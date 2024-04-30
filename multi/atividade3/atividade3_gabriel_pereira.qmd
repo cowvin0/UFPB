@@ -32,8 +32,10 @@ library(tidyverse)
 library(yacca)
 library(CCA)
 library(CCP)
+library(ggord)
 library(klaR)
 library(psych)
+library(caret)
 library(tidymodels)
 set.seed(42)
 ```
@@ -93,7 +95,7 @@ O primeiro conjunto de variáveis escolhidas foi a *medição do maior comprimen
 
 ### Código
 
-```{r}
+```{r output=FALSE}
 X <- data |> 
   dplyr::select(Length, Diameter, `Whole weight`)
 Y <- data |> 
@@ -110,87 +112,171 @@ img.matcor(correl)
 
 :::
 
-## Obtendo as correlações canônicas
+## Correlação entre o conjunto de variáveis
 
-## Correlação entre o conjunto de variáveis {.smaller}
+::: {.panel-tabset}
 
+### Código
 
-
-```{r}
+```{r output=FALSE}
 cca.fit <- cca(X, Y)
-cca.fit$corr
 
-barplot(cca.fit$corr, xlab = "Dimensão", ylab = "Correlação canônica", names.arg = 1:3, ylim = c(0, 1))
+barplot(
+  cca.fit$corr,
+  xlab = "Dimensão",
+  ylab = "Correlação canônica",
+  names.arg = 1:3, 
+  ylim = c(0, 1), 
+  col = "#21908C"
+  )
 ```
 
+### Correlação canônica
 
+```{r echo=FALSE}
+barplot(
+  cca.fit$corr,
+  xlab = "Dimensão",
+  ylab = "Correlação canônica",
+  names.arg = 1:3, 
+  ylim = c(0, 1), 
+  col = "#21908C"
+  )
+```
 
+:::
 
-##
+## Correlação entre o conjunto de variáveis
+
+Pelo gráfico de barras, podemos ver que a correlação entre as variáveis canônicas de $\left(U1, V1\right)$ é bastante correlacionada, chegando a 99.56%. Já para $\left(U2, V2\right)$ a correlação foi apenas de 19.71%, bastante baixa.
+
+## Testes para significância do par canônico
 
 ```{r}
 res.cc <- cc(X, Y)
-cca.fit |> plot()
-
-plt.cc(res.cc ,type = "v", var.label = TRUE)
-```
-
-##
-
-```{r}
-plt.cc(res.cc, type = "i", ind.names = train$Sex)
-```
-
-
-```{r}
 rho <- res.cc$cor
 nn <- dim(X)[1]; pp <- dim(X)[2]; qq <- dim(Y)[2]
-assintotico <- p.asym(rho, N=nn, p=pp, q=qq, tstat = "Hotelling")
+p.asym(rho, N=nn, p=pp, q=qq, tstat = "Hotelling")
+
+p.asym(rho, N=nn, p=pp, q=qq, tstat = "Wilks")
+
+p.asym(rho, N=nn, p=pp, q=qq, tstat = "Pillai")
 ```
 
-## Análise de discriminante
+## Testes para significância do par canônico
+
+Foram realizados 3 testes para verificar a significância do par canônico: Pillai-Bartlett, Wilks' Lambda e Hotelling-Lawley. Pelos testes, foi possível verificas que todos os conjuntos de pares canônicos são significativos.
+
+## Variância total explicada pela variável canônica $U_k$
+
+::: {.panel-tabset}
+
+### Código
+
+```{r output=FALSE}
+loadings <- comput(X,Y, res.cc)
+pvte.u <- (colSums((loadings$corr.X.xscores)^2))/(dim(X)[2])*100
+barplot(
+  pvte.u,
+  xlab = "Variável",
+  ylab = "Variância total explicada",
+  names.arg = 1:3, 
+  # ylim = c(0, 1), 
+  col = "#21908C"
+)
+```
+
+### $U_k$
+
+```{r echo=FALSE}
+pvte.u <- (colSums((loadings$corr.X.xscores)^2))/(dim(X)[2])*100
+barplot(
+  pvte.u / sum(pvte.u),
+  xlab = "Variável",
+  ylab = "Variância total explicada",
+  names.arg = 1:3, 
+  # ylim = c(0, 1), 
+  col = "#21908C"
+)
+```
+
+:::
+
+## Variância total explicada pela variável canônica $V_k$
+
+::: {.panel-tabset}
+
+### Código
+
+```{r output=FALSE}
+pvte.v <- (colSums((loadings$corr.Y.yscores)^2))/(dim(Y)[2])*100
+barplot(
+  pvte.v / sum(pvte.v),
+  xlab = "Variável",
+  ylab = "Variância total explicada",
+  names.arg = 1:3, 
+  col = "#21908C"
+)
+```
+
+### $V_k$
+
+```{r echo=FALSE}
+pvte.v <- (colSums((loadings$corr.X.xscores)^2))/(dim(X)[2])*100
+barplot(
+  pvte.v / sum(pvte.v),
+  xlab = "Variável",
+  ylab = "Variância total explicada",
+  names.arg = 1:3, 
+  col = "#21908C"
+)
+```
+
+:::
+
+## $R^2$ canônico
+
+Indica o quanto da variância da variável canônica dependente é explicada pela variável canônica. 
 
 ```{r}
-pairs.panels(
-  data[2:7], hist.col = "#a0000a",
-  gap = 0,
-  bg = ifelse(data$Sex == "A","#1199ff", "#cccccc"),
-  pch = ifelse(data$Sex == "A", 21, 22)
-  )
+res.cc$cor ^ 2
 ```
+
+Dessa forma, 99.12% da primeira variável canônica dependente é explicada pela primeira variável canônica independente. De forma semelhante, 3.88% e 0.1923% da segunda e terceira variável canônica dependente é explicada pela segunta e terceira variável canônica independente, respectivamente.    
+
+## Índice de redundância
+
+```{r}
+ir.x <- (colSums((loadings$corr.X.xscores)^2))/(dim(X)[2])*(res.cc$cor^2)
+ir.y <- (colSums((loadings$corr.Y.yscores)^2))/(dim(Y)[2])*(res.cc$cor^2)
+ir.x
+ir.y
+```
+
+
+# Análise de discriminante
+
 ## Linear
 
 ```{r}
-linear <- lda(Sex ~ ., training(splits), prior = c(1,1)/2, CV = TRUE)
 colnames(train) <- make.names(colnames(train))
 colnames(test) <- make.names(colnames(test))
-
-pairs.panels(train[,2:7], hist.col = "#a0000a",
-             gap = 0,
-             bg = ifelse(linear$class == "A", "#1199ff", "#cccccc"),
-             pch = ifelse(linear$class == "A", 21, 22)
-             )
-
+linear <- lda(Sex ~ ., test)
 
 partimat(Sex ~ ., data = train, method = "lda",
          image.colors = c("#1199ff", "#cccccc")
          )
-
-table(train$Sex, linear$class)
+cm <- confusionMatrix(test$Sex, predict(linear, test)$class)
 ```
+
+## Resultados do caso linear
+
+
 
 ## Quadrático
 
 ```{r}
 quadratico <- qda(Sex ~ ., train, prior = c(1,1)/2, CV = TRUE)
-
-pairs.panels(
-  train[2:7],
-  hist.col = "#a0000a",
-  gap = 0,
-  bg = ifelse(quadratico$class =="A","#1199ff", "#cccccc"),
-  pch = ifelse(quadratico$class == "A",21,22)
-  )
 ```
 ##
 

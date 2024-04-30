@@ -330,8 +330,8 @@ Agora, para verificar a adequabilidade do modelo, foi feito um teste de hipótes
 
 |               | Resultado Final |
 |:-------------:|:---------------:|
-|$Desvio / \phi$|     1271.217    |
-|   $\chi ^ 2$  |     1355.276    |
+|$Desvio / \phi$|     1262.441    |
+|   $\chi ^ 2$  |     1346.214    |
 
 Portanto, como o desvio é menor que o quantil $\chi ^ 2$, o modelo é indicado para classificar a situação do cliente quanto ao cumprimento dos prazos.
 
@@ -350,7 +350,7 @@ train |>
   geom_qq(size = 4, color="#21908C", alpha = 0.25) +
   geom_abline(alpha = 0.6) +
   coord_obs_pred() +
-  labs(x = "Qualtil teórico", y = "Quantil observado") +
+  labs(x = "Quantil teórico", y = "Quantil observado") +
   theme_bw(10, "serif")
 ```
 
@@ -486,7 +486,7 @@ Foram realizados dois testes para a suposição de normalidade e homocedásticid
 |Previstos| Não |   1923   | 39  |
 |         | Sim |     14   | 24  |
 
-Pela matriz de confusão, vemos que 1923 dos clientes foram previstos corretamente como não sendo inadimplentes e 14 foram previstos como inadimplentes, mas não são. Já para os clientes inadimplentes os resultados ficaram um pouco piores, o que faz sentido já que a variável da situação dos clientes é bastante desbalanceada. Assim, podemos ver que 39 dos clientes inadimplentes foram incorretamente classificados como não sendo inadimplentes e 24 foram corretamente classificados como sendo inadimplentes. Ainda, o modelo final obtido teve uma acurácia de 97,35%, que é a proporção de classificações corretas da regressão logística. O modelo obteve uma sensibilidade de 99.28%, o que significa que 99.28% dos casos em que o cliente não é inadimplente foi corretamente classificado pelo modelo. Já para os clientes que são inadimplentes, apenas 38.10% foi classificado corretamente pelo modelo. 
+Pela matriz de confusão, vemos que 1923 clientes foram previstos corretamente como não sendo inadimplentes e 14 foram previstos como inadimplentes, mas não são. Já para os clientes inadimplentes os resultados ficaram piores, o que faz sentido já que a variável da situação dos clientes é bastante desbalanceada. Assim, podemos ver que 39 dos clientes inadimplentes foram incorretamente classificados como não sendo inadimplentes e 24 foram corretamente classificados como sendo inadimplentes. Ainda, o modelo final obtido teve uma acurácia de 97,35%, que é a proporção de classificações corretas da regressão logística. O modelo obteve uma sensibilidade de 99.28%, o que significa que 99.28% dos casos em que o cliente não é inadimplente foi corretamente classificado pelo modelo. Já para os clientes que são inadimplentes, apenas 38.10% foi classificado corretamente pelo modelo. 
 
 ```{r}
 #| fig-cap: Curva ROC da regressão logística ajustada
@@ -499,65 +499,21 @@ abline(0, 1, lty = 2, col = "black")
 
 Observando a curva ROC, é possível ver que o modelo está classificando bem a situação de cada um dos clientes. Com a regressão logística final, foi possível chegar a um $AUC$ de 94.64%.
 
+![](foto.jpeg)
+
+Todos os coeficientes são altamente significantes, com o intervalo não contendo 0. Além disso, observando o gráfico de envelope anterior, podemos ver que nenhum dos resíduos estão fora do envelope.
+
+```{r}
+confint(modelo1, level = 0.9) |> 
+  knitr::kable()
+```
+
+
 \newpage
 
 ### Interpretação da regressão logística
 
 Pela tabela 2 em que foi avaliada a significância dos coeficientes do modelo, temos que o coeficiente da variável *Estudante* e *Saldo* foi -0.6720 e 0.0057, respectivamente. Analisando somente a variável *Saldo*, vemos que se mantendo constante todas as variáveis, as chances de um cliente ser inadimplente diminui em 0.43% a cada dolár de saldo. Agora analisando a variável dicotômica *Estudante*, podemos calcular a probabilidade de um cliente que não é estudante ser inadimplente. Dessa forma, podemos prosseguir da seguinte maneira: primeiro consideramos o caso em que o cliente é um estudante, depois fazemos o mesmo para o caso em que não é um estudante. Assim, fixamos o saldo e fazemos a razão desses dois cenários. Logo, chegamos que $\exp\left(0.941389\right) = 2.56354$ a chance de um cliente que não é estudante ser inadimplente é 156.35% vezes maior que um cliente que é estudante. O que faz sentido, pois clientes que não são estudantes tendem a ter rendas maiores e isso pode levar a saldos maiores que, pelo que foi visto na análise exploratória, é um dos maiores motivos de inadimplência.
-
-
-```{r}
-# par(mfrow=c(1,1))
-# X <- model.matrix(modelo1)
-# n <- nrow(X)
-# p <- ncol(X)
-# w <- modelo1$weights
-# W <- diag(w)
-# H <- solve(t(X)%*%W%*%X)
-# H <- sqrt(W)%*%X%*%H%*%t(X)%*%sqrt(W)
-# h <- diag(H)
-# td <- resid(modelo1,type="deviance")/sqrt(1-h)
-# e <- matrix(0,n,100)
-# #
-# for(i in 1:100){
-# dif <- runif(n) - fitted(modelo1)
-# dif[dif >= 0 ] <- 0
-# dif[dif<0] <- 1
-# nresp <- dif
-# fit <- glm(nresp ~ X, family=binomial)
-# w <- fit$weights
-# W <- diag(w)
-# H <- solve(t(X)%*%W%*%X)
-# H <- sqrt(W)%*%X%*%H%*%t(X)%*%sqrt(W)
-# h <- diag(H)
-# e[,i] <- sort(resid(fit,type="deviance")/sqrt(1-h))}
-# #
-# e1 <- numeric(n)
-# e2 <- numeric(n)
-# #
-# for(i in 1:n){
-#   eo <- sort(e[i,])
-# e1[i] <- (eo[2]+eo[3])/2
-# e2[i] <- (eo[97]+eo[98])/2}
-# #
-# med <- apply(e,1,mean)
-# faixa <- range(td,e1,e2)
-# par(pty="s")
-# qqnorm(td,xlab="Percentil da N(0,1)",
-# ylab="Componente do Desvio", ylim=faixa, pch=16)
-# #
-# par(new=T)
-# #
-# qqnorm(e1,axes=F,xlab="",ylab="",type="l",ylim=faixa,lty=1)
-# par(new=T)
-# qqnorm(e2,axes=F,xlab="",ylab="", type="l",ylim=faixa,lty=1)
-# par(new=T)
-# qqnorm(med,axes=F,xlab="", ylab="", type="l",ylim=faixa,lty=2)
-```
-
-```{r output=FALSE}
-confint(modelo1, level = 0.9)
-```
 
 
 ```{r output = FALSE}
@@ -580,3 +536,271 @@ Foi possível também chegar a uma boa regressão linear para o caso em que os c
 Ainda, foi contastado que mesmo o modelo não tendo passado pela suposição de normalidade e ter muitos pontos de alavanca, foi possível obter boas classificações para o caso em que o cliente não é inadimplente. 
 
 # Anexos
+
+## Pacotes
+
+
+```{r output=FALSE, echo = TRUE}
+library(tidyverse)
+library(mgcv)
+library(gamlss)
+library(boot)
+library(pROC)
+library(tidymodels)
+library(caret)
+library(pROC)
+set.seed(42)
+```
+
+## Análise de dados
+
+```{r output=FALSE, echo=TRUE}
+data |> 
+  pivot_longer(
+    c(Saldo, Renda),
+    names_to = "variable",
+    values_to = "values"
+  ) |>
+  ggplot(aes(x = values, fill = Inadimplência)) +
+  geom_density(alpha = 0.4) +
+  facet_wrap(
+    vars(variable), 
+    scales = "free",
+    labeller = as_labeller(
+      c(`Saldo` = "Saldo",
+        `Renda` = "Renda")
+      )
+    ) +
+  scale_fill_brewer(palette = "Set1", name = "Inadimplência", 
+                    labels = c("Não", "Sim"), direction = -1) +
+  labs(x = "", y = "") +
+  theme_bw()
+
+data |> 
+  ggplot(aes(Saldo, Renda, color = Inadimplência)) +
+  geom_point(alpha = .4, size = 3.3) +
+  scale_color_brewer(
+    palette = "Set1",
+    direction = -1,
+    # name = "Inadimplência"
+    ) +
+  theme_bw() +
+  labs(y = "Renda", x = "Saldo")
+
+data |> 
+  ggplot(aes(x = forcats::fct_infreq(Inadimplência))) +
+  geom_bar(
+        aes(
+          y = after_stat(count) / sum(after_stat(count)), 
+          fill = Inadimplência
+          ),
+        show.legend = FALSE,
+  ) +
+  theme_bw() +
+  theme(axis.title.x = element_blank()) +
+  scale_fill_brewer(palette = "Set1") +
+  labs(y = NULL, x = NULL) 
+
+data |> 
+  ggplot(aes(x = forcats::fct_infreq(Estudante))) +
+  geom_bar(
+        aes(
+          y = after_stat(count) / sum(after_stat(count)), 
+          fill = Estudante
+          ),
+        show.legend = FALSE,
+  ) +
+  theme_bw() +
+  theme(axis.title.x = element_blank()) +
+  scale_fill_brewer(palette = "Set1") +
+  labs(y = NULL, x = NULL) 
+```
+
+## Construção do modelo e cálculo das métricas
+
+```{r output=FALSE, echo=TRUE}
+splits <- initial_split(
+  data |> mutate(
+    Inadimplência = as.factor(ifelse(Inadimplência == "Sim", "Yes", "No")),
+    Estudante = as.factor(ifelse(Estudante == "Sim", "Yes", "No"))), 
+  prop = 0.80, 
+  strat = Inadimplência)
+train <- training(splits) 
+test <- testing(splits)
+
+workflow <- workflow() |>
+  add_model(logistic_reg(), formula = Inadimplência ~ .) |>
+  add_recipe(train |>
+               recipe(Inadimplência ~ .) |> 
+               step_rm(Renda) |>
+               step_dummy(all_nominal_predictors())
+               )
+
+model <- workflow |>
+  fit(train)
+
+metricas <- model |> 
+  extract_fit_engine() |> 
+  summary()
+
+phi1 <- metricas$dispersion
+desvio1 <- metricas$deviance / phi1
+q.quadr1 <- qchisq(0.95, desvio1)
+
+classes_previstas <- predict(model, new_data = test, type = "class") |>
+  _$.pred_class
+
+probs_previstas <- predict(model, new_data = test, type = "prob")
+
+cm <- confusionMatrix(table(classes_previstas, test$Inadimplência))
+
+results <- test |> 
+  dplyr::select(Inadimplência) |> 
+  bind_cols(classes_previstas, probs_previstas)
+
+modelo1 <- glm(Inadimplência ~ ., 
+               family = binomial(link = "logit"), 
+               data = train |> dplyr::select(-Renda)
+               )
+
+roc_obj <- roc(results$Inadimplência, results$.pred_No)
+```
+
+## Código para análise de diagnósticos
+
+```{r output=FALSE, echo=TRUE}
+train |> 
+  ggplot(aes(sample = rstandard(modelo1))) + 
+  geom_qq(size = 4, color="#21908C", alpha = 0.25) +
+  geom_abline(alpha = 0.6) +
+  coord_obs_pred() +
+  labs(x = "Qualtil teórico", y = "Quantil observado") +
+  theme_bw(10, "serif")
+
+train |> 
+ggplot(aes(x = 1:nrow(train), y = glm.diag(modelo1)$cook)) + 
+  geom_point(size=4, color='#21908C', alpha = 0.25) +
+  geom_abline(
+    intercept = qchisq(0.1, 3)/3,
+    slope = 0, 
+    color='#001132',
+    alpha = 0.6
+    ) +
+  theme(
+    axis.title.x = element_text(colour = '#001132'),
+    axis.text.x = element_text(colour = '#001132'),
+    axis.title.y = element_text(colour = '#001132'),
+    axis.text.y = element_text(colour = '#001132')
+    ) +
+  labs(y = "Distância de Cook", x = "Índice") +
+  theme_bw(10, "serif")
+
+train |> 
+ggplot(aes(x=1:nrow(train), y=glm.diag(modelo1)$h)) + 
+  geom_point(size=4, color='#21908C', alpha = 0.25) +
+  geom_abline(
+    intercept = 2*(length(modelo1$coefficients)/nrow(train)),
+    slope = 0, color='#001132',
+    alpha = 0.6
+    ) +
+  theme(
+    axis.title.x = element_text(colour = '#001132'), 
+    axis.text.x = element_text(colour = '#001132'),
+    axis.title.y = element_text(colour = '#001132'), 
+    axis.text.y = element_text(colour = '#001132')
+    ) +
+  labs(y = "h", x = "Índice") +
+  theme_bw(10, "serif")
+
+
+train |>
+  ggplot(aes(x=1:nrow(train), y=rstandard(modelo1))) +
+  geom_point(size=4, color='#21908C', alpha = 0.25) + 
+  geom_abline(intercept = -2, slope = 0, color='#001132', alpha = 0.6) +
+  geom_abline(intercept = 2, slope = 0, color='#001132', alpha = 0.6) + 
+  ylim(-4,4) + 
+  theme(
+    axis.title.x = element_text(colour = '#001132'), 
+    axis.text.x = element_text(colour = '#001132'), 
+    axis.title.y = element_text(colour = '#001132'),
+    axis.text.y = element_text(colour = '#001132')
+    ) +
+  labs(y = "Résiduos padronizados", x = "Índice") +
+  theme_bw(10, "serif")
+
+train |> 
+    ggplot(aes(x = fitted(modelo1), y = rstandard(modelo1))) +
+    geom_point(color = "#21908C") +
+    geom_hline(yintercept = 0, alpha = 0.25) +
+    labs(x = "Valores ajustados", y = "Resíduos padronizados") +
+    theme_bw()
+```
+
+## Código para testes dos resíduos
+
+```{r output=FALSE, echo=TRUE}
+# homocedasticidade
+lmtest::gqtest(modelo1)
+lmtest::bgtest(modelo1)
+
+# normalidade
+nortest::lillie.test(modelo1$residuals)
+nortest::ad.test(modelo1$residuals)
+```
+
+```{r output=FALSE, echo=TRUE}
+# código para curva ROC
+plot(roc_obj, main = "")
+abline(0, 1, lty = 2, col = "black")
+```
+
+## Gráfico de evelope
+
+```{r output=FALSE, echo=TRUE}
+# par(mfrow=c(1,1))
+# X <- model.matrix(modelo1)
+# n <- nrow(X)
+# p <- ncol(X)
+# w <- modelo1$weights
+# W <- diag(w)
+# H <- solve(t(X)%*%W%*%X)
+# H <- sqrt(W)%*%X%*%H%*%t(X)%*%sqrt(W)
+# h <- diag(H)
+# td <- resid(modelo1,type="deviance")/sqrt(1-h)
+# e <- matrix(0,n,100)
+# #
+# for(i in 1:100){
+#   dif <- runif(n) - fitted(modelo1)
+#   dif[dif >= 0 ] <- 0
+#   dif[dif<0] <- 1
+#   nresp <- dif
+#   fit <- glm(nresp ~ X, family=binomial)
+#   w <- fit$weights
+#   W <- diag(w)
+#   H <- solve(t(X)%*%W%*%X)
+#   H <- sqrt(W)%*%X%*%H%*%t(X)%*%sqrt(W)
+#   h <- diag(H)
+#   e[,i] <- sort(resid(fit,type="deviance")/sqrt(1-h))}
+# #
+# e1 <- numeric(n)
+# e2 <- numeric(n)
+# #
+# for(i in 1:n){
+#   eo <- sort(e[i,])
+#   e1[i] <- (eo[2]+eo[3])/2
+#   e2[i] <- (eo[97]+eo[98])/2}
+# #
+# med <- apply(e,1,mean)
+# faixa <- range(td,e1,e2)
+# par(pty="s")
+# qqnorm(td,xlab="Percentil da N(0,1)",
+#        ylab="Componente do Desvio", ylim=faixa, pch=16)
+# #
+# par(new=T)
+# #
+# qqnorm(e1,axes=F,xlab="",ylab="",type="l",ylim=faixa,lty=1)
+# par(new=T)
+# qqnorm(e2,axes=F,xlab="",ylab="", type="l",ylim=faixa,lty=1)
+# par(new=T)
+# qqnorm(med,axes=F,xlab="", ylab="", type="l",ylim=faixa,lty=2)
+```
