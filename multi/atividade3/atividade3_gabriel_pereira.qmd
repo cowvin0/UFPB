@@ -1,5 +1,5 @@
 ---
-title: Apresentação 3
+title: Molusco 3
 author: Gabriel de Jesus Pereira
 date: today
 cache: true
@@ -17,6 +17,8 @@ format:
   revealjs:
     theme: [default, style.scss]
     embed-resources: true
+    self-contained-math: true
+    self-contained: true
     transition: slide
     background-transition: fade
     scrollable: true
@@ -34,6 +36,7 @@ library(CCA)
 library(CCP)
 library(ggord)
 library(klaR)
+library(pROC)
 library(psych)
 library(caret)
 library(tidymodels)
@@ -67,7 +70,7 @@ test <- testing(splits)
 
 ## As variáveis do banco de dados {auto-animate="true"}
 
-- Sexo do abalone: variável nominal indicando se o abalone é macho ou filhote.
+- Sexo do abalone: variável nominal indicando se o abalone é macho ou filhote. No entanto o macho e a fêmea foi juntado numa única classe de adultos para fazer a comparação.
 
 - Medição do maior comprimento da concha
 
@@ -87,7 +90,7 @@ test <- testing(splits)
 
 ## Seleção do conjunto de variáveis
 
-O primeiro conjunto de variáveis escolhidas foi a *medição do maior comprimento da concha*, o *diamêtro* e a *altura do abalone com a casca*. Já o segundo é composto pelo *peso total*, *peso da carne*, *peso das vísceras* e *peso da concha sem carne*.
+O conjunto de variáveis independentes escolhida foi a *medição do maior comprimento da concha*,  *diamêtro* e o *peso total*. Já o conjunto de variáveis dependentes é composto pelo, *peso da carne*, *peso das vísceras* e *peso da concha sem carne*. Além disso, os machos e as fêmeas foram juntados numa única classe de adultos.
 
 ## Correlação entre o conjunto de variáveis
 
@@ -113,6 +116,10 @@ img.matcor(correl)
 :::
 
 ## Correlação entre o conjunto de variáveis
+
+A partir do gráfico anterior, podemos ver que o conjunto de variáveis independentes e dependentes são bastante correlacionados.
+
+## Correlação canônica
 
 ::: {.panel-tabset}
 
@@ -146,9 +153,9 @@ barplot(
 
 :::
 
-## Correlação entre o conjunto de variáveis
+## Correlação canônica
 
-Pelo gráfico de barras, podemos ver que a correlação entre as variáveis canônicas de $\left(U1, V1\right)$ é bastante correlacionada, chegando a 99.56%. Já para $\left(U2, V2\right)$ a correlação foi apenas de 19.71%, bastante baixa.
+Pelo gráfico de barras, podemos ver que as variáveis canônicas de $\left(U1, V1\right)$ são bastante correlacionadas, chegando a 99.56%. Já para $\left(U2, V2\right)$ a correlação foi apenas de 19.71%, bastante baixa.
 
 ## Testes para significância do par canônico
 
@@ -181,7 +188,7 @@ barplot(
   xlab = "Variável",
   ylab = "Variância total explicada",
   names.arg = 1:3, 
-  # ylim = c(0, 1), 
+  ylim = c(0, 1),
   col = "#21908C"
 )
 ```
@@ -194,13 +201,17 @@ barplot(
   pvte.u / sum(pvte.u),
   xlab = "Variável",
   ylab = "Variância total explicada",
-  names.arg = 1:3, 
-  # ylim = c(0, 1), 
+  names.arg = 1:3,
+  ylim = c(0, 1),
   col = "#21908C"
 )
 ```
 
 :::
+
+## Variância total explicada pela variável canônica $U_k$
+
+Podemos ver que a variável canônica $U_1$ explica 91.3094% da variância original do grupo de variáveis independentes, enquanto a segunda explica apenas 2.4725%. 
 
 ## Variância total explicada pela variável canônica $V_k$
 
@@ -215,6 +226,7 @@ barplot(
   xlab = "Variável",
   ylab = "Variância total explicada",
   names.arg = 1:3, 
+  ylim = c(0, 1),
   col = "#21908C"
 )
 ```
@@ -222,19 +234,24 @@ barplot(
 ### $V_k$
 
 ```{r echo=FALSE}
-pvte.v <- (colSums((loadings$corr.X.xscores)^2))/(dim(X)[2])*100
+pvte.v <- (colSums((loadings$corr.Y.yscores)^2))/(dim(Y)[2])*100
 barplot(
   pvte.v / sum(pvte.v),
   xlab = "Variável",
   ylab = "Variância total explicada",
-  names.arg = 1:3, 
+  names.arg = 1:3,
+  ylim = c(0, 1),
   col = "#21908C"
 )
 ```
 
 :::
 
-## $R^2$ canônico
+## Variância total explicada pela variável canônica $V_k$
+
+De forma semelhante a feita em $U_k$, é possível ver que a variável canônica $V_1$ explica 93.7397% da variância original do grupo de variáveis independentes, enquanto a segunda explica apenas 4.0192%.
+
+## $R^2$ canônico {.smaller}
 
 Indica o quanto da variância da variável canônica dependente é explicada pela variável canônica. 
 
@@ -244,13 +261,23 @@ res.cc$cor ^ 2
 
 Dessa forma, 99.12% da primeira variável canônica dependente é explicada pela primeira variável canônica independente. De forma semelhante, 3.88% e 0.1923% da segunda e terceira variável canônica dependente é explicada pela segunta e terceira variável canônica independente, respectivamente.    
 
-## Índice de redundância
+## Índice de redundância {.smaller}
 
 ```{r}
 ir.x <- (colSums((loadings$corr.X.xscores)^2))/(dim(X)[2])*(res.cc$cor^2)
 ir.y <- (colSums((loadings$corr.Y.yscores)^2))/(dim(Y)[2])*(res.cc$cor^2)
 ir.x
 ir.y
+```
+
+Pelo índice de redundância, podemos que o segundo e terceiro pares canônicos, apesar dos testes estatísticos tendo mostrado que os pares canônicos são significativos, tem pouco ou nenhum significado prático. Dessa forma, a análise poderia ser feita considerando apenas o primeiro par canônico.
+
+## Gráficos {.smaller}
+
+No último plot, podemos ver o quanto o cada par foi mais importante para explicar a variância. Ainda, podemos ver que como as variáveis e o conjunto de variáveis são extremamente correlacionados, todas contribuem bastante para explicar a variância para os pares.
+
+```{r}
+plot.cca(cca.fit)
 ```
 
 
@@ -263,26 +290,65 @@ colnames(train) <- make.names(colnames(train))
 colnames(test) <- make.names(colnames(test))
 linear <- lda(Sex ~ ., test)
 
-partimat(Sex ~ ., data = train, method = "lda",
-         image.colors = c("#1199ff", "#cccccc")
-         )
-cm <- confusionMatrix(test$Sex, predict(linear, test)$class)
+pred_l <- predict(linear, test)
+cm1 <- confusionMatrix(test$Sex, pred_l$class)
+cm1$table
 ```
 
 ## Resultados do caso linear
 
+84.32% dos casos em que o molusco é adulto foi corretamente classificado e 74.25% dos casos em que o molusco é filhote foi corretamente identificado. Além disso, o modelo tem uma acurácia obteve uma acurácia de 81.44%, que é a proporção de predições corretas.
 
-
-## Quadrático
+## Curva ROC
 
 ```{r}
-quadratico <- qda(Sex ~ ., train, prior = c(1,1)/2, CV = TRUE)
+roc_obj_l <- roc(test$Sex, pred_l$posterior[, 1])
+auc(roc_obj_l)
+plot(roc_obj_l)
 ```
-##
+
+## Discriminação
 
 ```{r}
-partimat(Sex ~ ., data = train, method = "lda",
+partimat(Sex ~ ., data = test, method = "lda",
          image.colors = c("#1199ff", "#cccccc")
          )
 ```
 
+## Discriminação
+
+Podemos ver que para os casos em que a variável não tem a ver com o peso dos abalones, os adultos e filhotes ficam um pouco melhor classificados. Isso acontece porque as variáveis de peso tem bastante interseção, mesmo quando é considerado somente os filhotes. 
+
+## Quadrático
+
+```{r}
+quadratico <- qda(Sex ~ ., train)
+
+pred_q <- predict(quadratico, test)
+cm2 <- confusionMatrix(test$Sex, pred_q$class)
+cm2$table
+```
+
+## Resultados do caso quadrático {.smaller}
+
+Para o caso quadrático a classificação dos moluscos machos ficou um pouco melhor, alcançando 90.41% dos casos em que o molusco é adulto foi corretamente classificado e 61.39% dos casos em que o molusco é filhote foi corretamente identificado. Além disso, o modelo tem uma acurácia obteve uma acurácia de 77.61%, que é a proporção de predições corretas. No entanto, perceba que a acurácia é menor e a classificação para os filhotes fica pior que no caso linear.
+
+## Curva ROC
+
+```{r}
+roc_obj_q <- roc(test$Sex, pred_q$posterior[, 1])
+auc(roc_obj_q)
+plot(roc_obj_q)
+```
+
+## Discriminação
+
+```{r}
+partimat(Sex ~ ., data = test, method = "qda",
+         image.colors = c("#1199ff", "#cccccc")
+         )
+```
+
+## Discriminação
+
+Da mesma forma do caso linear, podemos ver que para os casos em que a variável não tem a ver com o peso dos abalones, os adultos e filhotes ficam um pouco melhor classificados. Isso acontece porque as variáveis de peso tem bastante interseção, mesmo quando é considerado somente os filhotes. No entanto, é possível ver claramente que o caso quadrático classifica muito pior as os abalones quando comparamos à linear.

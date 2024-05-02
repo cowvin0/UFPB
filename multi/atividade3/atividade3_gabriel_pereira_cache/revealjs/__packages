@@ -36,3 +36,7 @@ tune
 workflows
 workflowsets
 yardstick
+ggord
+pROC
+lattice
+caret
