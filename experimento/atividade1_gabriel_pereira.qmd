@@ -277,7 +277,7 @@ data |>
   scale_color_viridis_d() +
   labs(x = "", y = "") + 
   theme_bw()
-  ```
+```
 
 Pelo gráfico da @fig-comp, podemos concluir também sobre as diferenças. Vemos que a média da mistura 1 e mistura 3 estão bastante próximas, mostrando que sua diferença não é significativa. Já para as outras diferenças, vemos que estão distantes, concluindo sobre as diferenças significativas que foram obtidas nos resultados anteriores.
 

@@ -33,8 +33,6 @@ library(ggpubr)
 library(ExpDes)
 ```
 
-
-
 # Quadrado latino
 
 ## O modelo para um quadrado latino
@@ -121,6 +119,8 @@ dados1 |>
 
 bartlett.test(Obs ~ Ingredient, data = dados1)
 ```
+
+\newpage
 
 # Anova com medidas repetidas
 
@@ -233,5 +233,247 @@ dados2 |>
     obs ~ vinho, paired = TRUE,
     p.adjust.method = "bonferroni"
     )
+```
+
+\newpage
+
+# Experimento Fatorial $2^2$
+
+```{r}
+dadosexp2 <- tibble(
+  A = c(
+    rep("A0", 4), rep("A1", 4), 
+    rep("A0", 4), rep("A1", 4)
+    ),
+  B = c(
+    rep("B0", 4), rep("B0", 4),
+    rep("B1", 4), rep("B1", 4)
+    ),
+  Y = c(5.12, 4.89, 4.98, 5,
+        6.65, 6.24, 5.49, 5.55,
+        4.95, 4.37, 4.27, 4.25,
+        5.28, 4.91, 4.75, 4.71
+        )
+  ) |> 
+  mutate(across(c(A, B), as.factor))
+
+fat2.crd(
+  dadosexp2$A, dadosexp2$B, dadosexp2$Y, 
+  quali = c(TRUE, TRUE),
+  mcomp = "tukey", 
+  fac.names = c("A", "B"),
+  sigT = 0.05,
+  sigF = 0.05)
+```
+
+\newpage
+
+# Experimento fatorial $2^3$
+
+```{r}
+dadosexp3 <- tibble(
+  A = c(
+    rep("A0", 3), rep("A1", 3),
+    rep("A0", 3), rep("A1", 3),
+    rep("A0", 3), rep("A1", 3),
+    rep("A0", 3), rep("A1", 3)
+    ),
+  B = c(
+    rep("B0", 6), rep("B1", 6),
+    rep("B0", 6), rep("B1", 6)
+  ),
+  C = c(
+    rep("C0", 12), rep("C1", 12)
+    ),
+  Y = c(22, 31, 25,
+        32, 43, 29,
+        35, 34, 50,
+        55, 47, 46,
+        44, 45, 38,
+        40, 37, 36,
+        60, 50, 54,
+        39, 41, 47)
+  ) |> 
+  mutate(across(-Y, as.factor))
+
+fat3.crd(dadosexp3$A, dadosexp3$B, dadosexp3$C, dadosexp3$Y)
+```
+
+\newpage
+
+# Bloco aleatório
+
+```{r}
+dados_rbd <- tibble(
+  distance = rep(c(4, 6, 8, 10), each = 5),
+  subject = rep(1:5, times = 4),
+  values = c(10, 6, 6, 6, 6,
+             7,  6, 6, 1, 6,
+             5, 3, 3, 2, 5,
+             6, 4, 4, 2, 3)
+)
+rbd(dados_rbd$distance, dados_rbd$subject, dados_rbd$values, unfold = 0)
+```
+
+\newpage
+
+# Efeito fixo
+
+```{r}
+dados_fix <- tibble(
+  rodding = factor(rep(
+    c("Subcompact", "Compact",
+      "Midsize", "Full size"), each = 10)
+    ),
+  values = c(3, 5, 3, 7, 6, 5, 3, 2, 1, 6,
+             1, 3, 4, 7, 5, 6, 3, 2, 1, 7,
+             4, 1, 3, 5, 7, 1, 2, 4, 2, 7,
+             3, 5, 7, 5, 10, 3, 4, 7, 2, 7)
+)
+model <- lm(values ~ rodding, dados_fix)
+```
+
+\newpage
+
+# Efeito aleatório
+
+O experimentador está normalmente interessado em um fator que tem uma grande quantidade de possíveis níveis. Caso o experimentador selecione aleatoriamente $a$ desses níveis da população de níveis do fator, então dizemos que o *fator* é aleatório. Dessa forma, como os níveis dos fatores foram selecionados aleatoriamente para o experimento, inferências são feitas sobre toda população de níveis do fator. Assumimos também que a população de níveis dos fatores possa ser de tamanho infinito ou é grande o suficiente para ser considerado inifinito. Assim, temos o seguinte modelo:
+
+$$
+y_{ij} = \mu + \tau_i + \epsilon_{ij}
+\begin{cases}
+  \mathcal i=1, 2, ..., a \\
+  \mathcal j=1, 2, ..., n
+\end{cases}
+$$
+
+Como $\tau_i$, que são os efeitos dos tratamentos, é independente de $\epsilon_{ij}$, a variância de qualquer observação é:
+
+$$
+V\left(y_{ij}\right) = \sigma^2_{\tau} + \sigma^2
+$$
+
+Ainda, diferente do modelo de efeito fixo, no caso aleatório, as observações $y_{ij}$ só são independentes se estiverem em diferentes níveis de fatores.
+
+## A análise de variância para o modelo de efeitos aleatórios
+
+A identidade basica para a soma de quadrados da ANOVA ainda é valida, $SS_T = SS_{Treatments} + SS_E$. Testar hipóteses sobre o efeito individual dos tratamentos não é significante pois estamos selecionando aleatoriamente e portanto, estamos mais interessados no comportamento populacional dos tratamentos. Assim, queremos fazer o seguinte teste:
+
+$$
+H_0: \sigma^2_{\tau} = 0
+$$
+
+$$
+H_1: \sigma^2_{\tau} > 0
+$$
+
+Se $\sigma^2_{\tau} = 0$, todos os tratamentos são idênticos; mas se $\sigma^2_{\tau} > 0$, há variabilidade entre os tratamentos. Dessa forma, para testar a hipótese, temos a seguinte estatística:
+
+$$
+F_0 = \frac{MS_{Tratamentos}}{MS_E}
+$$
+em que a razão é uma variável aleatória $F$ com $a - 1$ e $a\left(n - 1\right)$ graus de liberdade quando $H_0$. A hipótese nula seria rejeitada a um nível de significância $\alpha$ se o valor calculado da estatística de teste $f_0 > f_{\alpha, a - 1, a\left(n - 1\right)}$. Temos também que os cálculos e a contrução da tabela ANOVA para os efeitos aleatórios são idênticos àqueles do efeito fixo. No entanto, a conclusão é diferente pois é aplicado a população inteira dos tratamentos.
+
+Temos também que $MS_{Tratamentos} = \frac{SS_{Tratamentos}}{a - 1}$ e $MS_E = \frac{SS_E}{a(n - 1)}$ 
+
+Ainda, para estimar $\sigma^2$ e $\sigma_{\tau} ^2$, temos que:
+
+::: {layout-ncol=2}
+$$
+\hat \sigma^2 = MS_E
+$$
+
+$$
+\hat \sigma^2_{\tau} = \frac{MS_{Tratamentos} - MS_E}{n}
+$$
+:::
+
+Assim, chegamos no seguinte intervalo de confiança para $\sigma^2$ e $\sigma_{\tau} ^2$, respectivamente:
+
+$$
+\frac{\left(N - a\right)MS_E}{\chi^2_{\alpha/2, N-a}} \leq \sigma^2 \leq \frac{\left(N - a\right)MS_E}{\chi^2_{1 - \alpha/2, N-a}} 
+$$
+
+$$
+\frac{L}{1 + L} \leq \frac{\sigma^2_{\tau}}{\sigma^2_{\tau} + \sigma^2} \leq \frac{U}{1 + U}
+$$
+
+em que $L = \frac{1}{n}\left(\frac{MS_{Tratamentos}}{MS_E}\frac{1}{F_{\alpha/2, a - 1, N-a}} - 1\right)$
+
+e $U = \frac{1}{n}\left(\frac{MS_{Tratamentos}}{MS_E}\frac{1}{F_{1 - \alpha/2, a - 1, N-a}} - 1\right)$
+
+
+
+## O problema a ser resolvido 3.13
+
+A manufacturer of television sets is interested in the effect on tube conductivity of four different types of coating for color picture tubes. A completely randomized experiment is conducted and the following conductivity data are obtained:
+
+```{r}
+
+dados_ale <- tibble(
+  coating = factor(rep(1:4, each = 4)),
+  conductivity = c(143, 141, 150, 146, 
+                   152, 149, 137, 143,
+                   134, 136, 132, 127,
+                   129, 127, 132, 129)
+  )
+
+modelo_ale <- aov(conductivity ~ coating, data = dados_ale)
+```
+
+## Suposições do modelo
+
+Primeiro começaremos analisando os resíduos do modelo.
+
+### Normalidade
+
+Foram feitos 3 testes para checar a normalidade dos resíduos do modelo: Shapiro-Wilk, Lilliefors e Jarque-Bera. Nenhum dos testes que foram realizados rejeitam a suposição de normalidade dos resíduos, isto é, não rejeitam $H_0$. 
+
+```{r}
+shapiro.test(rstandard(modelo_ale))
+nortest::lillie.test(rstandard(modelo_ale))
+moments::jarque.test(rstandard(modelo_ale))
+```
+
+### Homocedasticidade
+
+Para a verificação da homocedasticidade, foram utilizados 3 testes: Breusch-Pagan, Goldfeld-Quandt e Harrison-McCabe. Assim como no caso da normalidade, não rejeitamos a suposição de homocedasticidade. Dessa forma, a variância dos resíduos é constante.
+
+```{r}
+lmtest::bptest(modelo_ale)
+lmtest::gqtest(modelo_ale)
+lmtest::hmctest(modelo_ale)
+```
+
+### Homogeneidade
+
+Os dois testes escolhidos para testar a homogeneidade foram os testes de Bartlete, Levene e Flingner-Killeen. Ao nível de 5% de significância, não rejeitamos a hipótese nula. Assim, a variância é igual entre os grupos. Isso indica que a variância do modelo é constante para todos os valores estimados da variável resposta.
+
+```{r}
+bartlett.test(conductivity ~ coating, data = dados_ale)
+car::leveneTest(conductivity ~ coating, data = dados_ale)
+fligner.test(conductivity ~ coating, data = dados_ale)
+```
+
+## Resultados do experimento de efeito aleatório
+
+```{r}
+teste = crd(dados_ale$coating, dados_ale$conductivity, quali = TRUE, unfold = NULL)
+```
+
+Pelo resultado do teste $F$, ao nível de 5% de significância, as médias não podem ser consideradas distintas. Dessa forma, há uma diferença na condutividade média entre os diferentes tipos de revestimento.
+
+## Comparações múltiplas 
+
+
+```{r}
+TukeyHSD(modelo_ale, conf.level=.95)
+```
+
+## Intervalo de confiança
+
+```{r}
+confint(modelo_ale) |> 
+  as_tibble()
 ```
 
