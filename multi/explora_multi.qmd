@@ -9,10 +9,10 @@ execute:
   eval: true
   echo: true
 revealjs-plugins:
-  - attribution 
+  - attribution
   - roughnotation
   - pointer
-format: 
+format:
   revealjs:
     theme: [default, style.scss]
     embed-resources: true
@@ -118,7 +118,7 @@ data <- readr::read_csv("abalone.csv") |>
 ### Código
 
 ```{r}
-Ausentes <- data |> 
+Ausentes <- data |>
   vis_dat() +
   labs(
     y = "Observações"
@@ -154,11 +154,11 @@ Ausentes
 ### Código
 
 ```{r}
-Frequência <- data |> 
+Frequência <- data |>
   ggplot(aes(x = forcats::fct_infreq(Sex))) +
   geom_bar(
         aes(
-          y = after_stat(count) / sum(after_stat(count)), 
+          y = after_stat(count) / sum(after_stat(count)),
           fill = Sex
           ),
         show.legend = FALSE,
@@ -168,7 +168,7 @@ Frequência <- data |>
   scale_fill_manual(
     values = viridis::mako(5)[3:5]
     ) +
-  labs(y = NULL, x = NULL) 
+  labs(y = NULL, x = NULL)
 ```
 
 ### Frequência
@@ -200,7 +200,7 @@ Distribuição <- data |>
   ) |>
   ggplot(
     aes(
-      x = values, 
+      x = values,
       fill = Sex
       )
     ) +
@@ -211,7 +211,7 @@ Distribuição <- data |>
   labs(x = "", y = "") +
   facet_wrap(vars(variable), scales = "free") +
   scale_fill_manual(
-    values = viridis::mako(5)[3:5], 
+    values = viridis::mako(5)[3:5],
     name = "Sexo"
     ) +
   theme_bw() +
@@ -308,14 +308,14 @@ As variáveis têm uma correlação significativa entre si, sendo o comprimento 
 
 ```{r}
 Componentes <- prcomp(
-  data |> 
+  data |>
     select_if(is.numeric),
   center = TRUE, tol=0
   )
 
 Var <- fviz_eig(
-  Componentes, 
-  addlabels = TRUE, 
+  Componentes,
+  addlabels = TRUE,
   barfill="#002951"
   ) +
   labs(
@@ -337,7 +337,7 @@ Var
 
 - Podemos ver que o primeiro componente é aquele que mais explica a variância;
 
-- A proporção acumulada do primeiro componente com o segundo componente chega aos 94,8%. 
+- A proporção acumulada do primeiro componente com o segundo componente chega aos 94,8%.
 
 ## Contribuição das variáveis
 
@@ -347,7 +347,7 @@ Var
 
 ```{r}
 Contrib <- fviz_cos2(
-  Componentes, 
+  Componentes,
   choice = "var",
   axes = 1:2,
   fill="#002951"
@@ -425,7 +425,7 @@ auto
 Fator <- factanal(
   data |> select_if(is.numeric),
   factors = 2,
-  scores="regression", 
+  scores="regression",
   nstart = 10
   )
 
@@ -458,7 +458,7 @@ auto
 
 - Vemos que alguns dos filhotes estão concentrados na faixa do segundo fator, que é o fator com as menores medidas;
 
-- O fator 1 está diretamente relacionado às medidas dos abalones. 
+- O fator 1 está diretamente relacionado às medidas dos abalones.
 
 # Considerações Finais
 

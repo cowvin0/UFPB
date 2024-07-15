@@ -10,10 +10,10 @@ execute:
   eval: true
   echo: true
 revealjs-plugins:
-  - attribution 
+  - attribution
   - roughnotation
   - pointer
-format: 
+format:
   revealjs:
     theme: [default, style.scss]
     embed-resources: true
@@ -47,11 +47,11 @@ set.seed(42)
 ## Carregando banco de dados
 
 ```{r}
-data <- read_csv("../abalone.csv") |> 
+data <- read_csv("../abalone.csv") |>
   mutate(
     Sex = ifelse(Sex == "M" | Sex == "F", "A", Sex) |>
       as.factor()
-    ) |> 
+    ) |>
   dplyr::select(-c(Rings, Height))
 
 splits <- initial_split(data)
@@ -99,9 +99,9 @@ O conjunto de variáveis independentes escolhida foi a *medição do maior compr
 ### Código
 
 ```{r output=FALSE}
-X <- data |> 
+X <- data |>
   dplyr::select(Length, Diameter, `Whole weight`)
-Y <- data |> 
+Y <- data |>
   dplyr::select(-c(Length, Diameter, Sex, `Whole weight`))
 
 correl <- matcor(X, Y)
@@ -132,8 +132,8 @@ barplot(
   cca.fit$corr,
   xlab = "Dimensão",
   ylab = "Correlação canônica",
-  names.arg = 1:3, 
-  ylim = c(0, 1), 
+  names.arg = 1:3,
+  ylim = c(0, 1),
   col = "#21908C"
   )
 ```
@@ -145,8 +145,8 @@ barplot(
   cca.fit$corr,
   xlab = "Dimensão",
   ylab = "Correlação canônica",
-  names.arg = 1:3, 
-  ylim = c(0, 1), 
+  names.arg = 1:3,
+  ylim = c(0, 1),
   col = "#21908C"
   )
 ```
@@ -187,7 +187,7 @@ barplot(
   pvte.u,
   xlab = "Variável",
   ylab = "Variância total explicada",
-  names.arg = 1:3, 
+  names.arg = 1:3,
   ylim = c(0, 1),
   col = "#21908C"
 )
@@ -211,7 +211,7 @@ barplot(
 
 ## Variância total explicada pela variável canônica $U_k$
 
-Podemos ver que a variável canônica $U_1$ explica 91.3094% da variância original do grupo de variáveis independentes, enquanto a segunda explica apenas 2.4725%. 
+Podemos ver que a variável canônica $U_1$ explica 91.3094% da variância original do grupo de variáveis independentes, enquanto a segunda explica apenas 2.4725%.
 
 ## Variância total explicada pela variável canônica $V_k$
 
@@ -225,7 +225,7 @@ barplot(
   pvte.v / sum(pvte.v),
   xlab = "Variável",
   ylab = "Variância total explicada",
-  names.arg = 1:3, 
+  names.arg = 1:3,
   ylim = c(0, 1),
   col = "#21908C"
 )
@@ -253,13 +253,13 @@ De forma semelhante a feita em $U_k$, é possível ver que a variável canônica
 
 ## $R^2$ canônico {.smaller}
 
-Indica o quanto da variância da variável canônica dependente é explicada pela variável canônica. 
+Indica o quanto da variância da variável canônica dependente é explicada pela variável canônica.
 
 ```{r}
 res.cc$cor ^ 2
 ```
 
-Dessa forma, 99.12% da primeira variável canônica dependente é explicada pela primeira variável canônica independente. De forma semelhante, 3.88% e 0.1923% da segunda e terceira variável canônica dependente é explicada pela segunta e terceira variável canônica independente, respectivamente.    
+Dessa forma, 99.12% da primeira variável canônica dependente é explicada pela primeira variável canônica independente. De forma semelhante, 3.88% e 0.1923% da segunda e terceira variável canônica dependente é explicada pela segunta e terceira variável canônica independente, respectivamente.
 
 ## Índice de redundância {.smaller}
 
@@ -317,7 +317,7 @@ partimat(Sex ~ ., data = test, method = "lda",
 
 ## Discriminação
 
-Podemos ver que para os casos em que a variável não tem a ver com o peso dos abalones, os adultos e filhotes ficam um pouco melhor classificados. Isso acontece porque as variáveis de peso tem bastante interseção, mesmo quando é considerado somente os filhotes. 
+Podemos ver que para os casos em que a variável não tem a ver com o peso dos abalones, os adultos e filhotes ficam um pouco melhor classificados. Isso acontece porque as variáveis de peso tem bastante interseção, mesmo quando é considerado somente os filhotes.
 
 ## Quadrático
 

@@ -51,6 +51,7 @@ set.seed(42)
 ```
 
 
+
 # Introdução
 
 ## O que são os abalones
@@ -105,6 +106,7 @@ Utilizar técnicas de classificação hierárquica, não-hierárquica e agrupame
 
 # Leitura dos dados
 
+
 ```{r}
 data <- readr::read_csv("abalone.csv") |>
   mutate(
@@ -117,6 +119,7 @@ data <- readr::read_csv("abalone.csv") |>
   select(- Rings)
 ```
 
+
 # Análise exploratória
 
 ## Distribuições
@@ -124,6 +127,7 @@ data <- readr::read_csv("abalone.csv") |>
 ::: {.panel-tabset}
 
 ### Código
+
 
 ```{r}
 data <- data |>
@@ -164,11 +168,14 @@ Distribuição <- data |>
   theme(axis.text.y = element_blank())
 ```
 
+
 ### Distribuição
+
 
 ```{r echo=FALSE}
 Distribuição
 ```
+
 
 :::
 
@@ -187,6 +194,7 @@ Distribuição
 
 ### Código
 
+
 ```{r output=FALSE}
 Métodos <- c(
   "average", "single",
@@ -202,6 +210,7 @@ for (i in 1:length(Métodos)) {
   Resultados[i, 2] <- agnes(data, method = Métodos[i], metric = "euclidian")$ac
 }
 ```
+
 
 ### Resultados dos métodos
 
@@ -223,6 +232,7 @@ Podemos ver na tabela que o melhor método foi o Ward, que será o método utili
 ::: {.panel-tabset}
 
 ### Código
+
 
 ```{r output=FALSE}
 CHWard <- agnes(data, method = "ward", metric = "euclidian") |>
@@ -248,7 +258,9 @@ plotColoredClusters(
 rect.hclust(CHWard, k = 3, border = c("red","red","red"))
 ```
 
+
 ### Dendograma
+
 
 ```{r echo=FALSE}
 plotColoredClusters(
@@ -271,6 +283,7 @@ plotColoredClusters(
 rect.hclust(CHWard, k = 3, border = c("red", "red", "red"))
 ```
 
+
 :::
 
 ## Dendograma do método Ward
@@ -284,6 +297,7 @@ Observando o dendrograma, podemos perceber que os filhotes estão bastante conce
 ::: {.panel-tabset}
 
 ### Código
+
 
 ```{r output=FALSE}
 Corte3 <- cutree(CHWard , k = 3)
@@ -311,7 +325,9 @@ Biplot +
   theme_bw()
 ```
 
+
 ### Biplot
+
 
 ```{r echo=FALSE}
 Biplot +
@@ -325,6 +341,7 @@ Biplot +
   theme_bw()
 ```
 
+
 :::
 
 ## Biplot do método Ward
@@ -333,10 +350,12 @@ Podemos perceber também a homogeneidade entre os filhotes, machos e fêmeas atr
 
 ## Tabela de contigência
 
+
 ```{r}
 (table(data.frame(Abalone = data$Sex, Classes = Corte3)) / nrow(data)) |>
   knitr::kable()
 ```
+
 
 ## Tabela de contigência
 
@@ -349,6 +368,7 @@ Pela tabela vemos que há uma maior frequência de filhotes no primeiro e segund
 ::: {.panel-tabset}
 
 ### Código
+
 
 ```{r output=FALSE}
 semente <- round(aggregate(data |> select_if(is.numeric),
@@ -375,7 +395,9 @@ Biplot +
   theme_bw()
 ```
 
+
 ### Biplot
+
 
 ```{r echo=FALSE}
 Biplot +
@@ -389,6 +411,7 @@ Biplot +
   theme_bw()
 ```
 
+
 :::
 
 ## K-means
@@ -397,10 +420,12 @@ Podemos ver pelo K-Means ainda que as classes dos abalones acabam caindo em vari
 
 ## Tabela de contigência
 
+
 ```{r}
 (table(data.frame(Abalone = data$Sex, Classes = km$cluster)) / nrow(data)) |>
   knitr::kable()
 ```
+
 
 ## Tabela de contigência
 
@@ -414,16 +439,20 @@ Diferente da tabela anterior, vemos que existem muitos filhotes classificados no
 
 ### Código
 
+
 ```{r output=FALSE}
 BIC <- mclustBIC(data[,-1])
 plot(BIC)
 ```
 
+
 ### BIC para cada método
+
 
 ```{r echo=FALSE}
 plot(BIC)
 ```
+
 
 :::
 
@@ -436,6 +465,7 @@ Vemos que de acordo com o pacote, o modelo VVV é aquele que melhor classifica. 
 ::: {.panel-tabset}
 
 ### Código
+
 
 ```{r output=FALSE}
 Modelo1 <- data |>
@@ -462,7 +492,9 @@ Biplot +
   theme_bw()
 ```
 
+
 ### Biplot
+
 
 ```{r echo=FALSE}
 Biplot +
@@ -476,6 +508,7 @@ Biplot +
   theme_bw()
 ```
 
+
 :::
 
 ## Biplot com modelo VVV
@@ -484,10 +517,12 @@ Vemos que o modelo VVV não classificou bem os filhotes, fêmeas e machos, inclu
 
 ## Tabela de contigência VVV
 
+
 ```{r}
 (table(data.frame(Abalone = data$Sex, Classes = Modelo1$classification)) / nrow(data)) |>
   knitr::kable()
 ```
+
 
 ## Tabela de contigência VVV
 
@@ -498,6 +533,7 @@ Observando o biplot anteriormente e analisando a tabela de contigência, vemos q
 ::: {.panel-tabset}
 
 ### Código
+
 
 ```{r output=FALSE}
 Modelo2 <- data |>
@@ -524,7 +560,9 @@ Biplot +
   theme_bw()
 ```
 
+
 ### Biplot
+
 
 ```{r echo=FALSE}
 Biplot +
@@ -538,6 +576,7 @@ Biplot +
   theme_bw()
 ```
 
+
 :::
 
 ## Biplot com modelo EII
@@ -546,10 +585,12 @@ Vemos agora que o modelo *EII* parece estar classificando melhor que o modelo *V
 
 ## Tabela de contigência EII
 
+
 ```{r}
 (table(data.frame(Abalone = data$Sex, Classes = Modelo2$classification)) / nrow(data)) |>
   knitr::kable()
 ```
+
 
 ## Tabela de contigência EII
 
@@ -558,3 +599,4 @@ Podemos ver que as fêmeas e os machos estão bastante representados no primeiro
 # Conclusão
 
 Vimos pelo dendrograma e os gráficos biplot que foi possível detectar a similaridade entre os filhotes, fêmeas e machos. Podemos também atráves das tabelas de contigência e biplots, detectar que os filhotes são aqueles com as menores medidas.
+
