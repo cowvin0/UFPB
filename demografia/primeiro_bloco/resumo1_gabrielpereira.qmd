@@ -1,7 +1,7 @@
 ---
 format: pdf
 title: Envelhecimento Populacional no Japão
-number-sections: true
+number-sections: false
 indent: true
 documentclass: scrreprt
 whitespace: small
@@ -25,4 +25,33 @@ include-in-header:
       \newcommand{\elandscape}{\end{landscape}}
 ---
 
-# Envelhecimento Populacional no Japão
+## Envelhecimento Populacional no Japão
+
+O crescimento populacional mundial vem diminuindo gradualmente, principalmente como resultado da redução da fecundidade na maioria dos países, sejam eles desenvolvidos ou em desenvolvimento. Em 2007, cerca de 40% da população mundial vivia em países com fecundidade abaixo do nível de reposição, e 13% vivia em países com fecundidade muito baixa, ou seja, uma fertilidade total menor que 1,3 filhos por mulher [@ogawa2007ageing]. Um desses países é o Japão.
+
+O Japão é um dos países que mais envelhece rapidamente, possuindo a população mais idosa do mundo. Atualmente, 28,7% da população japonesa tem 65 anos ou mais, sendo a maioria mulheres. De acordo com @d2020japan, em 2036 as pessoas com 65 anos ou mais representarão um terço da população japonesa.
+
+A população japonesa, assim como muitos países ocidentais, passou por um boom demográfico. No entanto, o boom demográfico japonês durou apenas por 3 anos entre 1947 e 1949 e passou por mais um boom demográfico entre 1971 e 1974, que coincidiu com a era de gelo do emprego. Embora o Japão tenha passado pelo boom demográfico logo após a Segunda Guerra Mundial e mais um com fim em 1974, o país falhou em aproveitar o momento para aumentar a sua taxa de fecundidade. Resultando, durante a década de 1990, em sua menor taxa de fecundidade quando o país estava passando por mudanças estruturais e resultou num inchaço na área de meia-idade e idosos na sua pirâmide demográfica, como pode ser observado na @fig-pir.
+
+::: {#fig-pir}
+
+![](includes/piramide.png){width=350}
+
+Fonte: @d2020japan
+:::
+
+Não existe uma causa específica para a maixa taxa de fecundidade japonesa, gerando como resultado um envelhecimento acelerado. No entanto, existem possíveis causas. Algumas delas serão descritas e contextualizadas a seguir.
+
+## Causas do Envelhecimento Acelerado
+
+
+
+## Impacto na Economia
+
+
+## Medidas Adotadas
+
+# Referências
+
+:::{#refs}
+:::
