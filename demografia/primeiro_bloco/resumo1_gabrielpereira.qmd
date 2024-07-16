@@ -1,9 +1,10 @@
 ---
+nocite: |
+  @NewDimensionMeasure2023
 format: pdf
 title: Envelhecimento Populacional no Japão
 number-sections: false
 indent: true
-documentclass: scrreprt
 whitespace: small
 lang: pt-br
 bibliography: includes/bib.bib
@@ -27,31 +28,53 @@ include-in-header:
 
 ## Envelhecimento Populacional no Japão
 
-O crescimento populacional mundial vem diminuindo gradualmente, principalmente como resultado da redução da fecundidade na maioria dos países, sejam eles desenvolvidos ou em desenvolvimento. Em 2007, cerca de 40% da população mundial vivia em países com fecundidade abaixo do nível de reposição, e 13% vivia em países com fecundidade muito baixa, ou seja, uma fertilidade total menor que 1,3 filhos por mulher [@ogawa2007ageing]. Um desses países é o Japão.
+O crescimento populacional mundial tem diminuído gradualmente, como resultado da redução da taxa de fecundidade na maioria dos países, sejam eles desenvolvidos ou em desenvolvimento. Em 2007, cerca de 40% da população mundial vivia em países com fecundidade abaixo do nível de reposição, e 13% vivia em países com fecundidade muito baixa, ou seja, com uma taxa de fertilidade total menor que 1,3 filhos por mulher [@ogawa2007ageing]. Um desses países é o Japão.
 
-O Japão é um dos países que mais envelhece rapidamente, possuindo a população mais idosa do mundo. Atualmente, 28,7% da população japonesa tem 65 anos ou mais, sendo a maioria mulheres. De acordo com @d2020japan, em 2036 as pessoas com 65 anos ou mais representarão um terço da população japonesa.
+\vspace{12pt}
 
-A população japonesa, assim como muitos países ocidentais, passou por um boom demográfico. No entanto, o boom demográfico japonês durou apenas por 3 anos entre 1947 e 1949 e passou por mais um boom demográfico entre 1971 e 1974, que coincidiu com a era de gelo do emprego. Embora o Japão tenha passado pelo boom demográfico logo após a Segunda Guerra Mundial e mais um com fim em 1974, o país falhou em aproveitar o momento para aumentar a sua taxa de fecundidade. Resultando, durante a década de 1990, em sua menor taxa de fecundidade quando o país estava passando por mudanças estruturais e resultou num inchaço na área de meia-idade e idosos na sua pirâmide demográfica, como pode ser observado na @fig-pir.
+O Japão é um dos países que mais envelhece rapidamente, possuindo a população mais idosa do mundo. Atualmente, 28,7% da população japonesa tem 65 anos ou mais, sendo a maioria composta por mulheres. De acordo com  @d2020japan, em 2036, as pessoas com 65 anos ou mais representarão um terço da população japonesa.
+
+\vspace{12pt}
+
+Assim como muitos países ocidentais, o Japão passou por um boom demográfico. No entanto, o boom demográfico japonês durou apenas três anos, entre 1947 e 1949, e ocorreu novamente entre 1971 e 1974, coincidindo com a "era de gelo do emprego". Embora o Japão tenha experimentado um crescimento populacional significativo logo após a Segunda Guerra Mundial e outro pico até 1974, o país falhou em aproveitar esses momentos para aumentar sua taxa de fecundidade. Como resultado, durante a década de 1990, o Japão registrou sua menor taxa de fecundidade, enquanto passava por mudanças estruturais que resultaram em um aumento na proporção de pessoas de meia-idade e idosos em sua pirâmide demográfica, como pode ser observado na @fig-pir.
+
+\vspace{12pt}
+
+Não existe apenas uma causa para o rápido envelhecimento da população japonesa. No entanto, há fatores claros que impactam essa situação. Algumas dessas causas serão descritas e contextualizadas a seguir.
 
 ::: {#fig-pir}
 
 ![](includes/piramide.png){width=350}
 
-Fonte: @d2020japan
+Gráfico de pirâmide demográfica da população japonesa separada pelo sexo masculino e feminino. Fonte: @d2020japan
 :::
-
-Não existe uma causa específica para a maixa taxa de fecundidade japonesa, gerando como resultado um envelhecimento acelerado. No entanto, existem possíveis causas. Algumas delas serão descritas e contextualizadas a seguir.
 
 ## Causas do Envelhecimento Acelerado
 
+A baixa taxa de fecundidade da população japonesa já foi explicitada como uma causa clara no contínuo envelhecimento da população. Portanto, agora o foco será entender os possíveis problemas adjacentes que impactam a fecundidade e, por conseguinte, o envelhecimento do país. O artigo de @horlacherI2001aging divide esses possíveis problemas em duas explicações: demográficas e socioeconômicas. Focaremos na explicação demográfica.
+
+\vspace{12pt}
+
+Do ponto de vista demográfico, @horlacherI2001aging explica que uma das possíveis causas é o aumento do divórcio no Japão, que pode diminuir a taxa de fecundidade. Isso pode ser ocasionado pela menor diferença salarial entre mulheres e homens, maiores oportunidades de trabalho em tempo integral e maiores níveis educacionais das mulheres. Além disso, em 2015, a proporção de pessoas que nunca se casaram abaixo dos 50 anos atingiu seu pico em 23,4% para os homens e 14,1% para as mulheres. @d2020japan argumenta também que uma das principais causas para a baixa taxa de fertilidade é a dificuldade de encontrar trabalho para homens jovens e responsabiliza também a cultura árdua de trabalho japonesa, que causa estresse e fadiga.
+
+\vspace{12pt}
+
+Assim, as melhores condições de educação, menores diferenças salariais, maiores oportunidades de trabalho em tempo integral e o crescente risco de divórcio entre os casais têm contribuído para o adiamento do casamento e, por sua vez, para a menor taxa de fecundidade.
 
 
-## Impacto na Economia
+## Medidas Adotadas pelo Governo Japonês
 
+Apesar do pouco sucesso, o governo japonês tem adotado várias medidas para aumentar a taxa de fecundidade no país. Uma das medidas propostas pelo primeiro-ministro japonês, Kishida Fumio, foi a "Nova Dimensão", anunciada em 13 de junho de 2023, para enfrentar a prolongada baixa taxa de fertilidade. A "Nova Dimensão" consiste em quatro partes.
 
-## Medidas Adotadas
+\vspace{12pt}
 
-# Referências
+A primeira parte propõe um auxílio de aproximadamente 200 dólares para o terceiro filho e os irmãos subsequentes, ou seja, todos os filhos após o terceiro. Além disso, Kishida sugere abolir o limite de renda para acesso ao auxílio, beneficiando também pessoas com um ganho anual de 80.000 dólares ou mais.
+
+\vspace{12pt}
+
+A segunda etapa é estender o seguro social para cobrir despesas de maternidade. A terceira ideia é introduzir um programa de creche para todas as crianças, permitindo que os pais possam trabalhar. A quarta parte é aprimorar os benefícios de licença parental, garantindo melhores condições para os pais que tiram licença para cuidar de seus filhos.
+
+## Referências
 
 :::{#refs}
 :::
