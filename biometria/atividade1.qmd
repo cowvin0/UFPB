@@ -1,0 +1,52 @@
+---
+format: pdf
+title: Tipos de estudo
+indent: true
+whitespace: small
+lang: pt-br
+bibliography: includes/bib.bib
+csl: includes/ufpe-abnt.csl
+subtitle: Universidade Federal da Paraíba - CCEN
+author: Gabriel de Jesus Pereira
+date: today
+date-format: long
+highlight-style: github
+fontsize: 12pt
+interlinespace: 1.5pt
+fig-cap-location: bottom
+warning: false
+echo: false
+include-in-header:
+  - text: |
+      \usepackage{pdflscape}
+      \newcommand{\blandscape}{\begin{landscape}}
+      \newcommand{\elandscape}{\end{landscape}}
+---
+
+## Exemplo 1.1
+
+\ \ \ O primeiro exemplo menciona os benefícios da aspirina para a prevenção de doenças, como doenças cardiovasculares. Além disso, faz referência a um estudo de 1982 conhecido como Physicians' Health Study, que visava testar os benefícios e riscos da aspirina na prevenção primária de doenças cardiovasculares e câncer. Neste estudo, 23.071 médicos americanos, com idades entre 40 e 84 anos, foram divididos aleatoriamente em dois grupos. Um grupo consumia aspirina a cada dois dias, enquanto o segundo tomava placebo. Ou seja, trata-se de um estudo comparativo, pois existe um grupo de controle interno. Como a resposta é dicotômica, o estudo utilizou o teste qui-quadrado de independência para verificar a eficácia do tratamento. Assim, o estudo é de caráter comparativo e utiliza técnicas de análise de bioestatística.
+
+## Exemplo 1.2
+
+\ \ \
+
+## Exemplo 1.3
+
+\ \ \
+
+## Exemplo 1.4
+
+\ \ \ Aqui é mencionada uma possível associação entre o consumo de carne e o câncer de cólon. No entanto, é dito que não é possível fazer essa associação utilizando apenas esses dados. Isso é verdade, pois seria necessário um estudo comparativo para investigar e testar a associação entre o consumo de carne e o câncer de cólon, o que poderia ser feito com um teste qui-quadrado de independência. Além disso, seria necessário considerar outras variáveis para avaliar o que também pode impactar o câncer de cólon.
+
+## Exemplo 1.5
+
+\ \ \ O exemplo 1.5 descreve a associação já conhecida entre o fumo e o câncer de pulmão. Embora se trate de um estudo comparativo observacional que utiliza análise bioestatística, no exemplo são descritos diversos tipos de estudos. Um dos estudos mencionados é o estudo de caso-controle, que foi utilizado para comparar dois grupos.
+
+O primeiro grupo foi constituído por todos os casos de câncer de pulmão de um conjunto de hospitais londrinos, cujos históricos clínicos e hábitos tabagistas foram levantados. O segundo grupo, chamado de grupo controle, foi constituído por pessoas sem diagnóstico de câncer, mas com as mesmas características do primeiro grupo. Assim, é possível realizar um teste qui-quadrado de associação para verificar o efeito do fumo na incidência de câncer de pulmão.
+
+O último estudo mencionado é chamado de estudo de coorte, que se propõe acompanhar os pacientes de forma prospectiva.
+
+## Exemplo 1.6
+
+\ \ \ Neste exemplo é descrito a forma de determinar uma faixa de referência para o ácido úrico em homens. Se trata de um **estudo descritivo** pois procura descrever determinada situação, mas não faz comparação.
