@@ -29,15 +29,15 @@ include-in-header:
 
 ## Exemplo 1.2
 
-\ \ \
+\ \ \ No exemplo 1.2 é contextualizado os acontecimentos depois do aparecimento da Síndrome da Imunodeficiência Adquirida (AIDS) no Brasil e no mundo. O Ministério da Saúde brasileiro procurando aumentas a confiabilidade para diagnósticos de HIV, sistematizou uma metodologia a ser adotado por todos os serviços públicos. Nesta sistematização seriam realizados dois testes de triagem para amostra de sangue. Ou seja, se trata de um estudo experimental pois o pesquisador interfere na alocação do tratamento, podendo introduzir diferentes testes ou métodos de diagnósticos para o individuo.
 
 ## Exemplo 1.3
 
-\ \ \
+\ \ \ Neste estudo clínico, são discutidas diferentes abordagens cirúrgicas para mulheres com câncer de mama em estágios I e II. Esse tipo de estudo pode ser caracterizado como experimental, pois as pacientes foram aleatoriamente alocadas a diferentes grupos de tratamento. Além disso, diferentes intervenções cirúrgicas foram aplicadas para avaliar a eficácia de cada uma.
 
 ## Exemplo 1.4
 
-\ \ \ Aqui é mencionada uma possível associação entre o consumo de carne e o câncer de cólon. No entanto, é dito que não é possível fazer essa associação utilizando apenas esses dados. Isso é verdade, pois seria necessário um estudo comparativo para investigar e testar a associação entre o consumo de carne e o câncer de cólon, o que poderia ser feito com um teste qui-quadrado de independência. Além disso, seria necessário considerar outras variáveis para avaliar o que também pode impactar o câncer de cólon.
+\ \ \ Aqui é mencionada uma possível associação entre o consumo de carne e o câncer de cólon. No entanto, não é possível estabelecer essa associação utilizando apenas os dados disponíveis. Para investigar e testar a associação entre o consumo de carne e o câncer de cólon, seria necessário realizar um estudo comparativo, como um teste qui-quadrado de independência. Além disso, seria importante considerar outras variáveis que também podem influenciar o risco de câncer de cólon.
 
 ## Exemplo 1.5
 
