@@ -25,7 +25,7 @@ include-in-header:
 
 ## Exemplo 1.1
 
-\ \ \ O primeiro exemplo menciona os benefícios da aspirina para a prevenção de doenças, como doenças cardiovasculares. Além disso, faz referência a um estudo de 1982 conhecido como Physicians' Health Study, que visava testar os benefícios e riscos da aspirina na prevenção primária de doenças cardiovasculares e câncer. Neste estudo, 23.071 médicos americanos, com idades entre 40 e 84 anos, foram divididos aleatoriamente em dois grupos. Um grupo consumia aspirina a cada dois dias, enquanto o segundo tomava placebo. Ou seja, trata-se de um estudo comparativo, pois existe um grupo de controle interno. Como a resposta é dicotômica, o estudo utilizou o teste qui-quadrado de independência para verificar a eficácia do tratamento. Assim, o estudo é de caráter comparativo e utiliza técnicas de análise de bioestatística.
+\ \ \ O primeiro exemplo menciona os benefícios da aspirina para a prevenção de doenças, como doenças cardiovasculares. Além disso, faz referência a um estudo de 1982 conhecido como Physicians' Health Study, que visava testar os benefícios e riscos da aspirina na prevenção primária de doenças cardiovasculares e câncer. Neste estudo, 23.071 médicos americanos, com idades entre 40 e 84 anos, foram divididos aleatoriamente em dois grupos. Um grupo consumia aspirina a cada dois dias, enquanto o segundo tomava placebo. Ou seja, trata-se de um estudo comparativo, pois existe um grupo de controle interno. Como a resposta é dicotômica, o estudo utilizou o teste qui-quadrado de independência para verificar a eficácia do tratamento. Assim, o estudo é de caráter comparativo.
 
 ## Exemplo 1.2
 
@@ -41,9 +41,9 @@ include-in-header:
 
 ## Exemplo 1.5
 
-\ \ \ O exemplo 1.5 descreve a associação já conhecida entre o fumo e o câncer de pulmão. Embora se trate de um estudo comparativo observacional que utiliza análise bioestatística, no exemplo são descritos diversos tipos de estudos. Um dos estudos mencionados é o estudo de caso-controle, que foi utilizado para comparar dois grupos.
+\ \ \ O exemplo 1.5 descreve a associação já conhecida entre o fumo e o câncer de pulmão. Embora se trate de um estudo comparativo observacional, pois observa-se o histórico do paciente, no exemplo são descritos diversos tipos de estudos. Um dos estudos mencionados é o estudo de caso-controle, que foi utilizado para comparar dois grupos.
 
-O primeiro grupo foi constituído por todos os casos de câncer de pulmão de um conjunto de hospitais londrinos, cujos históricos clínicos e hábitos tabagistas foram levantados. O segundo grupo, chamado de grupo controle, foi constituído por pessoas sem diagnóstico de câncer, mas com as mesmas características do primeiro grupo. Assim, é possível realizar um teste qui-quadrado de associação para verificar o efeito do fumo na incidência de câncer de pulmão.
+\ \ \ O primeiro grupo foi constituído por todos os casos de câncer de pulmão de um conjunto de hospitais londrinos, cujos históricos clínicos e hábitos tabagistas foram levantados. O segundo grupo, chamado de grupo controle, foi constituído por pessoas sem diagnóstico de câncer, mas com as mesmas características do primeiro grupo. Assim, é possível realizar um teste qui-quadrado de associação para verificar o efeito do fumo na incidência de câncer de pulmão.
 
 O último estudo mencionado é chamado de estudo de coorte, que se propõe acompanhar os pacientes de forma prospectiva.
 
