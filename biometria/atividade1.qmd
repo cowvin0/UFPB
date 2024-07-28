@@ -1,0 +1,52 @@
+---
+format: pdf
+title: Tipos de estudo
+indent: true
+whitespace: small
+lang: pt-br
+bibliography: includes/bib.bib
+csl: includes/ufpe-abnt.csl
+subtitle: Universidade Federal da Paraíba - CCEN
+author: Gabriel de Jesus Pereira
+date: today
+date-format: long
+highlight-style: github
+fontsize: 12pt
+interlinespace: 1.5pt
+fig-cap-location: bottom
+warning: false
+echo: false
+include-in-header:
+  - text: |
+      \usepackage{pdflscape}
+      \newcommand{\blandscape}{\begin{landscape}}
+      \newcommand{\elandscape}{\end{landscape}}
+---
+
+## Exemplo 1.1
+
+\ \ \ O primeiro exemplo menciona os benefícios da aspirina para a prevenção de doenças, como doenças cardiovasculares. Além disso, faz referência a um estudo de 1982 conhecido como Physicians' Health Study, que visava testar os benefícios e riscos da aspirina na prevenção primária de doenças cardiovasculares e câncer. Neste estudo, 23.071 médicos americanos, com idades entre 40 e 84 anos, foram divididos aleatoriamente em dois grupos. Um grupo consumia aspirina a cada dois dias, enquanto o segundo tomava placebo. Ou seja, trata-se de um estudo comparativo, pois existe um grupo de controle interno. Como a resposta é dicotômica, o estudo utilizou o teste qui-quadrado de independência para verificar a eficácia do tratamento. Assim, o estudo é de caráter comparativo.
+
+## Exemplo 1.2
+
+\ \ \ No exemplo 1.2 é contextualizado os acontecimentos depois do aparecimento da Síndrome da Imunodeficiência Adquirida (AIDS) no Brasil e no mundo. O Ministério da Saúde brasileiro procurando aumentas a confiabilidade para diagnósticos de HIV, sistematizou uma metodologia a ser adotado por todos os serviços públicos. Nesta sistematização seriam realizados dois testes de triagem para amostra de sangue. Ou seja, se trata de um estudo experimental pois o pesquisador interfere na alocação do tratamento, podendo introduzir diferentes testes ou métodos de diagnósticos para o individuo.
+
+## Exemplo 1.3
+
+\ \ \ Neste estudo clínico, são discutidas diferentes abordagens cirúrgicas para mulheres com câncer de mama em estágios I e II. Esse tipo de estudo pode ser caracterizado como experimental, pois as pacientes foram aleatoriamente alocadas a diferentes grupos de tratamento. Além disso, diferentes intervenções cirúrgicas foram aplicadas para avaliar a eficácia de cada uma.
+
+## Exemplo 1.4
+
+\ \ \ Aqui é mencionada uma possível associação entre o consumo de carne e o câncer de cólon. No entanto, não é possível estabelecer essa associação utilizando apenas os dados disponíveis. Para investigar e testar a associação entre o consumo de carne e o câncer de cólon, seria necessário realizar um estudo comparativo, como um teste qui-quadrado de independência. Além disso, seria importante considerar outras variáveis que também podem influenciar o risco de câncer de cólon.
+
+## Exemplo 1.5
+
+\ \ \ O exemplo 1.5 descreve a associação já conhecida entre o fumo e o câncer de pulmão. Embora se trate de um estudo comparativo observacional, pois observa-se o histórico do paciente, no exemplo são descritos diversos tipos de estudos. Um dos estudos mencionados é o estudo de caso-controle, que foi utilizado para comparar dois grupos.
+
+\ \ \ O primeiro grupo foi constituído por todos os casos de câncer de pulmão de um conjunto de hospitais londrinos, cujos históricos clínicos e hábitos tabagistas foram levantados. O segundo grupo, chamado de grupo controle, foi constituído por pessoas sem diagnóstico de câncer, mas com as mesmas características do primeiro grupo. Assim, é possível realizar um teste qui-quadrado de associação para verificar o efeito do fumo na incidência de câncer de pulmão.
+
+O último estudo mencionado é chamado de estudo de coorte, que se propõe acompanhar os pacientes de forma prospectiva.
+
+## Exemplo 1.6
+
+\ \ \ Neste exemplo é descrito a forma de determinar uma faixa de referência para o ácido úrico em homens. Se trata de um **estudo descritivo** pois procura descrever determinada situação, mas não faz comparação.
