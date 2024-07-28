@@ -7,8 +7,8 @@ number-sections: false
 indent: true
 whitespace: small
 lang: pt-br
-bibliography: includes/bib.bib
-csl: includes/ufpe-abnt.csl
+bibliography: ../includes/bib.bib
+csl: ../includes/ufpe-abnt.csl
 subtitle: Universidade Federal da Paraíba - CCEN
 author: Gabriel de Jesus Pereira
 date: today

@@ -1,0 +1,36 @@
+---
+format: pdf
+title: Relatório (escolher o nome depois)
+number-sections: false
+indent: true
+whitespace: small
+documentclass: scrreprt
+lang: pt-br
+bibliography: ../includes/bib.bib
+csl: ../includes/ufpe-abnt.csl
+subtitle: Universidade Federal da Paraíba - CCEN
+author: Gabriel de Jesus Pereira
+date: today
+date-format: long
+highlight-style: github
+fontsize: 12pt
+interlinespace: 1.5pt
+fig-cap-location: bottom
+warning: false
+echo: false
+include-in-header:
+  - text: |
+      \usepackage{pdflscape}
+      \newcommand{\blandscape}{\begin{landscape}}
+      \newcommand{\elandscape}{\end{landscape}}
+---
+
+# Introdução
+
+O estado do Rio de Janeiro, localizado na região Sudeste do Brasil, é um dos estados mais importantes e influentes do país. De acordo com o último censo realizado, o de 2022, o estado do Rio de Janeiro como um todo
+
+# Metodologia
+
+# Resultados
+
+# Conclusão
