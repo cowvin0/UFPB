@@ -9,10 +9,10 @@ execute:
   eval: true
   echo: true
 revealjs-plugins:
-  - attribution 
+  - attribution
   - roughnotation
   - pointer
-format: 
+format:
   revealjs:
     theme: [default, style.scss]
     embed-resources: true
@@ -46,11 +46,11 @@ library(timetk)
 # Carregando a série temporal
 
 ```{r}
-dados <- readxl::read_xls("ipeadata[15-03-2024-10-52].xls") |> 
+dados <- readxl::read_xls("ipeadata[15-03-2024-10-52].xls") |>
   mutate(
-    Data = paste0(Data, ".01") |> 
+    Data = paste0(Data, ".01") |>
       as.Date(format = "%Y.%m.%d")
-    ) |> 
+    ) |>
   filter(year(Data) >= 1997 & (year(Data) < 2019 | (year(Data) == 2019 & month(Data) <= 4)))
 
 dados2 <- vroom::vroom("STP-20240419184423222.csv", delim = ";") |>
@@ -62,7 +62,7 @@ dados3 <- vroom::vroom("STI-20240416154018232.csv", delim = ";") |>
   mutate(Data = paste0("01/", Data) |>
            as.Date(format = "%d/%m/%Y"),
          ) |>
-  filter(year(Data) >= 1997 & (year(Data) < 2019 | (year(Data) == 2019 & month(Data) <= 4))) |> 
+  filter(year(Data) >= 1997 & (year(Data) < 2019 | (year(Data) == 2019 & month(Data) <= 4))) |>
   left_join(dados2, by = join_by(Data == Data))
 
 dados4 <- vroom::vroom("STP-20240420130016063.csv", delim = ";") |>
@@ -72,8 +72,8 @@ dados4 <- vroom::vroom("STP-20240420130016063.csv", delim = ";") |>
   filter(year(Data) >= 1997 & (year(Data) < 2019 | (year(Data) == 2019 & month(Data) <= 4))) |>
   left_join(dados3, by = join_by(Data == Data))
 
-dados <- dados |> 
-  left_join(dados4, by = join_by(Data == Data)) |> 
+dados <- dados |>
+  left_join(dados4, by = join_by(Data == Data)) |>
   mutate(Transferências = Transferências * 5.2,
          Exportação = Exportação * 5.2,
          Importação = Importação * 5.2,
@@ -95,7 +95,7 @@ A série temporal foi coletada no site do Banco central. Ela vai do momento inic
 ### Código
 
 ```{r output=FALSE}
-Nao_deflacionado <- dados |> 
+Nao_deflacionado <- dados |>
   plot_time_series(
     Data,
     ICMS / 1e6,
@@ -119,12 +119,12 @@ Nao_deflacionado
 ### Código
 
 ```{r output=FALSE}
-dados_deflacionado <- dados |> 
+dados_deflacionado <- dados |>
   mutate(across(-c(Data, starts_with("Alta")), \(x) deflate(x, Data, "04/2019", "igpm")))
 
-Deflacionado <- dados_deflacionado |> 
+Deflacionado <- dados_deflacionado |>
   plot_time_series(
-    Data, 
+    Data,
     ICMS,
     .interactive = TRUE,
     .title = ""
@@ -145,7 +145,7 @@ Deflacionado
 
 - Além disso, no final do ano de 2004, foi aprovado a diminuição do ICMS sobre os combustível como uma tentativa de diminuir a sonegação fiscal. Isso, juntamente com o crescimento do setor terciário, pode ter sido uma das causas do crescimento quase constante da arrecadação de 2005 até 2013.
 
-- Em 2016, ano da olimpíada, o estado do Rio de Janeiro declara estado de calamidade e ao mesmo tempo o país passa por uma crise política, podendo ser uma das causas da baixa arrecadação entre 2016 e 2018. 
+- Em 2016, ano da olimpíada, o estado do Rio de Janeiro declara estado de calamidade e ao mesmo tempo o país passa por uma crise política, podendo ser uma das causas da baixa arrecadação entre 2016 e 2018.
 
 ## ICMS sob a ótica de outras séries
 
@@ -154,13 +154,13 @@ Deflacionado
 ### Código
 
 ```{r output=FALSE}
-dados_deflacionado |> 
-  select(-c(Exportação, Transferências, Importação, `Alta do Mês`, `Alta do Trimestre`)) |> 
+dados_deflacionado |>
+  select(-c(Exportação, Transferências, Importação, `Alta do Mês`, `Alta do Trimestre`)) |>
   pivot_longer(
     -Data,
     names_to = "Série",
     values_to = "Reais"
-  ) |> 
+  ) |>
   ggplot(aes(x = Data, y = Reais / 1e6, color = Série)) +
   geom_line() +
   scale_color_viridis_d() +
@@ -171,13 +171,13 @@ dados_deflacionado |>
 ### Séries
 
 ```{r echo=FALSE}
-dados_deflacionado |> 
-  select(-c(Exportação, Transferências, Importação,  `Alta do Mês`, `Alta do Trimestre`)) |> 
+dados_deflacionado |>
+  select(-c(Exportação, Transferências, Importação,  `Alta do Mês`, `Alta do Trimestre`)) |>
   pivot_longer(
     -Data,
     names_to = "Série",
     values_to = "Reais"
-  ) |> 
+  ) |>
   ggplot(aes(x = Data, y = Reais / 1e6, color = Série)) +
   geom_line() +
   scale_color_discrete() +
@@ -198,11 +198,11 @@ dados_deflacionado |>
 ### Código
 
 ```{r output=FALSE}
-Meses <- dados_deflacionado |> 
+Meses <- dados_deflacionado |>
   ggplot(
     aes(
-      x = month(Data, label = TRUE), 
-      y = `ICMS` / 1e6, 
+      x = month(Data, label = TRUE),
+      y = `ICMS` / 1e6,
       group = as.factor(year(Data)),
       color = as.factor(year(Data))
       )
@@ -231,9 +231,9 @@ Podemos perceber que os meses de alguns anos possuem uma certa sazonalidade, pri
 ### Código
 
 ```{r output=FALSE}
-dados_deflacionado |> 
+dados_deflacionado |>
   plot_seasonal_diagnostics(
-    .date_var = Data, 
+    .date_var = Data,
     .value = ICMS,
     .interactive = FALSE,
     .title = "")
@@ -243,9 +243,9 @@ dados_deflacionado |>
 
 ```{r echo=FALSE}
 #| fig-height: 8
-dados_deflacionado |> 
+dados_deflacionado |>
   plot_seasonal_diagnostics(
-    .date_var = Data, 
+    .date_var = Data,
     .value = ICMS,
     .interactive = FALSE,
     .title = "")
@@ -254,7 +254,7 @@ dados_deflacionado |>
 
 ## Análise sazonal
 
-É possível perceber que o quarto e o segundo trimestre são aqueles que tem a maior arrecadação do ICMS. 
+É possível perceber que o quarto e o segundo trimestre são aqueles que tem a maior arrecadação do ICMS.
 
 # Teste para estacionariedade e sazonalidade
 
@@ -270,7 +270,7 @@ KPSS: $H_0$: A série é estacionária
 ### Código
 
 ```{r output=FALSE}
-Teste.Adf <- dados |> 
+Teste.Adf <- dados |>
   pull(ICMS) |>
   adf.test()
 
@@ -303,7 +303,7 @@ KPSS: $H_0$: A série é estacionária
 ### Código
 
 ```{r output=FALSE}
-Teste.Adf <- dados_deflacionado |> 
+Teste.Adf <- dados_deflacionado |>
   pull(ICMS) |>
   adf.test()
 
@@ -337,7 +337,7 @@ Friedman: $H_0$: Não sazonalidade
 Teste.Kw <- dados_deflacionado |>
   pull(ICMS) |>
   isSeasonal(
-    freq = 12, 
+    freq = 12,
     test = "kw"
     )
 
@@ -351,7 +351,7 @@ Teste.Kw
 Teste.Fried <- dados_deflacionado |>
   pull(ICMS) |>
   isSeasonal(
-    freq = 12, 
+    freq = 12,
     test = "fried"
     )
 
@@ -372,12 +372,12 @@ Considerando o teste de Kruskall-Wallis e de Friedman, vemos que os dois testes 
 ### Código
 
 ```{r output=FALSE}
-ACF_PACF <- dados |> 
+ACF_PACF <- dados |>
   plot_acf_diagnostics(
     Date,
     ICMS,
     .interactive = TRUE,
-    .title = "", 
+    .title = "",
     .y_lab = ""
   )
 ```
@@ -399,14 +399,14 @@ Observando os gráficos de ACF e PACF, podemos notar um padrão em que o ACF dec
 ## Código para decomposição clássica
 
 ```{r}
-data_ts <- dados_deflacionado |> 
-  select(- Data) |> 
-  ts(frequency = 12, 
+data_ts <- dados_deflacionado |>
+  select(- Data) |>
+  ts(frequency = 12,
      start = c(1997, 01),
      )
 
-Clássica <- data_ts[,1] |> 
-  decompose(type = "additive") 
+Clássica <- data_ts[,1] |>
+  decompose(type = "additive")
 ```
 
 ## Decomposição Clássica
@@ -415,7 +415,7 @@ Clássica <- data_ts[,1] |>
 ### Código
 
 ```{r output=FALSE}
-Clássica |> 
+Clássica |>
   autoplot(
     labels = c("Tendência", "Sazonalidade", "Ruído")
     ) +
@@ -428,7 +428,7 @@ Clássica |>
 ### Clássica
 
 ```{r echo=FALSE}
-Clássica |> 
+Clássica |>
   autoplot(
     labels = c("Tendência", "Sazonalidade", "Ruído")
     ) +
@@ -450,7 +450,7 @@ STL <- stl(data_ts[,1], s.window = "periodic", robust = TRUE)
 ### Código
 
 ```{r output=FALSE}
-STL |> 
+STL |>
   autoplot(
     labels = c("Tendência", "Sazonalidade", "Ruído")
     ) +
@@ -463,7 +463,7 @@ STL |>
 ### STL
 
 ```{r echo=FALSE}
-STL |> 
+STL |>
   autoplot(
     labels = c("Tendência", "Sazonalidade", "Ruído"),
     ) +
@@ -501,39 +501,39 @@ splits <- time_series_split(dados_deflacionado, assess = "24 months", cumulative
 
 model_fit_snaive <- naive_reg(seasonal_period = 12) |>
   set_engine("snaive") |>
-  fit(ICMS ~ Data, data = training(splits)) |> 
+  fit(ICMS ~ Data, data = training(splits)) |>
   modeltime_calibrate(new_data = training(splits))
-  
-forecast_snaive24 <- model_fit_snaive |> 
+
+forecast_snaive24 <- model_fit_snaive |>
   modeltime_forecast(
     h = "24 months",
     actual_data = testing(splits)
-  ) |> 
-  mutate(.which = ifelse(.model_desc == "ACTUAL", NA, "2 anos")) 
+  ) |>
+  mutate(.which = ifelse(.model_desc == "ACTUAL", NA, "2 anos"))
 
-forecast_snaive12 <- model_fit_snaive |> 
+forecast_snaive12 <- model_fit_snaive |>
   modeltime_forecast(
     h = "12 months",
     actual_data = testing(splits)
-  ) |> 
+  ) |>
   mutate(.which = ifelse(.model_desc == "ACTUAL", NA, "1 ano"))
 
-forecast_snaive6 <- model_fit_snaive |> 
+forecast_snaive6 <- model_fit_snaive |>
   modeltime_forecast(
     h = "6 months",
     actual_data = testing(splits)
-  ) |> 
-  mutate(.which = ifelse(.model_desc == "ACTUAL", NA, "6 meses")) 
+  ) |>
+  mutate(.which = ifelse(.model_desc == "ACTUAL", NA, "6 meses"))
 
-junto_snaive <- Reduce(rbind, list(forecast_snaive24, forecast_snaive12, forecast_snaive6)) |> 
-  select(-c(.model_id, .model_desc, .key)) |> 
+junto_snaive <- Reduce(rbind, list(forecast_snaive24, forecast_snaive12, forecast_snaive6)) |>
+  select(-c(.model_id, .model_desc, .key)) |>
   drop_na(.which)
 
-junto_snaive |> 
+junto_snaive |>
   ggplot(aes(x = .index, y = .value, color = .which)) +
   geom_line() +
   geom_line(data = dados_deflacionado,
-            mapping = aes(x = Data, y = ICMS, color = "Série real"), 
+            mapping = aes(x = Data, y = ICMS, color = "Série real"),
             color = "black") +
   scale_color_manual(name = "Previsão", values = c("#1000b5", "red", "green")) +
   theme_bw() +
@@ -544,11 +544,11 @@ junto_snaive |>
 ### Previsões
 
 ```{r echo=FALSE}
-junto_snaive |> 
+junto_snaive |>
   ggplot(aes(x = .index, y = .value, color = .which)) +
   geom_line() +
   geom_line(data = dados_deflacionado,
-            mapping = aes(x = Data, y = ICMS, color = "Série real"), 
+            mapping = aes(x = Data, y = ICMS, color = "Série real"),
             color = "black") +
   scale_color_manual(name = "Previsão", values = c("#1000b5", "red", "green")) +
   theme_bw() +
@@ -562,66 +562,66 @@ junto_snaive |>
 ### Código
 
 ```{r output=FALSE}
-junto_snaive |> 
-  rename(Data = .index, ICMS = .value) |> 
-  select(-c(.conf_lo, .conf_hi)) |> 
+junto_snaive |>
+  rename(Data = .index, ICMS = .value) |>
+  select(-c(.conf_lo, .conf_hi)) |>
   rbind(
-    dados_deflacionado |> 
-      select(c(Data, ICMS)) |> 
+    dados_deflacionado |>
+      select(c(Data, ICMS)) |>
       mutate(.which = "Série real")
-    ) |> 
+    ) |>
   pivot_wider(
-    names_from = .which, 
+    names_from = .which,
     values_from = ICMS
-    ) |> 
+    ) |>
   pivot_longer(
     cols = c("2 anos", "1 ano", "6 meses"),
     names_to = "Período",
     values_to = "Previsões"
-  ) |> 
+  ) |>
   group_by(Período) |>
   summarise(
     RMSE = rmse_vec(`Série real`, Previsões),
     MAPE = mape_vec(`Série real`, Previsões),
     R2 = rsq_vec(`Série real`, Previsões),
-  ) |> 
-  arrange(RMSE) |> 
-  mutate(across(-Período, \(x) round(x, 3))) |> 
+  ) |>
+  arrange(RMSE) |>
+  mutate(across(-Período, \(x) round(x, 3))) |>
   knitr::kable()
 ```
 
 ### Métricas
 
 ```{r echo=FALSE}
-metricas_snaive <- junto_snaive |> 
-  rename(Data = .index, ICMS = .value) |> 
-  select(-c(.conf_lo, .conf_hi)) |> 
+metricas_snaive <- junto_snaive |>
+  rename(Data = .index, ICMS = .value) |>
+  select(-c(.conf_lo, .conf_hi)) |>
   rbind(
-    dados_deflacionado |> 
-      select(c(Data, ICMS)) |> 
+    dados_deflacionado |>
+      select(c(Data, ICMS)) |>
       mutate(.which = "Série real")
-    ) |> 
+    ) |>
   pivot_wider(
-    names_from = .which, 
+    names_from = .which,
     values_from = ICMS
-    ) |> 
+    ) |>
   pivot_longer(
     cols = c("2 anos", "1 ano", "6 meses"),
     names_to = "Período",
     values_to = "Previsões"
-  ) |> 
+  ) |>
   group_by(Período) |>
   summarise(
     RMSE = rmse_vec(`Série real`, Previsões),
     MAPE = mape_vec(`Série real`, Previsões),
     R2 = rsq_vec(`Série real`, Previsões),
-  ) |> 
-  arrange(RMSE) |> 
+  ) |>
+  arrange(RMSE) |>
   mutate(Método = "Naïve sazonal")
 
-metricas_snaive |> 
-  select(- Método) |> 
-  mutate(across(-Período, \(x) round(x, 3))) |> 
+metricas_snaive |>
+  select(- Método) |>
+  mutate(across(-Período, \(x) round(x, 3))) |>
   knitr::kable()
 ```
 :::
@@ -636,7 +636,7 @@ O método de Naïve é um caso particular de médias móveis, quando se é utili
 
 
 $$
-\hat Z_t\left(h\right) = M_t = \frac{Z_t + Z_{t - 1} + ... + Z_{t - r - 1}}{r}, \ \forall h > 0 
+\hat Z_t\left(h\right) = M_t = \frac{Z_t + Z_{t - 1} + ... + Z_{t - r - 1}}{r}, \ \forall h > 0
 $$
 
 Em que $r$ são as observações mais recentes da série.
@@ -657,7 +657,7 @@ mms6 <- smooth::sma(training(splits)$ICMS, order = 12, h = 6)$forecast
 plot_stats_mms <- function() {
   tibble(
     Data = c(
-      dados$Data, 
+      dados$Data,
       testing(splits)$Data[1:6],
       testing(splits)$Data[1:12],
       testing(splits)$Data
@@ -677,7 +677,7 @@ plot_stats_mms <- function() {
     )
 }
 
-plot_stats_mms() |> 
+plot_stats_mms() |>
   ggplot(aes(x = Data, y = ICMS, color = Previsão)) +
   geom_line(alpha = .7) +
   scale_color_manual(name = "Previsão", values = c("blue", "orange", "red", "black")) +
@@ -687,7 +687,7 @@ plot_stats_mms() |>
 ### Previsões
 
 ```{r echo=FALSE}
-plot_stats_mms() |> 
+plot_stats_mms() |>
   ggplot(aes(x = Data, y = ICMS, color = Previsão)) +
   geom_line(alpha = .7) +
   scale_color_manual(name = "Previsão", values = c("blue", "orange", "red", "black")) +
@@ -700,13 +700,13 @@ plot_stats_mms() |>
 ::: {.panel-tabset}
 ### Código
 ```{r output=FALSE}
-plot_stats_mms() |> 
-  pivot_wider(names_from = Previsão, values_from = ICMS) |> 
+plot_stats_mms() |>
+  pivot_wider(names_from = Previsão, values_from = ICMS) |>
   pivot_longer(
     cols = c("6 meses", "1 ano", "2 anos"),
-    names_to = "Período", 
+    names_to = "Período",
     values_to = "Previsões"
-    ) |> 
+    ) |>
   group_by(Período) |>
   drop_na() |>
   summarise(
@@ -714,21 +714,21 @@ plot_stats_mms() |>
     MAPE = mape_vec(`Série real`, Previsões),
     R2 = rsq_vec(`Série real`, Previsões),
   ) |>
-  arrange(RMSE) |> 
-  mutate(across(-Período, \(x) round(x, 3))) |> 
+  arrange(RMSE) |>
+  mutate(across(-Período, \(x) round(x, 3))) |>
   knitr::kable()
 ```
 
 ### Métricas
 
 ```{r echo=FALSE}
-metricas_mms <- plot_stats_mms() |> 
-  pivot_wider(names_from = Previsão, values_from = ICMS) |> 
+metricas_mms <- plot_stats_mms() |>
+  pivot_wider(names_from = Previsão, values_from = ICMS) |>
   pivot_longer(
     cols = c("6 meses", "1 ano", "2 anos"),
-    names_to = "Período", 
+    names_to = "Período",
     values_to = "Previsões"
-    ) |> 
+    ) |>
   group_by(Período) |>
   drop_na() |>
   summarise(
@@ -736,12 +736,12 @@ metricas_mms <- plot_stats_mms() |>
     MAPE = mape_vec(`Série real`, Previsões),
     R2 = rsq_vec(`Série real`, Previsões),
   ) |>
-  arrange(RMSE) |> 
+  arrange(RMSE) |>
   mutate(Método = "MMS")
-  
-metricas_mms |> 
-  select(-Método) |> 
-  mutate(across(-Período, \(x) round(x, 3))) |> 
+
+metricas_mms |>
+  select(-Método) |>
+  mutate(across(-Período, \(x) round(x, 3))) |>
   knitr::kable()
 ```
 :::
@@ -782,11 +782,11 @@ A, C e D são componentes de suavização.
 ### Código
 
 ```{r output=FALSE}
-splits_ts_train <- training(splits) |> 
-  select(- Data) |> 
+splits_ts_train <- training(splits) |>
+  select(- Data) |>
   ts(start = c(1997, 1), end = c(2017, 4), frequency = 12)
-splits_ts_teste <- testing(splits) |> 
-  select(- Data) |> 
+splits_ts_teste <- testing(splits) |>
+  select(- Data) |>
   ts(start = c(2017, 5), end = c(2019, 4), frequency = 12)
 
 model_hw <- HoltWinters(splits_ts_train[,1], seasonal = "multiplicative")
@@ -794,7 +794,7 @@ model_hw <- HoltWinters(splits_ts_train[,1], seasonal = "multiplicative")
 plot_stats <- function(f1, f2, f3) {
   tibble(
     Data = c(
-      dados$Data, 
+      dados$Data,
       zoo::as.Date(f1$mean),
       zoo::as.Date(f2$mean),
       zoo::as.Date(f3$mean)
@@ -818,7 +818,7 @@ forecast_hw24 <- forecast(model_hw, h = 24)
 forecast_hw12 <- forecast(model_hw, h = 12)
 forecast_hw6 <- forecast(model_hw, h = 6)
 
-plot_stats(forecast_hw6, forecast_hw12, forecast_hw24) |> 
+plot_stats(forecast_hw6, forecast_hw12, forecast_hw24) |>
   ggplot(aes(x = Data, y = ICMS, color = Previsão)) +
   geom_line(alpha = .7) +
   scale_color_manual(name = "Previsão", values = c("blue", "orange", "red", "black")) +
@@ -828,7 +828,7 @@ plot_stats(forecast_hw6, forecast_hw12, forecast_hw24) |>
 ### Previsões
 
 ```{r echo=FALSE}
-plot_stats(forecast_hw6, forecast_hw12, forecast_hw24) |> 
+plot_stats(forecast_hw6, forecast_hw12, forecast_hw24) |>
   ggplot(aes(x = Data, y = ICMS, color = Previsão)) +
   geom_line(alpha = .7) +
   scale_color_manual(name = "Previsão", values = c("blue", "orange", "red", "black")) +
@@ -842,13 +842,13 @@ plot_stats(forecast_hw6, forecast_hw12, forecast_hw24) |>
 ### Código
 
 ```{r output=FALSE}
-plot_stats(forecast_hw6, forecast_hw12, forecast_hw24) |> 
-  pivot_wider(names_from = Previsão, values_from = ICMS) |> 
+plot_stats(forecast_hw6, forecast_hw12, forecast_hw24) |>
+  pivot_wider(names_from = Previsão, values_from = ICMS) |>
   pivot_longer(
     cols = c("6 meses", "1 ano", "2 anos"),
-    names_to = "Período", 
+    names_to = "Período",
     values_to = "Previsões"
-    ) |> 
+    ) |>
   group_by(Período) |>
   drop_na() |>
   summarise(
@@ -856,21 +856,21 @@ plot_stats(forecast_hw6, forecast_hw12, forecast_hw24) |>
     MAPE = mape_vec(`Série real`, Previsões),
     R2 = rsq_vec(`Série real`, Previsões),
   ) |>
-  arrange(RMSE) |> 
-  mutate(across(-Período, \(x) round(x, 3))) |> 
+  arrange(RMSE) |>
+  mutate(across(-Período, \(x) round(x, 3))) |>
   knitr::kable()
 ```
 
 ### Métricas
 
 ```{r echo=FALSE}
-metricas_hw <- plot_stats(forecast_hw6, forecast_hw12, forecast_hw24) |> 
-  pivot_wider(names_from = Previsão, values_from = ICMS) |> 
+metricas_hw <- plot_stats(forecast_hw6, forecast_hw12, forecast_hw24) |>
+  pivot_wider(names_from = Previsão, values_from = ICMS) |>
   pivot_longer(
     cols = c("6 meses", "1 ano", "2 anos"),
-    names_to = "Período", 
+    names_to = "Período",
     values_to = "Previsões"
-    ) |> 
+    ) |>
   group_by(Período) |>
   drop_na() |>
   summarise(
@@ -878,12 +878,12 @@ metricas_hw <- plot_stats(forecast_hw6, forecast_hw12, forecast_hw24) |>
     MAPE = mape_vec(`Série real`, Previsões),
     R2 = rsq_vec(`Série real`, Previsões),
   ) |>
-  arrange(RMSE) |> 
+  arrange(RMSE) |>
   mutate(Método = "Holt-Winters")
-  
-metricas_hw |> 
-  select(- Método) |> 
-  mutate(across(-Período, \(x) round(x, 3))) |> 
+
+metricas_hw |>
+  select(- Método) |>
+  mutate(across(-Período, \(x) round(x, 3))) |>
   knitr::kable()
 ```
 :::
@@ -915,7 +915,7 @@ coeftest(sarima_model)
 
 ## Significância dos coeficientes
 
-Testando a significância dos coeficiantes do modelo, vemos que todos os coeficientes são significantes. 
+Testando a significância dos coeficiantes do modelo, vemos que todos os coeficientes são significantes.
 
 ## Independência dos resíduos
 
@@ -990,7 +990,7 @@ forecast_sarima24 <- forecast(sarima_model, h = 24)
 forecast_sarima12 <- forecast(sarima_model, h = 12)
 forecast_sarima6 <- forecast(sarima_model, h = 6)
 
-plot_stats(forecast_sarima6, forecast_sarima12, forecast_sarima24) |> 
+plot_stats(forecast_sarima6, forecast_sarima12, forecast_sarima24) |>
   ggplot(aes(x = Data, y = ifelse(Previsão != "Série real", exp(ICMS), ICMS), color = Previsão)) +
   geom_line(alpha = .7) +
   labs(y = "ICMS") +
@@ -1005,7 +1005,7 @@ forecast_sarima24 <- forecast(sarima_model, h = 24)
 forecast_sarima12 <- forecast(sarima_model, h = 12)
 forecast_sarima6 <- forecast(sarima_model, h = 6)
 
-plot_stats(forecast_sarima6, forecast_sarima12, forecast_sarima24) |> 
+plot_stats(forecast_sarima6, forecast_sarima12, forecast_sarima24) |>
   ggplot(aes(x = Data, y = ifelse(Previsão != "Série real", exp(ICMS), ICMS), color = Previsão)) +
   geom_line(alpha = .7) +
   labs(y = "ICMS") +
@@ -1021,13 +1021,13 @@ plot_stats(forecast_sarima6, forecast_sarima12, forecast_sarima24) |>
 
 ```{r output=FALSE}
 plot_stats(forecast_sarima6, forecast_sarima12, forecast_sarima24) |>
-  mutate(ICMS = ifelse(Previsão != "Série real", exp(ICMS), ICMS)) |> 
-  pivot_wider(names_from = Previsão, values_from = ICMS) |> 
+  mutate(ICMS = ifelse(Previsão != "Série real", exp(ICMS), ICMS)) |>
+  pivot_wider(names_from = Previsão, values_from = ICMS) |>
   pivot_longer(
     cols = c("6 meses", "1 ano", "2 anos"),
-    names_to = "Período", 
+    names_to = "Período",
     values_to = "Previsões"
-    ) |> 
+    ) |>
   group_by(Período) |>
   drop_na() |>
   summarise(
@@ -1035,22 +1035,22 @@ plot_stats(forecast_sarima6, forecast_sarima12, forecast_sarima24) |>
     MAPE = mape_vec(`Série real`, Previsões),
     R2 = rsq_vec(`Série real`, Previsões),
   ) |>
-  arrange(RMSE) |> 
-  mutate(across(-Período, \(x) round(x, 3))) |> 
+  arrange(RMSE) |>
+  mutate(across(-Período, \(x) round(x, 3))) |>
   knitr::kable()
 ```
 
 ### Métricas
 
 ```{r echo=FALSE}
-metricas_sarima <- plot_stats(forecast_sarima6, forecast_sarima12, forecast_sarima24) |> 
-  mutate(ICMS = ifelse(Previsão != "Série real", exp(ICMS), ICMS)) |> 
-  pivot_wider(names_from = Previsão, values_from = ICMS) |> 
+metricas_sarima <- plot_stats(forecast_sarima6, forecast_sarima12, forecast_sarima24) |>
+  mutate(ICMS = ifelse(Previsão != "Série real", exp(ICMS), ICMS)) |>
+  pivot_wider(names_from = Previsão, values_from = ICMS) |>
   pivot_longer(
     cols = c("6 meses", "1 ano", "2 anos"),
-    names_to = "Período", 
+    names_to = "Período",
     values_to = "Previsões"
-    ) |> 
+    ) |>
   group_by(Período) |>
   drop_na() |>
   summarise(
@@ -1058,12 +1058,12 @@ metricas_sarima <- plot_stats(forecast_sarima6, forecast_sarima12, forecast_sari
     MAPE = mape_vec(`Série real`, Previsões),
     R2 = rsq_vec(`Série real`, Previsões),
   ) |>
-  arrange(RMSE) |> 
+  arrange(RMSE) |>
   mutate(Método = "SARIMA")
-  
-metricas_sarima |> 
-  select(- Método) |> 
-  mutate(across(-Período, \(x) round(x, 3))) |> 
+
+metricas_sarima |>
+  select(- Método) |>
+  mutate(across(-Período, \(x) round(x, 3))) |>
   knitr::kable()
 ```
 :::
@@ -1094,40 +1094,40 @@ em que $m$ é a frequência da série.
 ```{r output=FALSE}
 model_fit_ets <- exp_smoothing(seasonal_period = 12) |>
   set_engine("ets") |>
-  fit(log(ICMS) ~ Data, data = training(splits)) |> 
+  fit(log(ICMS) ~ Data, data = training(splits)) |>
   modeltime_calibrate(new_data = training(splits))
 
-forecast_ets24 <- model_fit_ets |> 
+forecast_ets24 <- model_fit_ets |>
   modeltime_forecast(
     h = "24 months",
     actual_data = testing(splits)
-  ) |> 
-  mutate(.which = ifelse(.model_desc == "ACTUAL", NA, "2 anos")) 
+  ) |>
+  mutate(.which = ifelse(.model_desc == "ACTUAL", NA, "2 anos"))
 
-forecast_ets12 <- model_fit_ets |> 
+forecast_ets12 <- model_fit_ets |>
   modeltime_forecast(
     h = "12 months",
     actual_data = testing(splits)
-  ) |> 
+  ) |>
   mutate(.which = ifelse(.model_desc == "ACTUAL", NA, "1 ano"))
 
-forecast_ets6 <- model_fit_ets |> 
+forecast_ets6 <- model_fit_ets |>
   modeltime_forecast(
     h = "6 months",
     actual_data = testing(splits)
-  ) |> 
-  mutate(.which = ifelse(.model_desc == "ACTUAL", NA, "6 meses")) 
+  ) |>
+  mutate(.which = ifelse(.model_desc == "ACTUAL", NA, "6 meses"))
 
-junto_ets <- Reduce(rbind, list(forecast_ets24, forecast_ets12, forecast_ets6)) |> 
-  select(-c(.model_id, .model_desc, .key)) |> 
+junto_ets <- Reduce(rbind, list(forecast_ets24, forecast_ets12, forecast_ets6)) |>
+  select(-c(.model_id, .model_desc, .key)) |>
   drop_na()
 
-junto_ets |> 
-  mutate(.value = exp(.value)) |> 
+junto_ets |>
+  mutate(.value = exp(.value)) |>
   ggplot(aes(x = .index, y = .value, color = .which)) +
   geom_line() +
   geom_line(data = dados_deflacionado,
-            mapping = aes(x = Data, y = ICMS, color = "Série real"), 
+            mapping = aes(x = Data, y = ICMS, color = "Série real"),
             color = "black") +
   scale_color_manual(name = "Previsão", values = c("#1000b5", "red", "green")) +
   theme_bw() +
@@ -1138,12 +1138,12 @@ junto_ets |>
 ### Previsões
 
 ```{r echo=FALSE}
-junto_ets |> 
-  mutate(.value = exp(.value)) |> 
+junto_ets |>
+  mutate(.value = exp(.value)) |>
   ggplot(aes(x = .index, y = .value, color = .which)) +
   geom_line() +
   geom_line(data = dados_deflacionado,
-            mapping = aes(x = Data, y = ICMS, color = "Série real"), 
+            mapping = aes(x = Data, y = ICMS, color = "Série real"),
             color = "black") +
   scale_color_manual(name = "Previsão", values = c("#1000b5", "red", "green")) +
   theme_bw() +
@@ -1157,68 +1157,68 @@ junto_ets |>
 ### Código
 
 ```{r output=FALSE}
-junto_ets |> 
-  mutate(.value = exp(.value)) |> 
-  rename(Data = .index, ICMS = .value) |> 
-  select(-c(.conf_lo, .conf_hi)) |> 
+junto_ets |>
+  mutate(.value = exp(.value)) |>
+  rename(Data = .index, ICMS = .value) |>
+  select(-c(.conf_lo, .conf_hi)) |>
   rbind(
-    dados_deflacionado |> 
-      select(c(Data, ICMS)) |> 
+    dados_deflacionado |>
+      select(c(Data, ICMS)) |>
       mutate(.which = "Série real")
-    ) |> 
+    ) |>
   pivot_wider(
-    names_from = .which, 
+    names_from = .which,
     values_from = ICMS
-    ) |> 
+    ) |>
   pivot_longer(
     cols = c("2 anos", "1 ano", "6 meses"),
     names_to = "Período",
     values_to = "Previsões"
-  ) |> 
+  ) |>
   group_by(Período) |>
   summarise(
     RMSE = rmse_vec(`Série real`, Previsões),
     MAPE = mape_vec(`Série real`, Previsões),
     R2 = rsq_vec(`Série real`, Previsões),
-  ) |> 
-  arrange(RMSE) |> 
-  mutate(across(-Período, \(x) round(x, 3))) |> 
+  ) |>
+  arrange(RMSE) |>
+  mutate(across(-Período, \(x) round(x, 3))) |>
   knitr::kable()
 ```
 
 ### Métricas
 
 ```{r echo=FALSE}
-metricas_ets <- junto_ets |> 
-  mutate(.value = exp(.value)) |> 
-  rename(Data = .index, ICMS = .value) |> 
-  select(-c(.conf_lo, .conf_hi)) |> 
+metricas_ets <- junto_ets |>
+  mutate(.value = exp(.value)) |>
+  rename(Data = .index, ICMS = .value) |>
+  select(-c(.conf_lo, .conf_hi)) |>
   rbind(
-    dados_deflacionado |> 
-      select(c(Data, ICMS)) |> 
+    dados_deflacionado |>
+      select(c(Data, ICMS)) |>
       mutate(.which = "Série real")
-    ) |> 
+    ) |>
   pivot_wider(
-    names_from = .which, 
+    names_from = .which,
     values_from = ICMS
-    ) |> 
+    ) |>
   pivot_longer(
     cols = c("2 anos", "1 ano", "6 meses"),
     names_to = "Período",
     values_to = "Previsões"
-  ) |> 
+  ) |>
   group_by(Período) |>
   summarise(
     RMSE = rmse_vec(`Série real`, Previsões),
     MAPE = mape_vec(`Série real`, Previsões),
     R2 = rsq_vec(`Série real`, Previsões),
-  ) |> 
-  arrange(RMSE) |> 
+  ) |>
+  arrange(RMSE) |>
   mutate(Método = "ETS")
 
-metricas_ets |> 
-  select(- Método) |> 
-  mutate(across(-Período, \(x) round(x, 3))) |> 
+metricas_ets |>
+  select(- Método) |>
+  mutate(across(-Período, \(x) round(x, 3))) |>
   knitr::kable()
 ```
 :::
@@ -1321,7 +1321,7 @@ forecast_sarimax24 <- forecast(sarimax_model, xreg = splits_ts_teste[, c(10, 11)
 forecast_sarimax12 <- forecast(sarimax_model, xreg = splits_ts_teste[1:12, c(10, 11)])
 forecast_sarimax6 <- forecast(sarimax_model, xreg = splits_ts_teste[1:6, c(10, 11)])
 
-plot_stats(forecast_sarimax6, forecast_sarimax12, forecast_sarimax24) |> 
+plot_stats(forecast_sarimax6, forecast_sarimax12, forecast_sarimax24) |>
   ggplot(aes(x = Data, y = ifelse(Previsão != "Série real", exp(ICMS), ICMS), color = Previsão)) +
   geom_line(alpha = .7) +
   labs(y = "ICMS") +
@@ -1332,7 +1332,7 @@ plot_stats(forecast_sarimax6, forecast_sarimax12, forecast_sarimax24) |>
 ### Previsões
 
 ```{r echo=FALSE}
-plot_stats(forecast_sarimax6, forecast_sarimax12, forecast_sarimax24) |> 
+plot_stats(forecast_sarimax6, forecast_sarimax12, forecast_sarimax24) |>
   ggplot(aes(x = Data, y = ifelse(Previsão != "Série real", exp(ICMS), ICMS), color = Previsão)) +
   geom_line(alpha = .7) +
   labs(y = "ICMS") +
@@ -1349,12 +1349,12 @@ plot_stats(forecast_sarimax6, forecast_sarimax12, forecast_sarimax24) |>
 ```{r output=FALSE}
 plot_stats(forecast_sarimax6, forecast_sarimax12, forecast_sarimax24) |>
   mutate(ICMS = ifelse(Previsão != "Série real", exp(ICMS), ICMS)) |>
-  pivot_wider(names_from = Previsão, values_from = ICMS) |> 
+  pivot_wider(names_from = Previsão, values_from = ICMS) |>
   pivot_longer(
     cols = c("6 meses", "1 ano", "2 anos"),
-    names_to = "Período", 
+    names_to = "Período",
     values_to = "Previsões"
-    ) |> 
+    ) |>
   group_by(Período) |>
   drop_na() |>
   summarise(
@@ -1362,21 +1362,21 @@ plot_stats(forecast_sarimax6, forecast_sarimax12, forecast_sarimax24) |>
     MAPE = mape_vec(`Série real`, Previsões),
     R2 = rsq_vec(`Série real`, Previsões),
   ) |>
-  arrange(RMSE) |> 
+  arrange(RMSE) |>
   knitr::kable()
 ```
 
 ### Métricas
 
 ```{r echo=FALSE}
-metricas_sarimax <- plot_stats(forecast_sarimax6, forecast_sarimax12, forecast_sarimax24) |> 
+metricas_sarimax <- plot_stats(forecast_sarimax6, forecast_sarimax12, forecast_sarimax24) |>
   mutate(ICMS = ifelse(Previsão != "Série real", exp(ICMS), ICMS)) |>
-  pivot_wider(names_from = Previsão, values_from = ICMS) |> 
+  pivot_wider(names_from = Previsão, values_from = ICMS) |>
   pivot_longer(
     cols = c("6 meses", "1 ano", "2 anos"),
-    names_to = "Período", 
+    names_to = "Período",
     values_to = "Previsões"
-    ) |> 
+    ) |>
   group_by(Período) |>
   drop_na() |>
   summarise(
@@ -1384,12 +1384,12 @@ metricas_sarimax <- plot_stats(forecast_sarimax6, forecast_sarimax12, forecast_s
     MAPE = mape_vec(`Série real`, Previsões),
     R2 = rsq_vec(`Série real`, Previsões),
   ) |>
-  arrange(RMSE) |> 
+  arrange(RMSE) |>
   mutate(Método = "SARIMAX")
-  
-metricas_sarimax |> 
-  select(- Método) |> 
-  mutate(across(-Período, \(x) round(x, 3))) |> 
+
+metricas_sarimax |>
+  select(- Método) |>
+  mutate(across(-Período, \(x) round(x, 3))) |>
   knitr::kable()
 ```
 :::
@@ -1401,17 +1401,17 @@ O modelo SARIMAX foi um dos que pior se ajustou aos dados, mesmo utilizando outr
 # Conclusão {.smaller}
 
 ```{r echo=FALSE}
-Reduce(rbind, 
-       list(metricas_sarima, 
-            metricas_sarimax, 
-            metricas_snaive, 
-            metricas_mms, 
-            metricas_ets, 
+Reduce(rbind,
+       list(metricas_sarima,
+            metricas_sarimax,
+            metricas_snaive,
+            metricas_mms,
+            metricas_ets,
             metricas_hw)
-       ) |> 
+       ) |>
   pivot_wider(names_from = Período,
               values_from = c(RMSE, MAPE, R2)) |>
-  mutate(across(-Método, \(x) round(x, 3))) |> 
+  mutate(across(-Método, \(x) round(x, 3))) |>
   knitr::kable()
 ```
 
