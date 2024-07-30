@@ -48,7 +48,48 @@ O estado do Rio de Janeiro, localizado na região Sudeste do Brasil, é um dos e
 
 \ \ \ A análise exploratória de dados é uma etapa fundamental em qualquer estudo que utilize a estatística como principal ferramenta de análise. Ela permite identificar padrões de comportamento nos dados e descobrir relações entre as variáveis estudadas. Assim, após a coleta e organização dos dados, a primeira etapa deste estudo foi a análise exploratória de dados. Essa etapa possibilitou a análise dos comportamentos de natalidade, mortalidade e crescimento populacional. Para identificar esses diferentes comportamentos, foram elaborados gráficos e tabelas.
 
+## Estatísticas para análise demográfica
+
+
 
 # Resultados
+
+
+```{python}
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+
+mortalidade = pd.read_csv("mortalidade_rj.csv", delimiter=";")\
+  .melt(
+    id_vars="Municipio",
+    value_vars=[str(x) for x in list(range(2010, 2021))],
+    var_name="Ano",
+    value_name="Mortalidade"
+  )\
+  .assign(Ano=lambda x: x.Ano.astype(int))
+natalidade = pd.read_csv("natalidade_rj.csv", delimiter=";")\
+  .iloc[0:4, :]\
+  .rename(
+    columns={"Número de nascidos vivos": "Intervalo de nascidos vivos"}
+    )\
+  .melt(
+    id_vars="Intervalo de nascidos vivos",
+    value_vars=[str(x) for x in list(range(2010, 2021))],
+    var_name="Ano",
+    value_name="Natalidade",
+  )\
+  .assign(Ano=lambda x: x.Ano.astype(int))
+populacao = pd.read_excel("projecoes_pop_rj.xls")\
+  .melt(
+    id_vars=populacao.columns[0:2],
+    value_vars=list(range(2010, 2021)),
+    var_name="Ano",
+    value_name="Projeções"
+  )\
+  .reset_index(drop=True)
+```
+
+## Descritiva dos dados
 
 # Conclusão
