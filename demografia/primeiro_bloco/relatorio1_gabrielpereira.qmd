@@ -31,6 +31,24 @@ O estado do Rio de Janeiro, localizado na região Sudeste do Brasil, é um dos e
 
 # Metodologia
 
+## Recursos computacionais
+
+\ \ \ As análises a seguir foram realizadas utilizando a linguagem de programação R [@rlang] com o conjunto de pacotes tidyverse [@tidy] para ciência de dados, utilizando principalmente o pacote ggplot2 [@ggplot] para visualização de dados. Além disso, os documentos do relatório foram feitos com o Quarto [@quarto], um sistema de escrita e publicação científica, e os códigos utilizados estão disponíveis no GitHub [@github].
+
+## Obtenção dos dados
+
+\ \ \ A obtenção dos dados demográficos foi realizada através de duas fontes. Os dados de mortalidade e natalidade foram obtidos através do TABNET, desenvolvido pelo DATASUS. O TABNET é um tabulador genérico de domínio público que permite organizar dados de forma rápida, conforme a consulta que se deseja tabular, e o DATASUS providencia informações que podem servir para analisar saúde pública e variáveis demográficas que ajudam na elaboração de programas de ações de saúde. Além disso, os dados referentes à quantidade da população do estado do Rio de Janeiro foram obtidos atráveis de estimativas do Instituto Brasileiro de Geografia e Estatística - IBGE.
+
+\vspace{12pt}
+
+\ \ \ A análise considerada abrange o período de 2010 a 2020, portanto, os dados de população, mortalidade e natalidade estão delimitados nesse intervalo. Os dados de mortalidade estão detalhados por município dentro do estado do Rio de Janeiro. As projeções populacionais do IBGE incluem faixas etárias e são divididas por sexo, o que permite a análise da pirâmide etária do estado do Rio de Janeiro. Além disso, os dados de natalidade estão categorizados por diferentes intervalos de nascidos vivos, proporcionando uma visão detalhada dos padrões de natalidade na região.
+
+
+## Análise Exploratória de Dados
+
+\ \ \ A análise exploratória de dados é uma etapa fundamental em qualquer estudo que utilize a estatística como principal ferramenta de análise. Ela permite identificar padrões de comportamento nos dados e descobrir relações entre as variáveis estudadas. Assim, após a coleta e organização dos dados, a primeira etapa deste estudo foi a análise exploratória de dados. Essa etapa possibilitou a análise dos comportamentos de natalidade, mortalidade e crescimento populacional. Para identificar esses diferentes comportamentos, foram elaborados gráficos e tabelas.
+
+
 # Resultados
 
 # Conclusão

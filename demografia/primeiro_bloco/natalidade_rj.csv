@@ -1,0 +1,26 @@
+ Nascidos Vivos no Estado do Rio de Janeiro
+Nascimentos p/ residência mãe por Número de nascidos vivos e Ano do nascimento
+Número de nascidos vivos: 1 a 3 nascidos vivos, 4 a 6 nascidos vivos, 7 a 9 nascidos vivos, 10 nascidos vivos e mais
+Período:2010-2020
+"Número de nascidos vivos";"2010";"2011";"2012";"2013";"2014";"2015";"2016";"2017";"2018";"2019";"2020";"Total"
+"1 a 3 nascidos vivos";102795;106978;107849;107300;112009;115603;108148;110773;112335;107458;103011;1194259
+"4 a 6 nascidos vivos";7539;7767;7599;7258;7286;7288;6895;7039;7360;7036;7026;80093
+"7 a 9 nascidos vivos";906;922;935;795;791;791;729;690;666;665;644;8534
+"10 nascidos vivos e mais";102;101;108;98;94;95;83;80;79;73;73;986
+"Total";111342;115768;116491;115451;120180;123777;115855;118582;120440;115232;110754;1283872
+ Fonte:
+ 
+   Sistema de Informações sobre Nascidos Vivos - SINASC:
+       
+       2022 em diante: Secretaria de Estado de Saúde - SES/RJ.
+           Situação da base estadual em 22/07/2024.
+       até 2021: Ministério da Saúde/Secretaria de Vigilância em Saúde ­ MS/SVS.
+           Situação da base nacional em 28/04/2023.
+           Para os anos de 2018 a 2021, foram acrescidos as Declarações de Nascidos Vivos de residentes do Rio de Janeiro constantes da base estadual mas que não constavam da base nacional disseminada.
+   
+ 
+ Notas:
+ 
+ O tipo de estabelecimento, a natureza jurídica e a esfera jurídica são obtidos do Cadastro Nacional de Estabelecimentos de Saúde (CNES), conforme a sua situação
+     neste cadastro no período de ocorrência. Poderão existir incompatibilidades entre esta situação e a informada como Local de ocorrência.
+ 
