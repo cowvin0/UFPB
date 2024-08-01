@@ -59,15 +59,11 @@ O estado do Rio de Janeiro, localizado na região Sudeste do Brasil, é um dos e
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+import seaborn as sns
 
 mortalidade = pd.read_csv("mortalidade_rj.csv", delimiter=";")\
-  .melt(
-    id_vars="Municipio",
-    value_vars=[str(x) for x in list(range(2010, 2021))],
-    var_name="Ano",
-    value_name="Mortalidade"
-  )\
-  .assign(Ano=lambda x: x.Ano.astype(int))
+  .rename(columns={"Ano do óbito": "Ano"})
+
 natalidade = pd.read_csv("natalidade_rj.csv", delimiter=";")\
   .iloc[0:4, :]\
   .rename(
@@ -75,21 +71,110 @@ natalidade = pd.read_csv("natalidade_rj.csv", delimiter=";")\
     )\
   .melt(
     id_vars="Intervalo de nascidos vivos",
-    value_vars=[str(x) for x in list(range(2010, 2021))],
+    value_vars=[str(x) for x in list(range(2011, 2021))],
     var_name="Ano",
     value_name="Natalidade",
   )\
   .assign(Ano=lambda x: x.Ano.astype(int))
+
+cat_type = pd.api.types.CategoricalDtype(
+  categories=[f"{i}-{i + 4}" for i in range(0, 89, 5)] + ["90+"],
+  ordered=True
+)
+
 populacao = pd.read_excel("projecoes_pop_rj.xls")\
   .melt(
-    id_vars=populacao.columns[0:2],
+    id_vars=["Idade", "Sexo"],
     value_vars=list(range(2010, 2021)),
     var_name="Ano",
     value_name="Projeções"
   )\
+  .assign(
+    Idade=lambda x: x.Idade.astype(cat_type)
+  )\
+  .sort_values("Idade", ascending=False)\
   .reset_index(drop=True)
 ```
 
+
 ## Descritiva dos dados
+
+::: {#fig-py layout-nrow=2}
+
+```{python}
+#| label: fig-pop2020
+
+demo_py = populacao.pivot(
+  index=["Idade", "Ano"],
+  columns="Sexo",
+  values="Projeções")\
+  .reset_index()\
+  .sort_values("Idade", ascending=False)\
+  .assign(
+    Masculino=lambda x: -x.Masculino
+  )
+
+barplot = sns.barplot(
+  x="Masculino",
+  y="Idade",
+  data=demo_py.query("Ano == 2020"),
+  order=demo_py.query("Ano == 2020").Idade,
+  color="#049899",
+  lw=0
+  )
+barplot = sns.barplot(
+  x="Feminino",
+  y="Idade",
+  data=demo_py.query("Ano == 2020"),
+  order=demo_py.query("Ano == 2020").Idade,
+  color="#ED9502",
+  lw=0
+)
+
+plt.xlabel("")
+plt.ylabel("")
+plt.xticks(
+  ticks=[int(i) for i in list(range(-600_000, 800_000, 200_000))],
+  labels=["600", "400", "200", "0", "200", "400", "600"]
+)
+plt.grid()
+plt.show()
+```
+
+```{python}
+#| label: fig-pop2010
+
+barplot = sns.barplot(
+  x="Masculino",
+  y="Idade",
+  data=demo_py.query("Ano == 2010"),
+  order=demo_py.query("Ano == 2010").Idade,
+  label="Masculino",
+  color="#049899",
+  lw=0
+  )
+barplot = sns.barplot(
+  x="Feminino",
+  y="Idade",
+  data=demo_py.query("Ano == 2010"),
+  order=demo_py.query("Ano == 2010").Idade,
+  label="Feminino",
+  color="#ED9502",
+  lw=0
+)
+
+plt.xlabel("")
+plt.ylabel("")
+plt.xticks(
+  ticks=[int(i) for i in list(range(-600_000, 800_000, 200_000))],
+  labels=["600", "400", "200", "0", "200", "400", "600"]
+)
+plt.legend(loc='upper center', bbox_to_anchor=(0.5, -.1), ncol=2)
+plt.grid()
+plt.show()
+```
+
+Gráfico de pirâmide etária que mostra a distribuição da população (em milhares) por sexo, de acordo com os grupos de idade. O gráfico na @fig-pop2020 representa a distribuição referente ao ano de 2020, enquanto o gráfico na @fig-pop2010 refere-se ao ano de 2020.
+:::
 
 # Conclusão
