@@ -50,7 +50,20 @@ O estado do Rio de Janeiro, localizado na região Sudeste do Brasil, é um dos e
 
 ## Estatísticas para análise demográfica
 
+\ \ \ As estatísticas utilizadas nesse trabalho para análise da população do estado do Rio de Janeiro descrevem a situação da população em relação a mortalidade, natalidade e o crescimento populacional. O crescimento populacional relaciona as duas últimas informações, podendo ter duas principais descrições: População Fechada ou População Aberta. No caso da população fechada, a estrutura populacional sofre alteração apenas pelos nascimentos e óbitos, portanto, não é afetada por migrações externas. Um exemplo de população fechada é a Coreia do Norte, um dos países mais fechados do mundo, tanto culturamente quanto populacionalmente. Não obstante, uma população aberta incluí as características das populações fechadas, mas é impactada também pela dinâmica migratória, como é o caso do estado do Rio de Janeiro. Dessa forma, o crescimento populacional de uma população aberta pode ser expresso por
 
+$$
+P_n - P_0 = N_t - O_t + I_t - E_t
+$$
+em que $P_0$ e $P_n$ denotam a população inicial em um tempo 0 e final em um tempo $t = n$, respectivamente. $N_t$ e $O_t$ representam o número de nascidos vivos e óbitos. E, como a população é aberta, ela será impactada pela dinâmica de migração. Portanto, a imigração e emigração em um tempo $t$ são representadas por $I_t$ e $E_t$, respectivamente. A diferença entre o número de nascidos vivos e óbitos
+$$
+N_t - O_t
+$$
+é chamada de crescimento natural, e a diferença entre o número de imigrantes e emigrantes
+$$
+I_t - E_t
+$$
+em um território é chamada de migração líquida.
 
 # Resultados
 
