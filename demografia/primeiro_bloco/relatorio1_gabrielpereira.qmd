@@ -54,7 +54,7 @@ O estado do Rio de Janeiro, localizado na região Sudeste do Brasil, é um dos e
 
 $$
 P_n - P_0 = N_t - O_t + I_t - E_t
-$$
+$${#eq-popcres}
 em que $P_0$ e $P_n$ denotam a população inicial em um tempo 0 e final em um tempo $t = n$, respectivamente. $N_t$ e $O_t$ representam o número de nascidos vivos e óbitos. E, como a população é aberta, ela será impactada pela dinâmica de migração. Portanto, a imigração e emigração em um tempo $t$ são representadas por $I_t$ e $E_t$, respectivamente. A diferença entre o número de nascidos vivos e óbitos
 $$
 N_t - O_t
@@ -64,6 +64,21 @@ $$
 I_t - E_t
 $$
 em um território é chamada de migração líquida.
+
+\vspace{12pt}
+
+A expressão da @eq-popcres pode ser dividida por uma quantidade $P_m$, que representa o número de anos-pessoas vividos na população em um intervalo de tempo $t$, obtendo a seguinte expressão
+
+$$
+\frac{P_n - P_0}{P_m} = \frac{N_t}{P_m} - \frac{O_t}{P_m} + \frac{I_t}{P_m} - \frac{E_t}{P_m}
+$$
+Cada termo da igualdade dividido por $P_m$ entregam diferentes estatísticas para análise da população. As estatísticas serão explicadas nas próximas sessões.
+
+### Taxa bruta de natalidade
+
+
+
+### Taxa bruna de mortalidade
 
 # Resultados
 
