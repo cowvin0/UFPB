@@ -74,11 +74,50 @@ $$
 $$
 Cada termo da igualdade dividido por $P_m$ entregam diferentes estatísticas para análise da população. As estatísticas serão explicadas nas próximas sessões.
 
-### Taxa bruta de natalidade
+### Taxa bruta de crescimento (r)
 
+\ \ \ A taxa bruta de crescimento é a diferença entre a população final em um tempo $t = n$ e a população inicial em um tempo $t = 0$, dividido por $P_m$. Essa estatística indica a intensidade de crescimento anual da população residente. A sua expressão é dada da seguinte forma
 
+$$
+r = \frac{P_n - P_0}{P_m}
+$$
 
-### Taxa bruna de mortalidade
+A taxa bruta de crescimento é impactada por todas as dinâmicas populacionais, número de nascidos vivos, óbitos e mudanças migratórias.
+
+### Taxa bruta de natalidade (TBN)
+
+A taxa bruta de natalidade expressa o número de nascidos vivos por mil habitantes, ocorridos na população geral, em determinado período. A sua definição matemática é dada por
+
+$$
+TBN = \frac{N_t}{P_m} 1000
+$$
+
+Essa taxa é influenciada pela estrutura da população, por sexo e idade e condicionada por fatores socioeconômicos de um país. Não obstante, entender essa taxa significa dimensionar a frequência de nascimentos vivos em determinada população para, por exemplo, ter um planejamento de assistência materno-infantil, planejar políticas de saúde e educação.
+
+### Taxa bruta de mortalidade (TBM)
+
+\ \ \ A estatística de taxa bruta de mortalidade mede a quantidade de óbitos em uma população especifíca durante um período de tempo, em relação a população total. A sua fórmula é expressa por
+
+$$
+TBM = \frac{O_t}{P_m} 1000
+$$
+em que $O_t$ é o número de óbitos em um tempo $t$. Além disso, a TBM é expressa em número de mortes por mil habitantes. Este indicador é importante para avaliar a saúde de uma população, a eficácia dos sistemas de saúde e para planejar políticas de saúde pública.
+
+### Taxa de crescimento natural
+
+A taxa de crescimento natural é a diferença entre o TBN e o TBM, sendo expresso da seguinte forma:
+
+$$
+TCN = TBN - TBM
+$$
+
+Se a TCN for positiva, isso indica que a população está crescendo naturalmente; se for negativa, indica que a população está diminuindo.
+
+### Taxa bruta de imigração
+
+### Taxa bruta de emigração
+
+### Taxa líquida de migração
 
 # Resultados
 
