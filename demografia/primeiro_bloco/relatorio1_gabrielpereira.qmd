@@ -25,7 +25,16 @@ include-in-header:
       \newcommand{\elandscape}{\end{landscape}}
 ---
 
+
+
 # Introdução
+
+```{python}
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+import seaborn as sns
+```
 
 O estado do Rio de Janeiro, localizado na região Sudeste do Brasil, é um dos estados mais importantes e influentes do país. De acordo com o último censo realizado, o de 2022, o estado do Rio de Janeiro como um todo
 
@@ -168,14 +177,15 @@ em que $r$ denota uma taxa de crescimento. Portanto, a tempo de duplicação é 
 # Resultados
 
 
-```{python}
-import pandas as pd
-import matplotlib.pyplot as plt
-import numpy as np
-import seaborn as sns
 
+```{python}
 mortalidade = pd.read_csv("mortalidade_rj.csv", delimiter=";")\
-  .rename(columns={"Ano do óbito": "Ano"})
+  .rename(
+    columns={
+      "Ano do óbito": "Ano",
+      "Óbitos não fetais de residentes do RJ": "Óbitos"
+      }
+    )
 
 natalidade = pd.read_csv("natalidade_rj.csv", delimiter=";")\
   .iloc[0:4, :]\
@@ -200,17 +210,60 @@ populacao = pd.read_excel("projecoes_pop_rj.xls")\
     id_vars=["Idade", "Sexo"],
     value_vars=list(range(2010, 2021)),
     var_name="Ano",
-    value_name="Projeções"
+    value_name="População"
   )\
   .assign(
     Idade=lambda x: x.Idade.astype(cat_type)
   )\
   .sort_values("Idade", ascending=False)\
   .reset_index(drop=True)
+
+dados_juntos = natalidade.groupby('Ano')['Natalidade']\
+  .sum()\
+  .to_frame()\
+  .join(mortalidade.set_index('Ano'))\
+  .join(
+    populacao\
+      .groupby('Ano')['População']\
+      .sum()\
+      .to_frame()
+  )\
+  .reset_index('Ano')\
+  .set_index('Ano')\
+  .stack()\
+  .to_frame()\
+  .reset_index()\
+  .rename(
+    columns={
+      'level_1': 'Tipo',
+      0: 'Valores'
+    }
+  )
 ```
 
 
 ## Descritiva dos dados
+
+```{python}
+#| label: fig-sit
+
+g = sns.FacetGrid(
+  dados_juntos.assign(Ano=lambda x: pd.Categorical(x.Ano)),
+  col='Tipo',
+  sharey=False,
+  sharex=False,
+  legend_out=False,
+  hue='Tipo',
+  height=6
+  )
+g.map_dataframe(sns.barplot, 'Ano', 'Valores')
+g.add_legend(loc='lower center', bbox_to_anchor=(1.69, -0.20), ncol=3)
+g.set_ylabels('')
+g.set_xlabels('')
+g.set_titles('')
+
+plt.show()
+```
 
 ::: {#fig-py layout-nrow=2}
 
@@ -220,7 +273,7 @@ populacao = pd.read_excel("projecoes_pop_rj.xls")\
 demo_py = populacao.pivot(
   index=["Idade", "Ano"],
   columns="Sexo",
-  values="Projeções")\
+  values="População")\
   .reset_index()\
   .sort_values("Idade", ascending=False)\
   .assign(
@@ -250,7 +303,6 @@ plt.xticks(
   ticks=[int(i) for i in list(range(-600_000, 800_000, 200_000))],
   labels=["600", "400", "200", "0", "200", "400", "600"]
 )
-plt.grid()
 plt.show()
 ```
 
@@ -283,7 +335,6 @@ plt.xticks(
   labels=["600", "400", "200", "0", "200", "400", "600"]
 )
 plt.legend(loc='upper center', bbox_to_anchor=(0.5, -.1), ncol=2)
-plt.grid()
 plt.show()
 ```
 

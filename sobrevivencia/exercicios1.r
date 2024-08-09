@@ -186,18 +186,9 @@ tabela_ajustados |>
 	geom_point() +
 	geom_abline()
 
+# a melhor foi a log-normal.
+
 tabela_ajustados |>
 	ggplot(aes(x = `Kaplan-Meier`, y = `Log-normal`)) +
 	geom_point() +
 	geom_abline()
-
-# tabela_ajustados |>
-# 	pivot_longer(
-# 		cols = -c(Tempos, `Kaplan-Meier`),
-# 		names_to = "Distribuição",
-# 		values_to = "S(t)"
-# 	) |>
-# 	ggplot(aes(x = `Kaplan-Meier`, y = "S(t)")) +
-# 	geom_point() +
-# 	geom_abline() +
-# 	facet_wrap(vars(Distribuição), scales = "free")
