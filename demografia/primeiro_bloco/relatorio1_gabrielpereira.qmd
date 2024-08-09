@@ -103,7 +103,7 @@ TBM = \frac{O_t}{P_m} 1000
 $$
 em que $O_t$ é o número de óbitos em um tempo $t$. Além disso, a TBM é expressa em número de mortes por mil habitantes. Este indicador é importante para avaliar a saúde de uma população, a eficácia dos sistemas de saúde e para planejar políticas de saúde pública.
 
-### Taxa de crescimento natural
+### Taxa de crescimento natural (r)
 
 A taxa de crescimento natural é a diferença entre o TBN e o TBM, sendo expresso da seguinte forma:
 
@@ -113,11 +113,57 @@ $$
 
 Se a TCN for positiva, isso indica que a população está crescendo naturalmente; se for negativa, indica que a população está diminuindo.
 
-### Taxa bruta de imigração
+### Taxa bruta de imigração (TBI)
+
+A taxa bruta de imigração mede o número de pessoas que imigram para uma determinada região durante um tempo $t$, em relação à população total dessa área ou país. Ela é calculada como a divisão entre o número de imigrantes que chegaram à área e a população total no meio do período, expressa por mil habitantes por ano. Assim, tem-se
+
+$$
+TBI = \frac{I_t}{P_m} 1000
+$$
+
+Esse indicador é importante para avaliar o impacto da imigração sobre o crescimento populacional e para planejar políticas relacionadas a integração social, mercado de trabalho e outras áreas afetadas pela chegada de novos residentes.
 
 ### Taxa bruta de emigração
 
+A taxa bruta de emigração é uma estatística demográfica que mede o número de pessoas que emigram, ou seja, deixam uma determinada área ou país para viver em outro lugar durante um período de tempo, em relação à população total dessa área ou país. A fórmula básica para calcular a taxa bruta de emigração é:
+
+$$
+TBE = \frac{E_t}{P_m} 1000
+$$
+
+A taxa bruta de emigração é expressa em número de emigrantes por mil habitantes por ano. Este indicador é usado para analisar a saída de pessoas de uma região e entender os impactos dessa saída na população, na economia e em outros aspectos sociais. Um exemplo de utilização da taxa bruta de emigração é o conflito entre Rússia e Ucrânia. A TBE pode ser utilizada para avaliar a perda de mão de obra que um país enfrenta durante o período de guerra devido à emigração para outros países.
+
 ### Taxa líquida de migração
+
+\ \ \ A taxa líquida de imigração é a diferença entre a TBE e TBI, durante um período determinado de tempo. Essa taxa reflete o saldo migratório, ou seja, o impacto líquido da migração sobre o tamanho da população de uma região. Dessa forma, tem-se a seguinte expressão:
+
+$$
+TLM = TBE - TBI
+$$
+
+A TLM é expressa em número de pessoas por mil habitantes por ano. Um valor positivo indica que a imigração supera a emigração, resultando em um aumento populacional devido à migração. Um valor negativo indica que a emigração supera a imigração, resultando em uma diminuição populacional.
+
+\vspace{12pt}
+
+Este indicador é útil para entender as dinâmicas migratórias de uma região e para planejar políticas públicas que respondam às mudanças populacionais provocadas pela migração.
+
+## Taxa média geométrica de crescimento anual
+
+A Taxa média geométrica de crescimento anual é uma medida que mostra, em percentual, quanto uma população cresceu ao ano durante o período indicado. Essa estatística demográfica é influenciada pala dinâmica de natalidade, mortalidade e migrações. Assim, a sua expressão é dada por
+
+$$
+TGCA = \sqrt[n]{\frac{P_n}{P_0}} - 1
+$$
+em que $n$ denota o número de anos no período. Se o TGCA for negativo, é um indicativo que a população está descrescendo, caso contrário, está crescendo.
+
+## Tempo de duplicação de uma população
+
+No tempo de duplicação de uma população é pressuposto que a população será o dobro em um tempo final $n$. Dessa forma, $P_n/P_0 = 2$ e, fazendo o logaritmo da expressão anterior, temos $\ln(P_n/P_0) = 0.693$. Assim, tem-se a expressão final do tempo de duplicação de uma população
+
+$$
+\frac{0.693}{r}
+$$
+em que $r$ denota uma taxa de crescimento. Portanto, a tempo de duplicação é interpretado como quanto tempo levará para uma população atingir o dobro do tamanho inicial.
 
 # Resultados
 
