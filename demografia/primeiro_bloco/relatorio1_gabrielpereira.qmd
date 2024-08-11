@@ -179,26 +179,9 @@ em que $r$ denota uma taxa de crescimento. Portanto, a tempo de duplicação é 
 
 
 ```{python}
-mortalidade = pd.read_csv("mortalidade_rj.csv", delimiter=";")\
-  .rename(
-    columns={
-      "Ano do óbito": "Ano",
-      "Óbitos não fetais de residentes do RJ": "Óbitos"
-      }
-    )
+mortalidade = pd.read_csv('mortalidade.csv', delimiter=';')
 
-natalidade = pd.read_csv("natalidade_rj.csv", delimiter=";")\
-  .iloc[0:4, :]\
-  .rename(
-    columns={"Número de nascidos vivos": "Intervalo de nascidos vivos"}
-    )\
-  .melt(
-    id_vars="Intervalo de nascidos vivos",
-    value_vars=[str(x) for x in list(range(2011, 2021))],
-    var_name="Ano",
-    value_name="Natalidade",
-  )\
-  .assign(Ano=lambda x: x.Ano.astype(int))
+natalidade = pd.read_csv('natalidade.csv', delimiter=';')
 
 cat_type = pd.api.types.CategoricalDtype(
   categories=[f"{i}-{i + 4}" for i in range(0, 89, 5)] + ["90+"],
@@ -218,9 +201,8 @@ populacao = pd.read_excel("projecoes_pop_rj.xls")\
   .sort_values("Idade", ascending=False)\
   .reset_index(drop=True)
 
-dados_juntos = natalidade.groupby('Ano')['Natalidade']\
-  .sum()\
-  .to_frame()\
+dados_juntos = natalidade\
+  .set_index('Ano')\
   .join(mortalidade.set_index('Ano'))\
   .join(
     populacao\
@@ -228,8 +210,6 @@ dados_juntos = natalidade.groupby('Ano')['Natalidade']\
       .sum()\
       .to_frame()
   )\
-  .reset_index('Ano')\
-  .set_index('Ano')\
   .stack()\
   .to_frame()\
   .reset_index()\
@@ -244,9 +224,9 @@ dados_juntos = natalidade.groupby('Ano')['Natalidade']\
 
 ## Descritiva dos dados
 
-```{python}
-#| label: fig-sit
+::: {#fig-parom}
 
+```{python}
 g = sns.FacetGrid(
   dados_juntos.assign(Ano=lambda x: pd.Categorical(x.Ano)),
   col='Tipo',
@@ -264,6 +244,9 @@ g.set_titles('')
 
 plt.show()
 ```
+
+Gráficos de barra que mostram os nascidos vivos, óbitos e população população do estado do Rio de Janeiro entre 2011 a 2020.
+:::
 
 ::: {#fig-py layout-nrow=2}
 
@@ -338,7 +321,47 @@ plt.legend(loc='upper center', bbox_to_anchor=(0.5, -.1), ncol=2)
 plt.show()
 ```
 
-Gráfico de pirâmide etária que mostra a distribuição da população (em milhares) por sexo, de acordo com os grupos de idade. O gráfico na @fig-pop2020 representa a distribuição referente ao ano de 2020, enquanto o gráfico na @fig-pop2010 refere-se ao ano de 2020.
+Gráfico de pirâmide etária que mostra a distribuição da população (em milhares) por sexo, de acordo com os grupos de idade. O gráfico na @fig-pop2020 representa a distribuição referente ao ano de 2020, enquanto o gráfico na @fig-pop2010 refere-se ao ano de 2010.
 :::
+
+```{python eval=TRUE}
+pop_2011 = dados_juntos.query('(Ano == 2011) and (Tipo == "População")').Valores.tolist()[0]
+pop_2020 = dados_juntos.query('(Ano == 2020) and (Tipo == "População")').Valores.tolist()[0]
+incremento_tot = pop_2020 - pop_2011
+obitos_2011_2020 = dados_juntos.query('Tipo == "Óbitos"').Valores.sum()
+nasc_2011_2020 = dados_juntos.query('Tipo == "Natalidade"').Valores.sum()
+pop_media = dados_juntos.query('Tipo == "População"').Valores.mean()
+nasc_medio = dados_juntos.query('Tipo == "Natalidade"').Valores.mean()
+obito_medio = dados_juntos.query('Tipo == "Óbitos"').Valores.mean()
+taxa_nata = nasc_medio / pop_media * 1000
+taxa_mortalidade = obito_medio / pop_media * 1000
+r = taxa_nata - taxa_mortalidade
+taxa_geometrica_cresc = (pop_2020 / pop_2011) ** 10 - 1
+
+pd.DataFrame(
+  {
+    'População e indicadores de crescimento demográfico': [
+      'População 2011', 'População 2020', 'Incremento total',
+      'Óbitos entre 2011 e 2020', 'Nascimentos entre 2011 e 2020',
+      'Óbitos médios entre 2011 e 2020', 'Nascimentos médios entre 2011 e 2020', 'População média entre 2011 e 2020', 'Taxa bruta de natalidade', 'Taxa bruta de mortalidade',
+      'Taxa de crescimento natural', 'Taxa média geométrica de crescimento anual (%)'
+    ],
+    'Estrutura conciliatória': [
+      pop_2011,
+      pop_2020,
+      incremento_tot,
+      obitos_2011_2020,
+      nasc_2011_2020,
+      obito_medio,
+      nasc_medio,
+      pop_media,
+      taxa_nata,
+      taxa_mortalidade,
+      r,
+      taxa_geometrica_cresc * 100
+    ]
+  }
+).style.hide()
+```
 
 # Conclusão
