@@ -224,6 +224,8 @@ dados_juntos = natalidade\
 
 ## Descritiva dos dados
 
+\ \ \ A análise exploratória dos dados de mortalidade, natalidade e projeções populacionais do estado do Rio de Janeiro começou com o entendimento da estrutura dos dados disponíveis. Para isso, a distribuição dos dados foi analisada por meio de histogramas, como mostrado na @fig-parom. No primeiro gráfico à esquerda, observa-se a distribuição dos nascidos vivos no estado do Rio de Janeiro. Nota-se um crescimento no número de nascidos vivos até o ano de 2015; contudo, após 2015, esses números diminuem rapidamente, atingindo sua maior redução em 2020.
+
 ::: {#fig-parom}
 
 ```{python}
@@ -247,6 +249,12 @@ plt.show()
 
 Gráficos de barra que mostram os nascidos vivos, óbitos e população população do estado do Rio de Janeiro entre 2011 a 2020.
 :::
+
+\ \ \ Analisando agora o histograma em cor laranja, que representa a distribuição dos óbitos, observa-se uma tendência de aumento constante no número de mortes. Embora não seja possível determinar com precisão a causa desse aumento, é importante considerar os diversos problemas sociais e de segurança pública enfrentados pelo estado do Rio de Janeiro. No entanto, ao observar o ano de 2020, destaca-se que esse período coincide com o auge da pandemia de Covid-19 no estado, o que provavelmente explica o aumento significativo no número de óbitos registrado naquele ano. Por fim, o gráfico verde, que representa a distribuição da população do estado, mostra uma tendência praticamente constante. É importante notar que, apesar da queda na natalidade e óbitos, o crescimento populacional pode estar sendo significativamente influenciado pela dinâmica migratória.
+
+\vspace{12pt}
+
+\ \ \ Os dois gráficos da figura @fig-py são as pirâmides etárias do estado do rio de janeiro.
 
 ::: {#fig-py layout-nrow=2}
 

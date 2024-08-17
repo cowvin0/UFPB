@@ -1,0 +1,262 @@
+---
+format: pdf
+title: Relatório (escolher o nome depois)
+number-sections: false
+indent: true
+whitespace: small
+documentclass: scrreprt
+lang: pt-br
+bibliography: includes/bib.bib
+csl: includes/ufpe-abnt.csl
+subtitle: Universidade Federal da Paraíba - CCEN
+author: Gabriel de Jesus Pereira
+date: today
+date-format: long
+highlight-style: github
+fontsize: 12pt
+interlinespace: 1.5pt
+fig-cap-location: bottom
+warning: false
+echo: false
+include-in-header:
+  - text: |
+      \usepackage{pdflscape}
+      \newcommand{\blandscape}{\begin{landscape}}
+      \newcommand{\elandscape}{\end{landscape}}
+---
+
+
+```{r}
+library(flexsurv)
+library(discSurv)
+library(survival)
+library(tidyverse)
+library(vroom)
+library(mice)
+```
+
+
+```{r}
+df <- read_delim("includes/dialcompete.txt", delim = " ") |>
+  mutate(
+    intervalo = cut(
+      tempo,
+      breaks = 43,
+      right = FALSE
+    )
+  )
+```
+
+```{r eval=FALSE}
+df <- read_delim("sobrevivencia/primeira_avaliacao/includes/dialcompete.txt", delim = " ") |>
+  mutate(
+    intervalo = cut(
+      tempo,
+      breaks = 43,
+      right = FALSE
+    )
+  )
+```
+
+# Introdução
+
+# Metodologia
+
+# Resultados
+
+## Análise exploratória
+
+a) tabela de eventos
+
+resultado da empirica
+
+```{r}
+tabela_eventos <- df |>
+  group_by(intervalo) |>
+  mutate(
+    falhas = sum(status, na.rm = TRUE),
+    censura = sum(status == 0, na.rm = TRUE),
+    amplitude = (\(x) {
+      inter = as.character(intervalo) |>
+        gsub(pattern = "\\[|\\(|\\)", replacement = "") |>
+        strsplit(",")
+
+      sapply(
+        X = inter,
+        FUN = \(x) {
+          as.numeric(x[2]) - as.numeric(x[1])
+        })
+    })(),
+    # .keep = "none"
+  ) |>
+  ungroup() |>
+  arrange(intervalo) |>
+  filter(status != 0) |>
+  select(-c(
+    status, id, idade,
+    doenca, motivo)
+  ) |>
+  distinct(intervalo, .keep_all = TRUE)
+
+nj <- nrow(df)
+for (x in 2:nrow(tabela_eventos)) {
+  nj[x] <-  nj[x - 1] - (tabela_eventos$falhas[x - 1] + tabela_eventos$censura[x - 1])
+}
+
+# empirica
+
+tabela_empirica <- tabela_eventos |>
+  mutate(
+    risco = nj,
+    `S(t)` = nj / nrow(df),
+    `f(t)` = falhas / (amplitude * nrow(df)),
+     `h(t)` = falhas / (risco * amplitude),
+     `H(t)` = - log(`S(t)`),
+     across(`S(t)`:`H(t)`, ~ round(.x, 4))
+  )
+
+tabela_empirica |>
+  knitr::kable()
+```
+
+\newpage
+
+resultado da tabela de vida
+
+```{r}
+tabela_de_vida <- lifeTable(
+  as.data.frame(df),
+  timeColumn = "tempo",
+  eventColumn = "status"
+  )$Output |>
+  as_tibble()
+
+tabela_de_vida |>
+  knitr::kable()
+```
+
+```{r}
+# kaplan meier
+
+ekm <- survfit(
+  Surv(df$tempo, df$status) ~ 1,
+  conf.type = "plain"
+)
+
+tabela_ekm <- ekm |>
+  summary() |>
+  (\(x) {
+    tibble(
+      time = x$time,
+      n.risk = x$n.risk,
+      n.event = x$n.event,
+      n.censor = x$n.censor,
+      std.err = x$std.err,
+      std.chaz = x$std.chaz,
+      `S(t)` = x$surv,
+      upper = x$upper,
+      lower = x$lower,
+      cumhaz = x$cumhaz,
+      std.haz = x$std.haz,
+      amplitude = tabela_eventos$amplitude
+    ) |>
+    mutate(
+      `h(t)` = (1 - (n.risk - n.event) / n.risk) / amplitude,
+      `f(t)` = `h(t)` * `S(t)`
+    )
+  })()
+
+tabela_ekm |>
+  knitr::kable()
+```
+
+```{r}
+# nelson alen
+
+alen <- survfit(
+  Surv(df$tempo, df$status) ~ df$doenca, type = "fleming-harrington"
+)
+
+tabela_alen <- alen |>
+  summary() |>
+  (\(x) {
+    tab <- sapply()
+
+    tab <- tibble(
+      time = x$time,
+      n.risk = x$n.risk,
+      n.event = x$n.event,
+      n.censor = x$n.censor,
+      std.err = x$std.err,
+      std.chaz = x$std.chaz,
+      `S(t)` = x$surv,
+      lower = x$lower,
+      upper = x$upper,
+      cumhaz = x$cumhaz,
+      std.haz = x$std.haz,
+      amplitude = tabela_eventos$amplitude
+    )
+
+    tab |>
+      mutate(
+        `h(t)` =  sapply(X = 1:nrow(tab), FUN = \(x) {
+          surv_ant = tab$`S(t)`[x]
+          surv_pos = tab$`S(t)`[x + 1]
+          time_pos = tab$time[x + 1]
+          time_ant = tab$time[x]
+
+          if (x == nrow(tab)) {
+            1
+            } else {
+              (surv_ant - surv_pos) / ((time_pos - time_ant) * surv_ant)
+              }
+            }),
+        `f(t)` = `h(t)` * `S(t)`
+      )
+  })()
+```
+
+
+```{r}
+expo <- flexsurvreg(
+  Surv(df$tempo, df$status) ~ df$doenca,
+  dist = "exponential"
+  ) |>
+  summary() |>
+  (\(x) {
+    vals <- list(
+      x$`df$doenca=outr`, x$`df$doenca=rim`,
+      x$`df$doenca=hiper`, x$`df$doenca=diab`,
+      x$`df$doenca=cong`
+    )
+
+    lapply(X = vals, FUN = \(y) {
+      tibble(
+        tempo = y$time,
+        `S(t)` = y$est,
+        lower = y$lcl,
+        upper = y$ucl
+      )
+    })
+  })()
+
+weib <- flexsurvreg(
+  Surv(df$tempo, df$status) ~ df$doenca,
+  dist = "weibull"
+  )
+
+gama <- flexsurvreg(
+  Surv(df$tempo, df$status) ~ df$doenca,
+  dist = "gamma"
+  )
+
+lognormal <- flexsurvreg(
+  Surv(df$tempo, df$status) ~ df$doenca,
+  dist = "lognormal"
+  )
+
+gama_gen <- flexsurvreg(
+  Surv(df$tempo, df$status) ~ df$doenca,
+  dist = "gengamma"
+)
+```
