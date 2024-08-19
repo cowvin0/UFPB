@@ -192,3 +192,26 @@ tabela_ajustados |>
 	ggplot(aes(x = `Kaplan-Meier`, y = `Log-normal`)) +
 	geom_point() +
 	geom_abline()
+
+# O gráfico da log-normal parece ser aquela que melhor se ajusta
+
+tabela_ajustados |>
+  pivot_longer(
+    cols = -c(Tempos, `Kaplan-Meier`),
+    names_to = "Distribuição",
+    values_to = "S(t)"
+  ) |>
+  ggplot(aes(x = Tempos, y = `S(t)`)) +
+  geom_line() +
+  geom_step(
+    data = tabela_ajustados,
+    aes(x = Tempos, y = `Kaplan-Meier`)
+  ) +
+  facet_wrap(vars(`Distribuição`)) +
+  theme_bw()
+
+# a)
+
+tempo_mediano_isolante <- exp(qnorm(0.5) * sqrt(ajust1_lognormal$scale) + ajust1_lognormal$coefficients)
+
+# b)
