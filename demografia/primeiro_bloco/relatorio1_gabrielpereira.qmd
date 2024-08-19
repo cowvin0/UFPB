@@ -174,11 +174,16 @@ $$
 $$
 em que $r$ denota uma taxa de crescimento. Portanto, a tempo de duplicação é interpretado como quanto tempo levará para uma população atingir o dobro do tamanho inicial.
 
+## Projeções populacionais
+
+
+
 # Resultados
 
 
-
 ```{python}
+censo = pd.read_csv('ibge_cnv_poprj17092745_227_107_69.csv', delimiter = ';')
+
 mortalidade = pd.read_csv('mortalidade.csv', delimiter=';')
 
 natalidade = pd.read_csv('natalidade.csv', delimiter=';')
@@ -254,7 +259,7 @@ Gráficos de barra que mostram os nascidos vivos, óbitos e população populaç
 
 \vspace{12pt}
 
-\ \ \ Os dois gráficos da figura @fig-py são as pirâmides etárias do estado do rio de janeiro.
+\ \ \ Os dois gráficos da figura @fig-py são as pirâmides etárias do estado do rio de janeiro. A pirâmide etária abaixo é do ano de 2010 e a de cima é a de 2020. É possível ver claramente o envelhecimento da população. Isso pode acontecer por diversos motivos. No caso do estado do Rio de Janeiro, um dos motivos bastantes impactantes parece ser a queda da natalidade, o que já havia sido observado no gráfico de barras anterior.
 
 ::: {#fig-py layout-nrow=2}
 
@@ -371,5 +376,96 @@ pd.DataFrame(
   }
 ).style.hide()
 ```
+
+## Projeção da população do estado do Rio de Janeiro para 2050
+
+\ \ \ Nesta sessão, serão apresentados os resultados das diferentes técnicas de projeção da população do estado do Rio de Janeiro para 2050. Para isso, foram utilizados inicialmente os dados populacionais dos censos de 2000 e 2010, a partir dos quais foi projetada a população do estado em 2020. Com as estimativas populacionais desses três anos, foi então projetada a população para o ano de 2050.
+
+```{python}
+censo.style.hide()
+```
+
+### Método aritmético
+
+```{python}
+def aritmetico(pop_final, pop_inicial, t):
+  r = (pop_final - pop_inicial) / (pop_inicial * t)
+
+  return lambda pop_ini_novo, t_novo: pop_ini_novo + (pop_ini_novo * r) * t_novo
+
+masculino = aritmetico(censo.Masculino[1], censo.Masculino[0], 10)
+feminino = aritmetico(censo.Feminino[1], censo.Feminino[0], 10)
+masculino_2020 = masculino(censo.Masculino[1], 10)
+feminino_2020 = feminino(censo.Feminino[1], 10)
+masculino_2050 = masculino(masculino_2020, 30)
+feminino_2050 = feminino(feminino_2020, 30)
+
+new_data = pd.DataFrame({
+    'Ano': [2020, 2050],
+    'Masculino': np.ceil([masculino_2020, masculino_2050]),
+    'Feminino': np.ceil([feminino_2020, feminino_2050])
+})
+censo_ari = pd.concat([censo, new_data])
+
+censo_ari.style.hide()
+```
+
+## Método Geométrico
+
+```{python}
+def geometrico(pop_final, pop_inicial, t):
+  r = 10 ** (np.log10(pop_final / pop_inicial) / t) - 1
+
+  return lambda pop_ini_novo, t_novo: pop_ini_novo * (1 + r) ** t_novo
+
+masculino_geo = geometrico(censo.Masculino[1], censo.Masculino[0], 10)
+feminino_geo = geometrico(censo.Feminino[1], censo.Feminino[0], 10)
+masculino_2020_geo = masculino_geo(censo.Masculino[1], 10)
+feminino_2020_geo = feminino_geo(censo.Feminino[1], 10)
+masculino_2050_geo = masculino_geo(masculino_2020_geo, 30)
+feminino_2050_geo = feminino_geo(feminino_2020_geo, 30)
+
+new_data_geo = pd.DataFrame({
+    'Ano': [2020, 2050],
+    'Masculino': np.ceil([masculino_2020_geo, masculino_2050_geo]),
+    'Feminino': np.ceil([feminino_2020_geo, feminino_2050_geo])
+})
+censo_geo = pd.concat([censo, new_data_geo])
+
+censo_geo.style.hide()
+```
+
+## Método Exponencial
+
+```{python}
+def exponencial(pop_final, pop_inicial, t):
+  r = np.log(pop_final / pop_inicial) / t
+
+  return lambda pop_ini_novo, t_novo: pop_ini_novo * np.exp(r * t_novo)
+
+masculino_exp = exponencial(censo.Masculino[1], censo.Masculino[0], 10)
+feminino_exp = exponencial(censo.Feminino[1], censo.Feminino[0], 10)
+masculino_2020_exp = masculino_exp(censo.Masculino[1], 10)
+feminino_2020_exp = feminino_exp(censo.Feminino[1], 10)
+masculino_2050_exp = masculino_exp(masculino_2020_exp, 30)
+feminino_2050_exp = feminino_exp(feminino_2020_exp, 30)
+
+new_data_exp = pd.DataFrame({
+    'Ano': [2020, 2050],
+    'Masculino': np.ceil([masculino_2020_exp, masculino_2050_exp]),
+    'Feminino': np.ceil([feminino_2020_exp, feminino_2050_exp])
+})
+censo_exp = pd.concat([censo, new_data_exp])
+
+censo_exp.style.hide()
+```
+
+## Método Logístico
+
+```{python}
+
+```
+
+\vspace{12pt}
 
 # Conclusão
