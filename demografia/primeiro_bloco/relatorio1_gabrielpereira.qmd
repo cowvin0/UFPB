@@ -36,21 +36,29 @@ import numpy as np
 import seaborn as sns
 ```
 
-O estado do Rio de Janeiro, localizado na região Sudeste do Brasil, é um dos estados mais importantes e influentes do país. De acordo com o último censo realizado, o de 2022, o estado do Rio de Janeiro como um todo
+\ \ \ O estado do Rio de Janeiro, localizado na região Sudeste do Brasil, é um dos estados mais importantes do país, tanto em termos econômicos quanto culturais. Com uma área de aproximadamente 43.696 km², o Rio de Janeiro é o terceiro menor estado brasileiro, mas também é um dos mais populosos. De acordo com o censo de 2022, 16.055.174 pessoas viviam no estado do Rio de Janeiro.
+
+\vspace{12pt}
+
+\ \ \ Apesar de sua grandeza e importância, o estado do Rio de Janeiro também enfrenta desafios significativos, como problemas relacionados à segurança pública, desigualdade social, e dificuldades econômicas. No entanto, o estado continua a ser um pilar fundamental na construção da identidade e do desenvolvimento do Brasil.
+
+\vspace{12pt}
+
+\ \ \ Assim, esse trabalho tem como objetivo analisar variáveis demográficas de mortalidade, natalidade e população do estado do Rio de Janeiro entre o ano de 2010 a 2020. Além disso, o trabalho também pretende testar diferentes métodos para projeção de população por sexo e comparar com as projeções reais disponibilizadas pelo IBGE.
 
 # Metodologia
 
 ## Recursos computacionais
 
-\ \ \ As análises a seguir foram realizadas utilizando a linguagem de programação R [@rlang] com o conjunto de pacotes tidyverse [@tidy] para ciência de dados, utilizando principalmente o pacote ggplot2 [@ggplot] para visualização de dados. Além disso, os documentos do relatório foram feitos com o Quarto [@quarto], um sistema de escrita e publicação científica, e os códigos utilizados estão disponíveis no GitHub [@github].
+\ \ \ As análises a seguir foram realizadas utilizando a linguagem de programação Python [@van1995python] com a biblioteca pandas [@reback2020pandas] para manipulação de dados e matplotlib para visualização de dados [@Hunter:2007]. Além disso, os documentos do relatório foram feitos com o Quarto [@quarto], um sistema de escrita e publicação científica, e os códigos utilizados estão disponíveis no GitHub [@github].
 
 ## Obtenção dos dados
 
-\ \ \ A obtenção dos dados demográficos foi realizada através de duas fontes. Os dados de mortalidade e natalidade foram obtidos através do TABNET, desenvolvido pelo DATASUS. O TABNET é um tabulador genérico de domínio público que permite organizar dados de forma rápida, conforme a consulta que se deseja tabular, e o DATASUS providencia informações que podem servir para analisar saúde pública e variáveis demográficas que ajudam na elaboração de programas de ações de saúde. Além disso, os dados referentes à quantidade da população do estado do Rio de Janeiro foram obtidos atráveis de estimativas do Instituto Brasileiro de Geografia e Estatística - IBGE.
+\ \ \ Os dados demográficos utilizados neste estudo foram obtidos de duas fontes principais. Os dados de óbitos e nascimentos vivos foram extraídos do TABNET, uma ferramenta desenvolvida pelo DATASUS. O TABNET é um tabulador genérico de domínio público que permite a rápida organização dos dados conforme a consulta desejada, enquanto o DATASUS oferece informações valiosas para a análise da saúde pública e de variáveis demográficas, auxiliando na elaboração de programas de ações de saúde. Os dados populacionais do estado do Rio de Janeiro foram obtidos a partir de projeções do Instituto Brasileiro de Geografia e Estatística (IBGE). As informações sobre óbitos são provenientes do Sistema de Informações sobre Mortalidade (SIM), e os dados de nascimentos vivos são do Sistema de Informações sobre Nascidos Vivos (SINASC). Vale destacar que as projeções do IBGE referem-se à data de 1º de julho, e as projeções utilizadas abrangem os anos de 2011 a 2020. Além disso, o ano de 2050 foi selecionado para comparação com os métodos de projeção final. Para a comparação das diferentes técnicas de projeção, também foram utilizados os dados do IBGE referentes aos censos de 2000 e 2010
 
 \vspace{12pt}
 
-\ \ \ A análise considerada abrange o período de 2010 a 2020, portanto, os dados de população, mortalidade e natalidade estão delimitados nesse intervalo. Os dados de mortalidade estão detalhados por município dentro do estado do Rio de Janeiro. As projeções populacionais do IBGE incluem faixas etárias e são divididas por sexo, o que permite a análise da pirâmide etária do estado do Rio de Janeiro. Além disso, os dados de natalidade estão categorizados por diferentes intervalos de nascidos vivos, proporcionando uma visão detalhada dos padrões de natalidade na região.
+\ \ \ A análise abrange o período de 2010 a 2020, delimitando os dados de população, mortalidade e natalidade a esse intervalo. Os dados de mortalidade estão detalhados por município no estado do Rio de Janeiro. As projeções populacionais do IBGE incluem faixas etárias e são segmentadas por sexo, permitindo uma análise detalhada da pirâmide etária do estado. Além disso, os dados de natalidade são categorizados por diferentes intervalos de nascimentos vivos, oferecendo uma visão aprofundada dos padrões de natalidade na região.
 
 
 ## Análise Exploratória de Dados
@@ -176,10 +184,87 @@ em que $r$ denota uma taxa de crescimento. Portanto, a tempo de duplicação é 
 
 ## Projeções populacionais
 
+\ \ \ O resultado final deste trabalho consiste na comparação entre diferentes métodos de projeção populacional. Foram utilizados quatro métodos: aritmético, geométrico, exponencial e logístico. As projeções obtidas foram, em seguida, comparadas com as projeções do IBGE. A projeção foi realizada com base nos dados dos censos populacionais de 2000 e 2010, segmentados por sexo. A partir desses dados, projetou-se a população de 2020 com cada um dos métodos e, em seguida, utilizando a projeção de 2020, estimou-se a população de 2050.
 
+\vspace{12pt}
+
+\ \ \ A projeção populacional de um país é crucial para o planejamento econômico, social e ambiental. Ela fornece estimativas sobre o crescimento e a distribuição da população ao longo do tempo, permitindo que governos e instituições tomem decisões informadas sobre políticas públicas, alocação de recursos, infraestrutura, saúde, educação e previdência social. Além disso, ajuda a antecipar desafios demográficos, como o envelhecimento da população, e a desenvolver estratégias para enfrentá-los. Portanto, essa seção terá como objetivo descrever cada um dos métodos de projeção populacional utilizados nesse trabalho.
+
+### Método Aritmético
+
+\ \ \ O primeiro método aplicado para a projeção da população, foi o método aritmético. O método aritmético assume que a taxa de mudança entre duas datas será constante durante o intervalo de tempo. Assim, matemáticamente ele é definido como
+
+$$
+P_n = P_{0} + \left(P_{0}r\right)t
+$$
+em que P_{0} é a população inicial num instante $0$, P_n é a população em um instante $n$, $r$ é a taxa de crescimento e $t$ é a quantidade de tempo entre $0 \text{ e } t$. Portanto, manipulando a equação, podemos obter a taxa de crescimento $r$:
+
+$$
+r = \frac{P_n - P_{0}}{\left(P_{0}t\right)}
+$$
+
+Dessa forma, com a taxa de crescimento obtida, basta fazer a previsão para o ano que se deseja considerando o intervalo de tempo $t$.
+
+### Método Geométrico
+
+Para se selecionar o método de projeção, é necessário considerar diversos fatores, um deles é a distância que se deseja fazer a estimação, e o outro o ritmo de crescimento. O ritmo pode ser geométrico. Caso o ritmo seja geométrico, a projeção do método geométrico é definido da seguinte forma:
+
+$$
+P_n = P_{0}\left(1 + r\right)^t
+$$
+em que $P_n$, $P_{0}$, $t$ e $r$ representam as mesmas variáveis do método anterior. Assim, manipulando a equação anterior, conseguimos obter a taxa de crescimento $r$:
+
+$$
+r = 10^{\frac{1}{t}\log\left(\frac{P_n}{P_{0}}\right)} - 1
+$$
+Além disso, caso queira saber o tempo que uma população irá dobrar o seu tamanho em um tempo, basta considerar $P_n = 2P_{0}$. Portanto, obtemos a seguinte expressão ao manipular a equação de projeção:
+
+$$
+t = \frac{\log2}{\log\left(1 + r\right)}
+$$
+
+### Método Exponencial
+
+O método exponencial pode ser útil quando  se projeta a população e é assumido um crescimento contínuo na taxa de crescimento entre duas datas.
+
+
+$$
+P_n = P_{0}e^{r_e t}
+$$
+Assim, utilizando a expressão de sua curva, podemos obter a taxa de crescimento de forma semelhante aos métodos anteriores:
+
+$$
+r_e = \frac{1}{t}\log\left(\frac{P_n}{P_{0}}\right)
+$$
+
+### Método Logístico
+
+\ \ \ Por último, foi aplicado o método logístico. Diferente dos outros métodos, o método logístico não assume taxa de crescimento constante durante o intervalo de projeção. Ele descreve uma situação em que cresce rapidamente durante o primeiro momento do intervalo. No segundo momento, entretanto, se aproxima ou se iguala à zero.
+
+\vspace{12pt}
+
+\ \ \ O método logístico, assume três condições. A primeira é que se tenha o conhecimento de três populações referentes a três momentos diferentes e equidistantes ($P_0$, $P_1$, $P_2$). A segunda assume que a população sempre apresente crescimento. Por fim, a condição de inflexão da curva deve ser satisfeita através de $P_{1}^2 > P_{0}P_{2}$. Com as condições satisfeitas, a projeção da população pode ser feita utilizando a seguinte equação:
+
+$$
+P_n = \frac{P_s}{1 + ce^{Kt}}
+$$
+em que $P_s$ é a estimativa da população assumida como limite, P_n é a população estimada para o ano $n$, $c$ é uma constante a ser estimada que representa o intervalo de tempo entre $P_0$ e $0$, ponto de saturação. $k$, assim como $c$, também é uma constante a ser estimada. $t$ é a diferença entre o ano para o qual se deseja estimar a população e o ano do primeiro censo, tomado como referência: $t = t^{'} - t_{0}$. Assim, definem-se as quantidades:
+
+$$
+P_s = \frac{2P_{0} P_{1}P_{2} - P_{1}^2\left(P_{0} + P_{2}\right)}{P_{0} P_{2} - P_{1}^2}
+$$
+
+$$
+c = \frac{P_s - P_{0}}{P_{0}}
+$$
+
+$$
+k = \frac{1}{t_2 - t_1}\ln\left[ \frac{P_0\left(P_s - P_{1}\right)}{P_{1}\left(P_s - P_{0}\right)} \right]
+$$
+
+Como foi dito anteriormente, $P_0$, $P_1$ e $P_2$ representam as populações em três instantes de tempo equidistantes.
 
 # Resultados
-
 
 ```{python}
 censo = pd.read_csv('ibge_cnv_poprj17092745_227_107_69.csv', delimiter = ';')
@@ -377,15 +462,50 @@ pd.DataFrame(
 ).style.hide()
 ```
 
+\ \ \ De acordo com a tabela de população e indicadores de crescimento demográfico, a taxa bruta de natalidade no estado do Rio de Janeiro é de 13,075 nascimentos por mil habitantes, enquanto a taxa de mortalidade é de 8 óbitos por mil habitantes, resultando em um crescimento natural de 4,89. Além disso, a taxa média de crescimento populacional no estado do Rio de Janeiro é de 76,66%.
+
+\newpage
+
 ## Projeção da população do estado do Rio de Janeiro para 2050
 
-\ \ \ Nesta sessão, serão apresentados os resultados das diferentes técnicas de projeção da população do estado do Rio de Janeiro para 2050. Para isso, foram utilizados inicialmente os dados populacionais dos censos de 2000 e 2010, a partir dos quais foi projetada a população do estado em 2020. Com as estimativas populacionais desses três anos, foi então projetada a população para o ano de 2050.
+\ \ \ Nesta sessão, serão apresentados os resultados das diferentes técnicas de projeção da população do estado do Rio de Janeiro para 2050. Para isso, foram utilizados inicialmente os dados populacionais dos censos de 2000 e 2010, a partir dos quais foi projetada a população do estado em 2020. Com as estimativas populacionais desses três anos, foi então projetada a população para o ano de 2050. Abaixo é a tabela com a população do Rio de Janeiro, por sexo, do censo de 2000 e 2010. A população de 2020 precisou ser projetada pois não ocorreu o censo em 2020, apenas em 2022.
 
 ```{python}
 censo.style.hide()
 ```
 
-### Método aritmético
+### Resultados do método aritmético
+
+Em cada um dos métodos aplicados, foi calculado a taxa de crescimento $r$ para o sexo masculino e feminino. Assim, temos as seguintes taxas de crescimento masculino e feminino, respectivamente ($t = 10$):
+
+$$
+r_M = \frac{7.625.679 - 6.900.335}{\left(6.900.335 \cdot 10\right)} = 0,0105
+$$
+
+$$
+r_F = \frac{8.364.250 - 7.490.947}{\left(7.490.947 \cdot 10\right)} = 0,0116
+$$
+em que $r_F$ é a taxa de crescimento para o feminino e $r_M$ é a taxa para o masculino.
+
+\ \ \ Agora, com as duas taxas de crescimento calculadas, podemos fazer a projeção para o ano de 2020 utilizando a população de 2010, que é a mais próxima.
+
+$$
+P_{2020-masculino} = 7.625.679 + \left(7.625.679 \cdot 0,0105\right) \cdot 10 = 8.427.270
+$$
+
+$$
+P_{2020-feminino} = 8.364.250 + \left(8.364.250 \cdot 0,0116\right) \cdot 10 = 9.339.364
+$$
+
+Com a projeção de 2020, basta fazer a projeção de 2050 utilizando a mesma taxa de crescimento obtido para o sexo masculino e feminino. Dessa forma, o resultado da projeção do sexo masculino e feminino para o ano de 2050, utilizando a projeção de 2020 como a data mais próxima, será:
+
+$$
+P_{2050-masculino} = 11.084.823
+$$
+
+$$
+P_{2050-feminino} = 12.605.745
+$$
 
 ```{python}
 def aritmetico(pop_final, pop_inicial, t):
@@ -408,9 +528,43 @@ new_data = pd.DataFrame({
 censo_ari = pd.concat([censo, new_data])
 
 censo_ari.style.hide()
+censo_ari = censo_ari.assign(Metodo = "Aritmético")
 ```
 
-## Método Geométrico
+
+### Resultados do método geométrico
+
+O método geométrico foi aplicado de forma semelhante ao método anterior. Primeiro foi estimado a taxa de crescimento de cada sexo para depois projetar a população de 2020. Com a população de 2020 projetada, foi utilizado a sua projeção para projetar o ano de 2050. Assim, temos as seguintes taxas de projeção de cada sexo:
+
+$$
+r_M = 10^{\frac{1}{10}\log\left(\frac{7.625.679}{6.900.335}\right)} - 1 = 0,0100
+$$
+
+$$
+r_F = 10^{\frac{1}{10}\log\left(\frac{8.364.250}{7.490.947}\right)} - 1 = 0,0110
+$$
+
+Agora basta projetar a população de 2020:
+
+$$
+P_{2020 - masculino} = 7.625.679 \left(1 + 0,01\right)^{10} =
+$$
+
+$$
+P_{2020 - feminino} = 9.339.364 \left(1 + 0,011\right)^{10}
+$$
+
+Com a projeção de 2020 de cada sexo, podemos então fazer a projeção para 2050, obtendo os seguintes resultados:
+
+$$
+P_{2050 - masculino} = 11.373.966
+$$
+
+$$
+P_{2050 - feminino} = 13.001.341
+$$
+
+Pela tabela abaixo e a tabela anterior do método aritmético, podemos ver claramente que não há muita diferença entre as projeções (as projeções foram arredondadas para cima). No entanto, a projeção da geométrica para o ano de 2050 superestima a população, enquanto a aritmética tem um crescimento menos acelerado. Além disso, o tempo que é levado para dobrar a população do sexo masculino e feminino é, respectivamente, 69,66 e 63,35 anos.
 
 ```{python}
 def geometrico(pop_final, pop_inicial, t):
@@ -433,9 +587,30 @@ new_data_geo = pd.DataFrame({
 censo_geo = pd.concat([censo, new_data_geo])
 
 censo_geo.style.hide()
+censo_geo = censo_geo.assign(Metodo = "Geométrico")
 ```
 
-## Método Exponencial
+### Resultados do método exponencial
+
+Como nos métodos anteriores, começamos estimando a taxa de crescimento $r_e$:
+
+$$
+r_{e,M} = \frac{1}{10}\ln\left(\frac{7.625.679}{6.900.335}\right) = 0,0099
+$$
+
+$$
+r_{e,F} = \frac{1}{10}\ln\left(\frac{8.364.250}{7.490.947}\right) = 0,0110
+$$
+É importante perceber que todos os métodos obteram uma taxa de crescimento extremamente próximas, o que pode ser uma das principais causas para as projeções estarem tão próximas. Agora, com as taxas calculadas, fazemos a projeção para o ano de 2020:
+
+$$
+P_{2020 - masculino} = 7.625.679 \cdot e^{0,0099 \cdot 10} = 8.427.270
+$$
+
+$$
+P_{2020 - feminino} = 8.364.250 \cdot e^{0,0110 \cdot 10} = 9.339.364
+$$
+Utilizando as projeções de 2020 para o sexo masculino e feminino, podemos projetar para o ano de 2050. Dessa forma, a projeção para o sexo masculino e feminino para o ano de 2050 foi 11.373.966 e 13.001.341, respectivamente.
 
 ```{python}
 def exponencial(pop_final, pop_inicial, t):
@@ -458,14 +633,88 @@ new_data_exp = pd.DataFrame({
 censo_exp = pd.concat([censo, new_data_exp])
 
 censo_exp.style.hide()
+censo_exp = censo_exp.assign(Metodo = "Exponencial")
 ```
 
-## Método Logístico
+### Resultados do método logístico
+
+O método logístico não cumpriu com a condição de inflexão da curva $P_{1}^2 > P_{0} P_{2}$, o que acabou gerando alguns resultados inesperados ao fazer a projeção utilizando esse método. No entanto, o foi aplicado. É importante salientar que foram utilizados os dados do censo de 2000, 2010 e a projeção feita com os outros métodos para o ano de 2020. Assim, esses foram os dados utilizados para a aplicação do método logístico. Portanto, utilizando os valores de 2000, 2010 e 2020 das tabelas anteriores, obtemos as seguintes estimativas para as constantes
+
+$$
+P_{s \text{-masculino}} = -748386452196,1002 \ c_{masculino} = -108457,5390 \ k_{masculino} = 0,0019
+$$
+
+$$
+P_{s \text{-feminino}} = -2662492726548.4253 \ c_{feminino} = -355429.0555 \ k_{feminino} = -0.0022
+$$
+Já é possível ver as inconsistências nos $P_s$ estimados pois o método não cumpre com a suposição $P_{1}^2 > P_{0} P_{2}$. Assim, chegamos a seguinte projeção para o ano de 2050, que pode ser observado na tabela abaixo.
+
+
+\vspace{12pt}
+
+A tabela abaixo contém a informação de projeção para o ano de 2050. Podemos ver que a projeção para o ano de 2050 acaba sendo menor que o ano de 2020. A causa é o não cumprimento da condição de inflexão da curva, o que acaba fazendo com que $P_s$ seja negativo e projetando a população para baixo.
+
+::: {#fig-log}
 
 ```{python}
 
+def logistico(p0, p1, p2, t):
+  ps = (2 * p0 * p1 * p2 - (p1 ** 2) * (p0 + p2)) / (p0 * p2 - (p1 ** 2))
+  c = (ps - p0) / p0
+  k = np.log(p0 * (ps - p1) / (p1 * (ps - p0))) / t
+
+  return ps / (1 + c * np.exp(k * t)), ps, c, k
+
+pop_2050_masculino = logistico(
+  censo.Masculino[0],
+  censo.Masculino[1],
+  8427270,
+  50
+  )
+
+pop_2050_feminino = logistico(
+  censo.Feminino[0],
+  censo.Feminino[1],
+  9339364,
+  50
+  )
+
+new_data_logis = pd.DataFrame({
+  'Ano': [2020, 2050],
+  'Masculino': [8427270.000000, 7625679.0],
+  'Feminino': [9339364.000000, 8364250.0]
+})
+
+proj_ibge = pd.DataFrame({
+  'Ano': [2020, 2050],
+  'Masculino': [8306271, 8790956],
+  'Feminino': [9059918, 9419780]
+}).assign(Metodo = "Projeção - IBGE")
+
+censo_proj = pd.concat([censo, proj_ibge])
+
+logis = pd.concat([censo, new_data_logis]).assign(Metodo = "Logístico")
+
+
+junta_tudo = pd.concat([logis, censo_exp, censo_ari, censo_geo, proj_ibge])
+
+pd.concat([censo, new_data_logis]).style.hide()
 ```
+
+:::
 
 \vspace{12pt}
 
 # Conclusão
+
+\ \ \ Durante o trabalho, foi possível observar as mudanças demográficas no estado do Rio de Janeiro. Um dos resultados mais evidentes é o rápido envelhecimento da população em comparação com a de 2010, além da queda na taxa de natalidade. Verificou-se que a taxa bruta de natalidade no estado é de 13,075 nascimentos por mil habitantes, enquanto a taxa de mortalidade é de 8 óbitos por mil habitantes.
+
+\vspace{12pt}
+
+\ \ \ Em relação aos diferentes métodos de projeção empregados, o método logístico foi o que mais se aproximou das projeções do IBGE para o ano de 2050, apesar de não cumprir todas as suposições. Além disso, os demais métodos também chegaram a valores bastante próximos, devido às suas taxas de crescimento semelhantes. A comparação pode ser visualizada na tabela abaixo.
+
+```{python}
+junta_tudo.style.hide()
+```
+
+\newpage
