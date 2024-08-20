@@ -4,7 +4,6 @@ title: |
   Análise Demográfica do Estado do Rio de Janeiro
 
   \Large Mortalidade, Natalidade e População - 2010 a 2020
-# subtitle: Mortalidade, Natalidade e População - 2010 a 2020
 number-sections: false
 indent: true
 whitespace: small
