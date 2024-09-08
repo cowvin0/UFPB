@@ -1,0 +1,689 @@
+---
+format: pdf
+title: |
+  Escolher título no final
+number-sections: false
+indent: true
+whitespace: small
+documentclass: scrreprt
+lang: pt-br
+bibliography: ../includes/bib.bib
+csl: ../includes/ufpe-abnt.csl
+subtitle: Universidade Federal da Paraíba - CCEN
+author: Gabriel de Jesus Pereira
+date: today
+date-format: long
+highlight-style: github
+fontsize: 12pt
+interlinespace: 1.5pt
+fig-cap-location: bottom
+warning: false
+echo: false
+include-in-header:
+  - text: |
+      \usepackage{pdflscape}
+      \newcommand{\blandscape}{\begin{landscape}}
+      \newcommand{\elandscape}{\end{landscape}}
+---
+
+```{r}
+library(reticulate)
+```
+
+```{python}
+
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+```
+
+# Introdução
+
+\ \ \ Este estudo tem como objetivo realizar uma análise comparativa abrangente entre o estado do Rio de Janeiro e o Brasil, utilizando dados dos censos de 2000 e 2010. Através dessa comparação temporal, busca-se entender as mudanças e tendências demográficas que ocorreram ao longo da década, focando em indicadores chave como o Índice de Envelhecimento, a Idade Mediana, as Pirâmides Etárias, a Razão de Dependência e o Índice de Myers. Esses indicadores oferecem uma visão detalhada da estrutura etária e das transformações populacionais em ambas as regiões. Além disso, todas as análises serão realizadas separadamente para homens e mulheres, permitindo avaliar as dinâmicas demográficas de forma desagregada por sexo, o que enriquece a compreensão das particularidades de cada grupo e das implicações dessas mudanças para o planejamento socioeconômico e de políticas públicas.
+
+# Metodologia
+
+## Obtenção dos dados
+
+\ \ \ Os dados demográficos utilizados neste estudo foram obtidos de duas fontes principais. As informações sobre a população por faixa etária foram extraídas do TABNET, uma ferramenta desenvolvida pelo DATASUS. O TABNET é um tabulador genérico de domínio público que permite a organização rápida de dados conforme a consulta desejada, enquanto o DATASUS fornece informações essenciais para a análise da saúde pública e de variáveis demográficas, contribuindo para a formulação de programas de ações em saúde. Já os dados populacionais com detalhamento etário do estado do Rio de Janeiro e do Brasil foram obtidos do Sidra. Vale destacar que os dados analisados referem-se aos censos de 2000 e 2010.
+
+## Recursos computacionais
+
+\ \ \ As análises a seguir foram realizadas utilizando a linguagem de programação Python [@van1995python], com a biblioteca Pandas [@reback2020pandas] para manipulação de dados e Matplotlib para visualização [@Hunter:2007]. Além disso, os documentos do relatório foram elaborados com o Quarto [@quarto], um sistema de escrita e publicação científica, e o código-fonte utilizado está disponível no GitHub [@github].
+
+## Razão de Sexo
+
+\ \ \ A razão de sexo é uma medida demográfica que expressa a proporção entre o número de homens e mulheres em uma determinada população. Essa medida mede o balanço relativo dos sexos ao comparar o montante masculino com o do feminino. A fórmula geral é:
+
+$$
+RS = \frac{P^m}{P^f} \times 100
+$$
+
+A razão de sexo é uma ferramenta importante em estudos demográficos, pois ajuda a entender a estrutura da população e pode indicar desequilíbrios que têm implicações sociais, econômicas e de saúde pública. Em algumas regiões, uma razão de sexo desproporcional pode ser um indicativo de práticas de discriminação de gênero, preferências culturais por filhos de determinado sexo ou de condições econômicas que afetam diferentemente homens e mulheres.
+
+## Índice de envelhecimento da população
+
+\ \ \ O Índice de Envelhecimento (IE) é uma medida demográfica que avalia o grau de envelhecimento de uma população. Ele é calculado como a razão entre o número de pessoas idosas (geralmente definidas como aquelas com 65 anos ou mais) e o número de jovens (geralmente aquelas com menos de 15 anos), multiplicado por 100. A fórmula é:
+
+$$
+IE = \frac{\text{População de 65 anos ou mais}}{\text{População de 0 a 14 anos}} \times 100
+$$
+
+Um IE de 100 significa que há um número igual de idosos e jovens na população. Quando o IE é superior a 100, a população tem mais idosos do que jovens, indicando uma população envelhecida. Valores abaixo de 100 indicam que a população é mais jovem.
+
+## Razão de Dependência
+
+\ \ \ A razão de dependência é um indicador demográfico que expressa a relação entre a população considerada economicamente dependente (crianças e idosos) e a população em idade ativa, ou seja, aquela geralmente considerada como economicamente produtiva. Este indicador é fundamental para avaliar a pressão econômica sobre a população em idade de trabalho, indicando o número de pessoas dependentes que cada trabalhador potencialmente precisa sustentar. A compreensão desses indicadores é crucial para o desenvolvimento de estratégias econômicas e sociais que garantam o bem-estar de todas as faixas etárias da população. A razão de dependência pode é dividida em três diferentes estatísticas, que serão definidas a seguir.
+
+### Razão de Dependência Total (RDT)
+
+Reflete a soma das razões de dependência jovem e idosa, calculando o total de pessoas dependentes (jovens e idosos) em relação à população em idade ativa.
+
+$$
+RDT = \frac{\text{População de 0 a 14 anos + População de 65 anos ou mais}}{\text{População de 15 a 64 anos}} \times 100
+$$
+
+### Razão de Dependência Jovem (RDJ)
+
+Calcula a proporção de jovens (0 a 14 anos) em relação à população em idade ativa (15 a 64 anos).
+
+$$
+RDJ = \frac{\text{População de 0 a 14 anos}}{\text{População de 15 a 64 anos}} \times 100
+$$
+
+### Razão de Dependência Idoso (RDI)
+
+Calcula a proporção de idosos (65 anos ou mais) em relação à população em idade ativa.
+
+$$
+RDI = \frac{\text{População de 65 anos ou mais}}{\text{População de 15 a 64 anos}} \times 100
+$$
+
+## Idade Mediana
+
+\ \ \ A idade mediana é uma medida estatística que indica o ponto central da distribuição etária de uma população. Em outras palavras, é a idade que divide a população em duas partes iguais: 50% da população é mais jovem do que essa idade e os outros 50% são mais velhos.
+
+\ \ \ A idade mediana é um indicador útil para entender a estrutura etária de uma população e é frequentemente utilizada em estudos demográficos e socioeconômicos para avaliar o estágio do processo de transição demográfica de um país ou região. Em países com uma idade mediana baixa, a população tende a ser jovem, o que pode estar associado a altas taxas de natalidade e crescimento populacional rápido. Já em países com uma idade mediana alta, a população tende a ser mais velha, refletindo baixas taxas de natalidade e aumento da longevidade.
+
+## Pirâmide etária
+
+\ \ \ A pirâmide etária é um gráfico que representa a distribuição da população de uma região ou país em diferentes faixas etárias, geralmente divididas por sexo (homens e mulheres). Ela é chamada de "pirâmide" devido ao formato característico que exibe em sociedades jovens, onde a base larga representa uma grande proporção de crianças e jovens, e o topo estreito representa uma menor proporção de idosos.
+
+\vspace{12pt}
+
+\ \ \ A partir da análise de um gráfico de pirâmide etária é possível analisar o crescimento populacional de uma região ou nação. Uma base larga sugere uma população crescente, um topo mais largo indica um aumento da proporção de idosos. Mudanças na forma da pirâmide podem exigir ajustes em políticas de saúde, educação, previdência social e mercado de trabalho.
+
+## Índice de Myers
+
+O índice de Myers permite determinar a preferência para cada dígito terminal (0 a 9) nas idades que variam de 10 a 99 anos. Este método assume que a distribuição por dígito terminal é uniforme. O cálculo do Índice de Myers envolve a soma das diferenças absolutas entre a distribuição observada das idades terminadas em cada dígito (de 0 a 9) e uma distribuição esperada uniforme, onde cada dígito deveria aparecer com a mesma frequência. O valor do índice varia de 0 a 90, onde 0 indica uma distribuição perfeita, sem preferência por nenhum dígito, e 90 indica a concentração total em um único dígito.
+
+# Resultados
+
+## Análise da razão de sexo (Brasil e Rio de Janeiro)
+
+\ \ \ A Razão de sexo foi primeiramente calculado para os dados do censo de 2000. Os dados podem ser observados na tabela abaixo. Com a população dividida entre situação rural e urbana, bastou fazer a razão entre a população masculina e feminina de cada situação. O cálculo foi feito considerando o Brasil como um todo e o estado do Rio de Janeiro.
+
+```{python}
+homens_urbanos_rural_2000 = pd\
+  .read_csv('2000_homens_urbana_rural.csv', delimiter=';')\
+  .assign(Sexo='Masculino')
+
+mulheres_urbanos_rural_2000 = pd\
+  .read_csv('2000_mulheres_urbana_rural.csv', delimiter=';')\
+  .assign(Sexo='Feminino')
+
+juntos_urbano_rural_2000 = pd.concat([homens_urbanos_rural_2000, mulheres_urbanos_rural_2000])\
+  .reset_index(drop=True)\
+  .assign(rj_total=lambda x: x['Unidade da Federação'].isin(["Total", "33 Rio de Janeiro"]))\
+  .query('rj_total')\
+  .reset_index(drop=True)\
+  .drop(columns=['rj_total'])\
+  .pivot_table(
+    index='Unidade da Federação',
+    columns='Sexo',
+    values=['Urbana', 'Rural', 'Total']
+  )\
+  .rename(index={'Total': 'Brasil', '33 Rio de Janeiro': 'Rio de Janeiro'}, columns={'Urbana': 'Urbano'})
+
+razao_sexo_2000 = juntos_urbano_rural_2000\
+  .assign(
+    Razão_de_Sexo_Rural=lambda x: x.Rural.Masculino / x.Rural.Feminino * 100,
+    Razão_de_Sexo_Urbana=lambda x: x.Urbano.Masculino / x.Urbano.Feminino * 100,
+    Razão_de_Sexo_Brazil=lambda x: x.Total.Masculino / x.Total.Feminino * 100
+    )\
+  .drop(columns=['Rural', 'Urbano', 'Total'])\
+  .rename(columns={
+    'Razão_de_Sexo_Brazil': 'Razão de Sexo - Total',
+    'Razão_de_Sexo_Urbana': 'Razão de Sexo - Urbano',
+    'Razão_de_Sexo_Rural': 'Razão de Sexo - Rural'})
+
+juntos_urbano_rural_2000.style.hide()
+```
+
+\ \ \ Assim, com os dados de população de 2000, chegamos a seguinte razão de sexo:
+
+```{python}
+razao_sexo_2000.style.hide()
+```
+
+No ano de 2000 a razão de sexo do estado do Rio de Janeiro e do Brasil como um todo é bastante equilibrado, não há muita diferença ao comparar os dois cenários. Analisando somente a situação dos residentes de região rural, a quantidade de homens é maior. Um dos possíveis motivos para se explicar esse acontecimento é que as mulheres saem da área rural a procura de oportunidades de emprego, já que no campo não há muitos trabalhos para mulheres.
+
+\vspace{12pt}
+
+Agora será observado o ano de 2010 e calculado a razão de sexo. A tabela da população com os dados do censo de 2010 pode ser vista na tabela abaixo.
+
+```{python}
+homens_urbanos_rural_2010 = pd\
+  .read_csv('2010_homens_urbanos_rural.csv', delimiter=';')\
+  .assign(Sexo='Masculino')
+
+mulheres_urbanos_rural_2010 = pd\
+  .read_csv('2010_mulheres_urbanas_rural.csv', delimiter=';')\
+  .assign(Sexo='Feminino')
+
+juntos_urbano_rural_2010 = pd.concat([homens_urbanos_rural_2010, mulheres_urbanos_rural_2010])\
+  .reset_index(drop=True)\
+  .assign(rj_total=lambda x: x['Unidade da Federação'].isin(["Total", "33 Rio de Janeiro"]))\
+  .query('rj_total')\
+  .reset_index(drop=True)\
+  .drop(columns=['rj_total'])\
+  .pivot_table(
+    index='Unidade da Federação',
+    columns='Sexo',
+    values=['Urbana', 'Rural', 'Total']
+  )\
+  .rename(index={'Total': 'Brasil', '33 Rio de Janeiro': 'Rio de Janeiro'}, columns={'Urbana': 'Urbano'})
+
+razao_sexo_2010 = juntos_urbano_rural_2010\
+  .assign(
+    Razão_de_Sexo_Rural=lambda x: x.Rural.Masculino / x.Rural.Feminino * 100,
+    Razão_de_Sexo_Urbana=lambda x: x.Urbano.Masculino / x.Urbano.Feminino * 100,
+    Razão_de_Sexo_Brazil=lambda x: x.Total.Masculino / x.Total.Feminino * 100,
+    )\
+  .drop(columns=['Rural', 'Urbano', 'Total'])\
+  .rename(columns={
+    'Razão_de_Sexo_Brazil': 'Razão de Sexo - Total',
+    'Razão_de_Sexo_Urbana': 'Razão de Sexo - Urbano',
+    'Razão_de_Sexo_Rural': 'Razão de Sexo - Rural'})
+
+juntos_urbano_rural_2010.style.hide()
+```
+
+\ \ \ Pela razão de sexo de 2010 abaixo, é possível ver claramente que não ouve uma mudança tão grande entre a razão de sexo de 2010 comparada a de 2000. No entando, ouve um pequeno das mulheres em situação urbana e no cenário total. Já na zona rural, houve ainda uma diminuição das mulheres, mas não apresenta uma diferença muito grande comparado ao ano de 2000.
+
+```{python}
+razao_sexo_2010.style.hide()
+```
+
+## Análise de Dependência
+
+A análise de dependência foi feita considerando a estatística total, jovens e idosos, por sexo. Assim, a primeira análise será em relação ao total. A razão de dependência total, jovem e de idosos foram calculados a partir dos dados do censo de 2000 e 2010. A partir desses dados e utilizando as fórmulas definidas na metodologia, foi possível chegar a tabela abaixo que mostra as razões por sexo e o mesmo definido para o Brasil como um todo:
+
+```{python}
+def calcular_rdt(df, unidade):
+    pop_0_14 = df[(df['Unidade da Federação'] == unidade) & (df['Intervalo de Idade'].isin(['Menor 1 ano', '1 a 4 anos', '5 a 9 anos', '10 a 14 anos']))]['Frequência'].sum()
+    pop_65_mais = df[(df['Unidade da Federação'] == unidade) & (df['Intervalo de Idade'].isin(['70 a 79 anos', '80 anos e mais']))]['Frequência'].sum()
+    pop_15_64 = df[(df['Unidade da Federação'] == unidade) & (df['Intervalo de Idade'].isin(['15 a 19 anos', '20 a 29 anos', '30 a 39 anos', '40 a 49 anos', '50 a 59 anos', '60 a 69 anos']))]['Frequência'].sum()
+
+    rdt = 100 * (pop_0_14 + pop_65_mais) / pop_15_64
+    return rdt
+
+def calcular_rdj(df, unidade):
+    pop_0_14 = df[(df['Unidade da Federação'] == unidade) & (df['Intervalo de Idade'].isin(['Menor 1 ano', '1 a 4 anos', '5 a 9 anos', '10 a 14 anos']))]['Frequência'].sum()
+    pop_15_64 = df[(df['Unidade da Federação'] == unidade) & (df['Intervalo de Idade'].isin(['15 a 19 anos', '20 a 29 anos', '30 a 39 anos', '40 a 49 anos', '50 a 59 anos', '60 a 69 anos']))]['Frequência'].sum()
+
+    rdj = 100 * pop_0_14 / pop_15_64
+    return rdj
+
+def calcular_rdi(df, unidade):
+    pop_65_mais = df[(df['Unidade da Federação'] == unidade) & (df['Intervalo de Idade'].isin(['70 a 79 anos', '80 anos e mais']))]['Frequência'].sum()
+    pop_15_64 = df[(df['Unidade da Federação'] == unidade) & (df['Intervalo de Idade'].isin(['15 a 19 anos', '20 a 29 anos', '30 a 39 anos', '40 a 49 anos', '50 a 59 anos', '60 a 69 anos']))]['Frequência'].sum()
+
+    rdi = 100 * pop_65_mais / pop_15_64
+    return rdi
+```
+
+```{python}
+mulher_etario_2010 = pd.read_csv('2010_faixa_etaria_mulher.csv', delimiter=';')\
+  .set_index('Unidade da Federação')\
+  .rename(index={'Total': 'Brasil', '33 Rio de Janeiro': 'Rio de Janeiro'})\
+  .stack()\
+  .reset_index()\
+  .query('level_1 != "Total"')\
+  .rename(columns={'level_1': 'Intervalo de Idade', 0: 'Frequência'})\
+  .assign(
+    Acumulado=lambda x: x.groupby('Unidade da Federação').Frequência.cumsum()
+  )
+
+categorias = mulher_etario_2010['Intervalo de Idade'].unique()
+
+homem_etario_2010 = pd.read_csv('2010_faixa_etaria_homem.csv', delimiter=';')\
+  .set_index('Unidade da Federação')\
+  .rename(index={'Total': 'Brasil', '33 Rio de Janeiro': 'Rio de Janeiro'})\
+  .stack()\
+  .reset_index()\
+  .query('level_1 != "Total"')\
+  .rename(columns={'level_1': 'Intervalo de Idade', 0: 'Frequência'})\
+  .assign(
+    Acumulado=lambda x: x.groupby('Unidade da Federação').Frequência.cumsum()
+  )
+homem_etario_2010['Intervalo de Idade'] = pd.Categorical(homem_etario_2010['Intervalo de Idade'], categories=categorias)
+mulher_etario_2010['Intervalo de Idade'] = pd.Categorical(mulher_etario_2010['Intervalo de Idade'], categories=categorias)
+```
+
+
+```{python}
+mulher_etario_2000 = pd.read_csv('2000_faixa_etaria_mulher.csv', delimiter=';')\
+  .set_index('Unidade da Federação')\
+  .rename(index={'Total': 'Brasil'})\
+  .stack()\
+  .reset_index()\
+  .query('level_1 != "Total"')\
+  .rename(columns={'level_1': 'Intervalo de Idade', 0: 'Frequência'})\
+  .assign(
+    Acumulado=lambda x: x.groupby('Unidade da Federação').Frequência.cumsum()
+  )
+
+categorias = mulher_etario_2000['Intervalo de Idade'].unique()
+
+homem_etario_2000 = pd.read_csv('2000_faixa_etaria_homem.csv', delimiter=';')\
+  .set_index('Unidade da Federação')\
+  .rename(index={'Total': 'Brasil'})\
+  .stack()\
+  .reset_index()\
+  .query('level_1 != "Total"')\
+  .rename(columns={'level_1': 'Intervalo de Idade', 0: 'Frequência'})\
+  .assign(
+    Acumulado=lambda x: x.groupby('Unidade da Federação').Frequência.cumsum()
+  )
+homem_etario_2000['Intervalo de Idade'] = pd.Categorical(homem_etario_2000['Intervalo de Idade'], categories=categorias)
+mulher_etario_2000['Intervalo de Idade'] = pd.Categorical(mulher_etario_2000['Intervalo de Idade'], categories=categorias)
+
+dep_total_2000 = pd.DataFrame({
+  'Ano': [2000] * 4,
+  'Unidade da Federação': ['Rio de Janeiro', 'Brasil'] * 2,
+  'Sexo': ['Feminino', 'Feminino', 'Masculino', 'Masculino'],
+  'RDT': [calcular_rdt(mulher_etario_2000, 'Rio de Janeiro'),
+          calcular_rdt(mulher_etario_2000, 'Brasil'),
+          calcular_rdt(homem_etario_2000, 'Rio de Janeiro'),
+          calcular_rdt(homem_etario_2000, 'Brasil')],
+  'RDJ': [calcular_rdj(mulher_etario_2000, 'Rio de Janeiro'),
+          calcular_rdj(mulher_etario_2000, 'Brasil'),
+          calcular_rdj(homem_etario_2000, 'Rio de Janeiro'),
+          calcular_rdj(homem_etario_2000, 'Brasil')],
+  'RDI': [calcular_rdi(mulher_etario_2000, 'Rio de Janeiro'),
+          calcular_rdi(mulher_etario_2000, 'Brasil'),
+          calcular_rdi(homem_etario_2000, 'Rio de Janeiro'),
+          calcular_rdi(homem_etario_2000, 'Brasil')],
+          })
+
+dep_total_2010 = pd.DataFrame({
+  'Ano': [2010] * 4,
+  'Unidade da Federação': ['Rio de Janeiro', 'Brasil'] * 2,
+  'Sexo': ['Feminino', 'Feminino', 'Masculino', 'Masculino'],
+  'RDT': [calcular_rdt(mulher_etario_2010, 'Rio de Janeiro'),
+          calcular_rdt(mulher_etario_2010, 'Brasil'),
+          calcular_rdt(homem_etario_2010, 'Rio de Janeiro'),
+          calcular_rdt(homem_etario_2010, 'Brasil')],
+  'RDJ': [calcular_rdj(mulher_etario_2010, 'Rio de Janeiro'),
+          calcular_rdj(mulher_etario_2010, 'Brasil'),
+          calcular_rdj(homem_etario_2010, 'Rio de Janeiro'),
+          calcular_rdj(homem_etario_2010, 'Brasil')],
+  'RDI': [calcular_rdi(mulher_etario_2010, 'Rio de Janeiro'),
+          calcular_rdi(mulher_etario_2010, 'Brasil'),
+          calcular_rdi(homem_etario_2010, 'Rio de Janeiro'),
+          calcular_rdi(homem_etario_2010, 'Brasil')],
+          })
+
+pd.concat([dep_total_2010, dep_total_2000], axis=0).style.hide()
+```
+
+A razão de dependência de jovens (RDJ) era significativamente maior no censo de 2000, tanto para o sexo masculino quanto para o feminino. No Brasil, em 2000, considerando apenas o sexo masculino, havia 46 jovens dependentes para cada 100 pessoas em idade ativa. Esse valor caiu para 35,32 no censo de 2010. A única situação que apresentou um aumento na dependência foi a dos idosos em 2010. Para as mulheres, a queda na dependência total, especialmente entre os jovens, foi ainda mais acentuada, refletindo uma redução na dependência das mulheres em relação às pessoas economicamente ativas.
+
+## Análise do índice de envelhecimento por sexo
+
+\ \ \ O índice de envelhecimento foi calculado para o sexo feminino e masculino, considerando a estatística para o estado do Rio de Janeiro e Brasil como um todo. Os valores cálculados podem ser observados abaixo.
+
+```{python}
+def calcular_ie(df, unidade):
+    # Somando as frequências da população com 60 anos ou mais
+    pop_60_mais = df[(df['Unidade da Federação'] == unidade) &
+                     (df['Intervalo de Idade'].isin(['60 a 69 anos', '70 a 79 anos', '80 anos e mais']))]['Frequência'].sum()
+
+    # Somando as frequências da população de 0 a 14 anos
+    pop_0_14 = df[(df['Unidade da Federação'] == unidade) &
+                  (df['Intervalo de Idade'].isin(['Menor 1 ano', '1 a 4 anos', '5 a 9 anos', '10 a 14 anos']))]['Frequência'].sum()
+
+    # Calculando o Índice de Envelhecimento
+    ie = (pop_60_mais / pop_0_14) * 100
+    return ie
+
+velhice_total_2000 = pd.DataFrame({
+  'Ano': [2000] * 4,
+  'Unidade da Federação': ['Rio de Janeiro', 'Brasil'] * 2,
+  'Sexo': ['Feminino', 'Feminino', 'Masculino', 'Masculino'],
+  'Índice de Envelhecimento': [calcular_ie(mulher_etario_2000, 'Rio de Janeiro'),
+          calcular_ie(mulher_etario_2000, 'Brasil'),
+          calcular_ie(homem_etario_2000, 'Rio de Janeiro'),
+          calcular_ie(homem_etario_2000, 'Brasil')],
+          })
+
+velhice_total_2010 = pd.DataFrame({
+  'Ano': [2010] * 4,
+  'Unidade da Federação': ['Rio de Janeiro', 'Brasil'] * 2,
+  'Sexo': ['Feminino', 'Feminino', 'Masculino', 'Masculino'],
+  'Índice de Envelhecimento': [calcular_ie(mulher_etario_2010, 'Rio de Janeiro'),
+          calcular_ie(mulher_etario_2010, 'Brasil'),
+          calcular_ie(homem_etario_2010, 'Rio de Janeiro'),
+          calcular_ie(homem_etario_2010, 'Brasil')],
+          })
+
+pd.concat([velhice_total_2010, velhice_total_2000], axis=0).style.hide()
+```
+
+\vspace{12pt}
+
+\ \ \ De 2000 para 2010, observa-se um aumento significativo no Índice de Envelhecimento em todas as categorias (por sexo e por unidade da federação). Esse aumento reflete o processo de envelhecimento populacional em andamento tanto no Rio de Janeiro quanto no Brasil como um todo.
+
+\vspace{12pt}
+
+\ \ \ O IE no Rio de Janeiro (50,59) era consideravelmente maior do que o do Brasil (32,32), indicando que o estado já tinha uma população feminina mais envelhecida em comparação ao país como um todo. Essa diferença aumenta ainda mais, com o Rio de Janeiro atingindo um IE de 73,37, enquanto o Brasil atinge 50,67. Isso mostra que a população feminina do Rio de Janeiro envelheceu em um ritmo mais rápido do que a média nacional.
+
+\vspace{12pt}
+
+\ \ \ O IE masculino no Rio de Janeiro (34,78) também era maior do que o do Brasil (25,62), embora a diferença seja menor comparada ao sexo feminino. Em 2010, essa diferença permanece, com o Rio de Janeiro atingindo um IE masculino de 49,90, em comparação com 39,18 no Brasil. Assim como no caso feminino, a população masculina do Rio de Janeiro também envelheceu mais rapidamente do que a média nacional.
+
+## Idade Mediana
+
+\ \ \ Para o cálculo da idade mediana foi considerado a frequência acumulado da população.Como pode ser observado na tabela abaixo, a população total masculina do Rio de Janeiro no censo de 2000 é de 6.900.335. Dividindo o total por 2, temos que a mediana da população é 3450167,5. Ou seja, a mediana está no intervalo de 20 a 29 anos. Assim, temos o seguinte cálculo da idade mediana para os homens com os dados do censo de 2000:
+
+$$
+M_d = 20 + \left(\frac{3.450.167,5 - 2.493.359}{1.208.174}\right) \times 9
+$$
+
+$$
+M_d = 20,7919
+$$
+
+Assim, a idade mediana para os homens do estado do Rio de Janeiro é de 20,7919. Agora considerando o Brasil como um todo no ano de 2000 para os homens, temos que a soma total é de 83.576.015. Ou seja, tomando a mediana da população, temos 41.788.007,5. Portanto, a mediana do Brasil está no intervalo de 20 a 29 anos, assim como o do Rio de Janeiro. Agora calculando a mediana para a população masculina do ano de 2000, temos que:
+
+$$
+M_d = 20 + \left(\frac{41.788.007,5 -  34.526.048}{14.862.546}\right)
+$$
+
+$$
+M_d = 20,4886
+$$
+
+Portanto, a idade mediana da população masculina do estado Rio de Janeiro é bastante semelhante a da população masculina geral no censo de 2000.
+
+```{python}
+homem_etario_2000.style.hide()
+```
+
+Agora prosseguindo de forma semelhante para o cálculo da idade mediana das mulheres no ano de 2000, podemos seguir da mesma forma com a tabela abaixo:
+
+\vspace{12pt}
+
+Da tabela vemos que o total de mulheres no estado do Rio de Janeiro no ano de 2000 é de 7.490.947. Portanto, tomando a metade desse total, temos 3.745.473,5. Ou seja, a idade mediana está no intervalo de 30 a 39 anos. Assim, prosseguindo com o cálculo da idade mediana para as mulheres no estado do Rio de Janeiro, tem-se:
+
+$$
+M_d = 30 + \left(\frac{3.745.473,5 - 3.700.536}{1.257.964}\right) = 30.0357
+$$
+
+Seguindo de forma semelhante para o Brasil, temos que a idade mediana do Brasil para as mulheres com os dados de censo de 2000 é:
+
+$$
+M_d = 20 + \left(\frac{43.111.577,5 - 33.679.889}{8.920.685}\right) = 21,0572
+$$
+
+```{python}
+mulher_etario_2000.style.hide()
+```
+
+Para o ano de 2010 para os homens e mulheres, o cálculo pode ser feito da mesma forma. Portanto, com as duas tabelas de homens e mulheres, respectivamente, temos as seguintes tabelas:
+
+```{python}
+homem_etario_2010.style.hide()
+```
+
+```{python}
+mulher_etario_2010.style.hide()
+```
+
+A partir das tabelas, a idade mediana para os homens do estado do Rio de Janeiro em 2010 é de 30,1195 e o do Brasil é de 20,8646. Para as mulheres do Rio de Janeiro a idade mediana no ano de 2010 é de 30,4032. Já para o Brasil é de 30,027. A população masculina em relação ao Rio de Janeiro apresentou um aumento na idade mediana, mas não houve uma mudança muito grande em relação ao Brasil. Já para as mulheres, houve um aumento claro na idade mediana do Brasil.
+
+## Pirâmide etária
+
+\ \ \ A construção da pirâmide etária foi realizada tanto para o estado do Rio de Janeiro quanto para o Brasil, levando em consideração as populações masculina e feminina. O gráfico abaixo apresenta a pirâmide etária do estado do Rio de Janeiro. Nota-se que, em 2010, a parte superior da pirâmide aumentou em relação ao ano de 2000, o que indica um envelhecimento da estrutura populacional, especialmente entre as mulheres, representadas pela cor laranja. A comparação entre os gráficos de 2000 e 2010 revela poucas diferenças em relação ao estado do Rio de Janeiro, sugerindo que a dinâmica populacional do Rio seguia um padrão muito semelhante ao observado no Brasil como um todo nesses anos.
+
+```{python}
+piram_muie_2000 = mulher_etario_2000\
+  .rename(columns={'Frequência': 'Feminino'})\
+  .drop(columns=['Acumulado'])\
+  .query('`Unidade da Federação` == "Rio de Janeiro"')
+
+piram_homi_2000 = homem_etario_2000\
+  .rename(columns={'Frequência': 'Masculino'})\
+  .drop(columns=['Acumulado'])\
+  .query('`Unidade da Federação` == "Rio de Janeiro"')
+
+piram_2000 = pd.concat([piram_muie_2000, piram_homi_2000.drop(columns=['Intervalo de Idade'])], axis=1)\
+  .rename(columns={'Intervalo de Idade': 'Idade', 'Unidade da Federação': 'UF'})\
+  .drop(columns=['UF'])\
+  .sort_values('Idade', ascending=False)
+```
+
+```{python}
+piram_muie_2010 = mulher_etario_2010\
+  .rename(columns={'Frequência': 'Feminino'})\
+  .drop(columns=['Acumulado'])\
+  .query('`Unidade da Federação` == "Rio de Janeiro"')
+
+piram_homi_2010 = homem_etario_2010\
+  .rename(columns={'Frequência': 'Masculino'})\
+  .drop(columns=['Acumulado'])\
+  .query('`Unidade da Federação` == "Rio de Janeiro"')
+
+piram_2010 = pd.concat([piram_muie_2010, piram_homi_2010.drop(columns=['Intervalo de Idade'])], axis=1)\
+  .rename(columns={'Intervalo de Idade': 'Idade', 'Unidade da Federação': 'UF'})\
+  .drop(columns=['UF'])\
+  .sort_values('Idade', ascending=False)
+```
+
+```{python}
+piram_muie_2000_brasil = mulher_etario_2000\
+  .rename(columns={'Frequência': 'Feminino'})\
+  .drop(columns=['Acumulado'])\
+  .query('`Unidade da Federação` == "Brasil"')
+
+piram_homi_2000_brasil = homem_etario_2000\
+  .rename(columns={'Frequência': 'Masculino'})\
+  .drop(columns=['Acumulado'])\
+  .query('`Unidade da Federação` == "Brasil"')
+
+piram_2000_brasil = pd.concat([piram_muie_2000, piram_homi_2000.drop(columns=['Intervalo de Idade'])], axis=1)\
+  .rename(columns={'Intervalo de Idade': 'Idade', 'Unidade da Federação': 'UF'})\
+  .drop(columns=['UF'])\
+  .sort_values('Idade', ascending=False)
+```
+
+```{python}
+piram_muie_2010_brasil = mulher_etario_2010\
+  .rename(columns={'Frequência': 'Feminino'})\
+  .drop(columns=['Acumulado'])\
+  .query('`Unidade da Federação` == "Brasil"')
+
+piram_homi_2010_brasil = homem_etario_2010\
+  .rename(columns={'Frequência': 'Masculino'})\
+  .drop(columns=['Acumulado'])\
+  .query('`Unidade da Federação` == "Brasil"')
+
+piram_2010_brasil = pd.concat([piram_muie_2010, piram_homi_2010.drop(columns=['Intervalo de Idade'])], axis=1)\
+  .rename(columns={'Intervalo de Idade': 'Idade', 'Unidade da Federação': 'UF'})\
+  .drop(columns=['UF'])\
+  .sort_values('Idade', ascending=False)
+```
+
+::: {#fig-py1 layout-ncol=2}
+
+```{python}
+#| label: fig-pir2000
+
+barplot = sns.barplot(
+  data=piram_2000.assign(Masculino=lambda x: -x.Masculino),
+  x="Masculino",
+  y="Idade",
+  order=piram_2000['Idade'],
+  color="#049899",
+  lw=0
+  )
+
+barplot = sns.barplot(
+  x="Feminino",
+  y="Idade",
+  data=piram_2000.sort_values('Idade'),
+  order=piram_2000.Idade.sort_values(ascending=False).cat.categories,
+  color="#ED9502",
+  lw=0
+)
+plt.xlabel('População')
+plt.show()
+```
+
+
+```{python}
+#| label: fig-pir2010
+
+barplot = sns.barplot(
+  data=piram_2010.assign(Masculino=lambda x: -x.Masculino),
+  x="Masculino",
+  y="Idade",
+  order=piram_2010['Idade'],
+  color="#049899",
+  lw=0
+  )
+
+barplot = sns.barplot(
+  x="Feminino",
+  y="Idade",
+  data=piram_2010.sort_values('Idade'),
+  order=piram_2010.Idade.sort_values(ascending=False).cat.categories,
+  color="#ED9502",
+  lw=0
+)
+plt.xlabel('População')
+plt.show()
+```
+
+Gráfico de pirâmide da população no estado do Rio de Janeiro. O gráfico na figura à esquerda é a pirâmide etária do estado do Rio de Janeiro em 2000. O da direita é no ano de 2010.
+:::
+
+::: {#fig-py2 layout-ncol=2}
+
+```{python}
+#| label: fig-pir2000_brasil
+
+barplot = sns.barplot(
+  data=piram_2000_brasil.assign(Masculino=lambda x: -x.Masculino),
+  x="Masculino",
+  y="Idade",
+  order=piram_2000_brasil['Idade'],
+  color="#049899",
+  lw=0
+  )
+
+barplot = sns.barplot(
+  x="Feminino",
+  y="Idade",
+  data=piram_2000_brasil.sort_values('Idade'),
+  order=piram_2000_brasil.Idade.sort_values(ascending=False).cat.categories,
+  color="#ED9502",
+  lw=0
+)
+plt.xlabel('População')
+plt.show()
+```
+
+
+```{python}
+#| label: fig-pir2010_brasil
+
+barplot = sns.barplot(
+  data=piram_2010_brasil.assign(Masculino=lambda x: -x.Masculino),
+  x="Masculino",
+  y="Idade",
+  order=piram_2010_brasil['Idade'],
+  color="#049899",
+  lw=0
+  )
+
+barplot = sns.barplot(
+  x="Feminino",
+  y="Idade",
+  data=piram_2010_brasil.sort_values('Idade'),
+  order=piram_2010_brasil.Idade.sort_values(ascending=False).cat.categories,
+  color="#ED9502",
+  lw=0
+)
+plt.xlabel('População')
+plt.show()
+```
+
+Gráfico de pirâmide da população no Brasil. O gráfico na figura à esquerda é a pirâmide etária no Brasil em 2000. O da direita é no ano de 2010.
+:::
+
+\newpage
+
+## Índice de Myers
+
+\ \ \ O índice de Myers foi calculado para o sexo feminino e masculino, considerando as mulheres e os homems, no ano de 2010. A tabela abaixo mostra as estatísticas obtidas para o estado do Rio de Janeiro e para o Brasil.
+
+\vspace{12pt}
+
+\ \ \ Os valores do Índice de Myers para o Brasil estão relativamente baixos, com 2,18 para homens e 1,75 para mulheres. Isso sugere que, de modo geral, não há uma forte tendência de arredondamento de idades ou preferências por certos dígitos, o que indica que os dados de idade são de boa qualidade. No entanto, os homens apresentam um valor ligeiramente mais alto que as mulheres, sugerindo que pode haver uma leve tendência de arredondamento maior entre eles.
+
+\vspace{12pt}
+
+\ \ \ No caso do Rio de Janeiro, os valores são um pouco mais elevados, especialmente para os homens (3,03), o que sugere uma maior tendência de arredondamento de idades nessa população. Esse valor, embora ainda moderado, indica uma leve concentração de idades em torno de dígitos preferenciais. Novamente, as mulheres apresentam um índice menor (2,25), o que sugere dados ligeiramente mais confiáveis em comparação aos homens.
+
+```{r}
+library(popstudy)
+library(readxl)
+library(tidyverse)
+library(tidyr)
+
+df_idadepontual <- read_excel("tabela_idadepontual_2010.xlsx") |> mutate(
+     Idade = rep(0:99, 2)
+   )
+
+myers_homem_brasil <- df_idadepontual |>
+  filter(`Brasil e Unidade da Federação` == "Brasil") |>
+  Myers(Idade, Homens)
+myers_homem_rj <- df_idadepontual |>
+  filter(`Brasil e Unidade da Federação` == "Rio de Janeiro") |>
+  Myers(Idade, Homens)
+
+myers_mulher_brasil <- df_idadepontual |>
+  filter(`Brasil e Unidade da Federação` == "Brasil") |>
+  Myers(Idade, Mulheres)
+myers_mulher_rj <- df_idadepontual |>
+  filter(`Brasil e Unidade da Federação` == "Rio de Janeiro") |>
+  Myers(Idade, Mulheres)
+
+tibble(
+  `Brasil e Rio de Janeiro` = c("Brasil", "Rio de Janeiro"),
+  Homens = c(myers_homem_brasil$MI, myers_homem_rj$MI),
+  Mulheres = c(myers_mulher_brasil$MI, myers_mulher_rj$MI)
+) |>
+  knitr::kable()
+```
+
+# Conclusão
+
+\ \ \ A partir das comparações entre o estado do Rio de Janeiro e o Brasil, observou-se que o Rio de Janeiro segue um padrão muito similar ao do país em todos os indicadores utilizados. No que diz respeito às pirâmides etárias, as análises revelaram que, entre 2000 e 2010, as diferenças entre as duas regiões são praticamente inexistentes para ambos os sexos. O mesmo padrão foi observado em relação à idade mediana, com um aumento no envelhecimento da população em 2010, especialmente entre as mulheres. No entanto, o envelhecimento masculino foi evidente apenas no Rio de Janeiro, enquanto, no Brasil, esse índice permaneceu estável.
+
+\vspace{12pt}
+
+\ \ \ No que tange ao Índice de Envelhecimento, o aumento foi mais expressivo entre as mulheres, especialmente no Rio de Janeiro. Já para a Razão de Dependência, observou-se uma queda mais acentuada entre as mulheres, refletindo uma redução na dependência feminina em relação à população economicamente ativa. A Razão de Sexo indicou uma diminuição da proporção de mulheres nas áreas rurais, provavelmente em busca de melhores oportunidades nas zonas urbanas. Por fim, o Índice de Myers sugeriu uma tendência mais acentuada de arredondamento de idades no estado do Rio de Janeiro.
