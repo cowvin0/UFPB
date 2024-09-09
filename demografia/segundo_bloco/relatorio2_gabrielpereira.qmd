@@ -1,7 +1,7 @@
 ---
 format: pdf
 title: |
-  Escolher título no final
+  Comparação indicadores demográficos entre Brasil e Rio de Janeiro (censo de 2000 e 2010)
 number-sections: false
 indent: true
 whitespace: small
@@ -46,11 +46,11 @@ import matplotlib.pyplot as plt
 
 ## Obtenção dos dados
 
-\ \ \ Os dados demográficos utilizados neste estudo foram obtidos de duas fontes principais. As informações sobre a população por faixa etária foram extraídas do TABNET, uma ferramenta desenvolvida pelo DATASUS. O TABNET é um tabulador genérico de domínio público que permite a organização rápida de dados conforme a consulta desejada, enquanto o DATASUS fornece informações essenciais para a análise da saúde pública e de variáveis demográficas, contribuindo para a formulação de programas de ações em saúde. Já os dados populacionais com detalhamento etário do estado do Rio de Janeiro e do Brasil foram obtidos do Sidra. Vale destacar que os dados analisados referem-se aos censos de 2000 e 2010.
+\ \ \ Os dados demográficos utilizados neste estudo foram obtidos de duas fontes principais. As informações sobre a população por faixa etária foram extraídas do TABNET, uma ferramenta desenvolvida pelo DATASUS. O TABNET é um tabulador genérico de domínio público que facilita a organização e consulta rápida de dados conforme os critérios definidos, enquanto o DATASUS fornece informações essenciais para a análise da saúde pública e variáveis demográficas, contribuindo para a formulação de políticas e programas de saúde. Os dados populacionais detalhados por idade para o estado do Rio de Janeiro e para o Brasil foram obtidos por meio do Sidra. É importante destacar que os dados analisados correspondem aos censos de 2000 e 2010.
 
 ## Recursos computacionais
 
-\ \ \ As análises a seguir foram realizadas utilizando a linguagem de programação Python [@van1995python], com a biblioteca Pandas [@reback2020pandas] para manipulação de dados e Matplotlib para visualização [@Hunter:2007]. Além disso, os documentos do relatório foram elaborados com o Quarto [@quarto], um sistema de escrita e publicação científica, e o código-fonte utilizado está disponível no GitHub [@github].
+\ \ \ As análises apresentadas neste estudo foram realizadas utilizando a linguagem de programação Python [@van1995python], com o auxílio da biblioteca Pandas [@reback2020pandas] para manipulação de dados e da biblioteca Matplotlib para visualização gráfica [@Hunter:2007]. Os documentos do relatório foram elaborados com o Quarto [@quarto], um sistema de escrita e publicação científica. Todo o código-fonte utilizado nas análises está disponível no GitHub [@github].
 
 ## Razão de Sexo
 
@@ -60,25 +60,25 @@ $$
 RS = \frac{P^m}{P^f} \times 100
 $$
 
-A razão de sexo é uma ferramenta importante em estudos demográficos, pois ajuda a entender a estrutura da população e pode indicar desequilíbrios que têm implicações sociais, econômicas e de saúde pública. Em algumas regiões, uma razão de sexo desproporcional pode ser um indicativo de práticas de discriminação de gênero, preferências culturais por filhos de determinado sexo ou de condições econômicas que afetam diferentemente homens e mulheres.
+\ \ \ A razão de sexo é uma ferramenta fundamental em estudos demográficos, pois permite compreender a estrutura populacional e identificar possíveis desequilíbrios que podem ter implicações sociais, econômicas e de saúde pública. Em algumas regiões, uma razão de sexo desproporcional pode indicar práticas de discriminação de gênero, preferências culturais por filhos de determinado sexo ou condições econômicas que afetam de maneira distinta homens e mulheres.
 
 ## Índice de envelhecimento da população
 
-\ \ \ O Índice de Envelhecimento (IE) é uma medida demográfica que avalia o grau de envelhecimento de uma população. Ele é calculado como a razão entre o número de pessoas idosas (geralmente definidas como aquelas com 65 anos ou mais) e o número de jovens (geralmente aquelas com menos de 15 anos), multiplicado por 100. A fórmula é:
+\ \ \ O Índice de Envelhecimento (IE) é uma medida demográfica que quantifica o grau de envelhecimento de uma população. Ele é calculado como a razão entre o número de pessoas idosas (geralmente definidas como aquelas com 65 anos ou mais) e o número de jovens (aqueles com menos de 15 anos), multiplicado por 100. A fórmula é:
 
 $$
 IE = \frac{\text{População de 65 anos ou mais}}{\text{População de 0 a 14 anos}} \times 100
 $$
 
-Um IE de 100 significa que há um número igual de idosos e jovens na população. Quando o IE é superior a 100, a população tem mais idosos do que jovens, indicando uma população envelhecida. Valores abaixo de 100 indicam que a população é mais jovem.
+\ \ \ Um IE de 100 indica que há um número equivalente de idosos e jovens na população. Quando o IE é superior a 100, isso sugere uma população mais envelhecida, com mais idosos do que jovens. Por outro lado, valores abaixo de 100 indicam que a população tem uma maior proporção de jovens.
 
 ## Razão de Dependência
 
-\ \ \ A razão de dependência é um indicador demográfico que expressa a relação entre a população considerada economicamente dependente (crianças e idosos) e a população em idade ativa, ou seja, aquela geralmente considerada como economicamente produtiva. Este indicador é fundamental para avaliar a pressão econômica sobre a população em idade de trabalho, indicando o número de pessoas dependentes que cada trabalhador potencialmente precisa sustentar. A compreensão desses indicadores é crucial para o desenvolvimento de estratégias econômicas e sociais que garantam o bem-estar de todas as faixas etárias da população. A razão de dependência pode é dividida em três diferentes estatísticas, que serão definidas a seguir.
+\ \ \ A razão de dependência é um indicador demográfico que expressa a relação entre a população considerada economicamente dependente (crianças e idosos) e a população em idade ativa, geralmente vista como economicamente produtiva. Esse indicador é fundamental para avaliar a pressão econômica sobre a população em idade de trabalho, pois revela quantas pessoas dependentes cada trabalhador, em potencial, precisa sustentar. A compreensão desse índice é essencial para o desenvolvimento de estratégias econômicas e sociais que promovam o bem-estar de todas as faixas etárias da população. A razão de dependência é dividida em três estatísticas distintas, que serão detalhadas a seguir.
 
 ### Razão de Dependência Total (RDT)
 
-Reflete a soma das razões de dependência jovem e idosa, calculando o total de pessoas dependentes (jovens e idosos) em relação à população em idade ativa.
+\ \ \ Reflete a soma das razões de dependência de jovens e idosos, expressando o total de pessoas dependentes (jovens e idosos) em relação à população em idade ativa.
 
 $$
 RDT = \frac{\text{População de 0 a 14 anos + População de 65 anos ou mais}}{\text{População de 15 a 64 anos}} \times 100
@@ -86,7 +86,7 @@ $$
 
 ### Razão de Dependência Jovem (RDJ)
 
-Calcula a proporção de jovens (0 a 14 anos) em relação à população em idade ativa (15 a 64 anos).
+\ \ \ Calcula a proporção de jovens (0 a 14 anos) em relação à população em idade ativa (15 a 64 anos), indicando o peso da população jovem sobre a força de trabalho.
 
 $$
 RDJ = \frac{\text{População de 0 a 14 anos}}{\text{População de 15 a 64 anos}} \times 100
@@ -94,7 +94,7 @@ $$
 
 ### Razão de Dependência Idoso (RDI)
 
-Calcula a proporção de idosos (65 anos ou mais) em relação à população em idade ativa.
+\ \ \ Calcula a proporção de idosos (65 anos ou mais) em relação à população em idade ativa (15 a 64 anos), indicando o impacto da população idosa sobre a força de trabalho.
 
 $$
 RDI = \frac{\text{População de 65 anos ou mais}}{\text{População de 15 a 64 anos}} \times 100
@@ -102,27 +102,29 @@ $$
 
 ## Idade Mediana
 
-\ \ \ A idade mediana é uma medida estatística que indica o ponto central da distribuição etária de uma população. Em outras palavras, é a idade que divide a população em duas partes iguais: 50% da população é mais jovem do que essa idade e os outros 50% são mais velhos.
-
-\ \ \ A idade mediana é um indicador útil para entender a estrutura etária de uma população e é frequentemente utilizada em estudos demográficos e socioeconômicos para avaliar o estágio do processo de transição demográfica de um país ou região. Em países com uma idade mediana baixa, a população tende a ser jovem, o que pode estar associado a altas taxas de natalidade e crescimento populacional rápido. Já em países com uma idade mediana alta, a população tende a ser mais velha, refletindo baixas taxas de natalidade e aumento da longevidade.
-
-## Pirâmide etária
-
-\ \ \ A pirâmide etária é um gráfico que representa a distribuição da população de uma região ou país em diferentes faixas etárias, geralmente divididas por sexo (homens e mulheres). Ela é chamada de "pirâmide" devido ao formato característico que exibe em sociedades jovens, onde a base larga representa uma grande proporção de crianças e jovens, e o topo estreito representa uma menor proporção de idosos.
+\ \ \ A idade mediana é uma medida estatística que representa o ponto central da distribuição etária de uma população. Em outras palavras, é a idade que divide a população em duas metades iguais: 50% das pessoas são mais jovens que essa idade, e os outros 50% são mais velhos.
 
 \vspace{12pt}
 
-\ \ \ A partir da análise de um gráfico de pirâmide etária é possível analisar o crescimento populacional de uma região ou nação. Uma base larga sugere uma população crescente, um topo mais largo indica um aumento da proporção de idosos. Mudanças na forma da pirâmide podem exigir ajustes em políticas de saúde, educação, previdência social e mercado de trabalho.
+\ \ \ A idade mediana é um indicador valioso para compreender a estrutura etária de uma população, sendo amplamente utilizada em estudos demográficos e socioeconômicos para avaliar o estágio do processo de transição demográfica de um país ou região. Em países com uma idade mediana baixa, a população tende a ser jovem, o que pode estar associado a altas taxas de natalidade e rápido crescimento populacional. Por outro lado, em países com uma idade mediana elevada, a população tende a ser mais velha, refletindo baixas taxas de natalidade e aumento da longevidade.
+
+## Pirâmide etária
+
+\ \ \ A pirâmide etária é um gráfico que representa a distribuição da população de uma região ou país por faixas etárias, geralmente separadas por sexo (homens e mulheres). Ela recebe o nome de "pirâmide" devido ao formato característico observado em sociedades jovens, onde a base larga indica uma grande proporção de crianças e jovens, enquanto o topo estreito reflete uma menor proporção de idosos.
+
+\vspace{12pt}
+
+\ \ \ A análise de uma pirâmide etária permite compreender o crescimento populacional de uma região ou país. Uma base larga sugere uma população em crescimento, enquanto um topo mais largo indica um aumento da proporção de idosos. Alterações no formato da pirâmide podem demandar ajustes em políticas públicas nas áreas de saúde, educação, previdência social e mercado de trabalho.
 
 ## Índice de Myers
 
-O índice de Myers permite determinar a preferência para cada dígito terminal (0 a 9) nas idades que variam de 10 a 99 anos. Este método assume que a distribuição por dígito terminal é uniforme. O cálculo do Índice de Myers envolve a soma das diferenças absolutas entre a distribuição observada das idades terminadas em cada dígito (de 0 a 9) e uma distribuição esperada uniforme, onde cada dígito deveria aparecer com a mesma frequência. O valor do índice varia de 0 a 90, onde 0 indica uma distribuição perfeita, sem preferência por nenhum dígito, e 90 indica a concentração total em um único dígito.
+\ \ \ O Índice de Myers é utilizado para determinar a preferência por cada dígito terminal (0 a 9) nas idades que variam de 10 a 99 anos. Esse método parte da suposição de que a distribuição dos dígitos terminais é uniforme. O cálculo do Índice de Myers consiste na soma das diferenças absolutas entre a distribuição observada das idades terminadas em cada dígito (de 0 a 9) e uma distribuição esperada uniforme, onde cada dígito deveria aparecer com a mesma frequência. O valor do índice varia de 0 a 90, sendo que 0 indica uma distribuição perfeita, sem preferência por nenhum dígito, e 90 indica a concentração total em um único dígito.
 
 # Resultados
 
 ## Análise da razão de sexo (Brasil e Rio de Janeiro)
 
-\ \ \ A Razão de sexo foi primeiramente calculado para os dados do censo de 2000. Os dados podem ser observados na tabela abaixo. Com a população dividida entre situação rural e urbana, bastou fazer a razão entre a população masculina e feminina de cada situação. O cálculo foi feito considerando o Brasil como um todo e o estado do Rio de Janeiro.
+\ \ \ A razão de sexo foi inicialmente calculada para os dados do censo de 2000. Os resultados estão apresentados na tabela abaixo. Para calcular a razão de sexo, a população foi dividida entre as situações rural e urbana, e a razão foi obtida comparando a população masculina com a feminina em cada situação. Os cálculos foram realizados tanto para o Brasil como um todo quanto para o estado do Rio de Janeiro.
 
 ```{python}
 homens_urbanos_rural_2000 = pd\
@@ -167,7 +169,7 @@ juntos_urbano_rural_2000.style.hide()
 razao_sexo_2000.style.hide()
 ```
 
-No ano de 2000 a razão de sexo do estado do Rio de Janeiro e do Brasil como um todo é bastante equilibrado, não há muita diferença ao comparar os dois cenários. Analisando somente a situação dos residentes de região rural, a quantidade de homens é maior. Um dos possíveis motivos para se explicar esse acontecimento é que as mulheres saem da área rural a procura de oportunidades de emprego, já que no campo não há muitos trabalhos para mulheres.
+\ \ \ No ano de 2000, a razão de sexo tanto para o estado do Rio de Janeiro quanto para o Brasil como um todo é bastante equilibrada, com poucas diferenças entre os dois cenários. No entanto, ao analisar exclusivamente a população residente em áreas rurais, observa-se que há um número maior de homens. Um possível motivo para essa discrepância é que as mulheres tendem a sair das áreas rurais em busca de oportunidades de emprego, uma vez que no campo há menos opções de trabalho para elas.
 
 \vspace{12pt}
 
@@ -210,7 +212,7 @@ razao_sexo_2010 = juntos_urbano_rural_2010\
 juntos_urbano_rural_2010.style.hide()
 ```
 
-\ \ \ Pela razão de sexo de 2010 abaixo, é possível ver claramente que não ouve uma mudança tão grande entre a razão de sexo de 2010 comparada a de 2000. No entando, ouve um pequeno das mulheres em situação urbana e no cenário total. Já na zona rural, houve ainda uma diminuição das mulheres, mas não apresenta uma diferença muito grande comparado ao ano de 2000.
+\ \ \ A razão de sexo de 2010, apresentada abaixo, revela que não houve uma mudança significativa em comparação com a de 2000. No entanto, observa-se uma leve redução na proporção de mulheres em áreas urbanas e no cenário geral. Na zona rural, também houve uma diminuição na proporção de mulheres, mas a diferença em relação ao ano de 2000 não é muito expressiva.
 
 ```{python}
 razao_sexo_2010.style.hide()
@@ -218,7 +220,7 @@ razao_sexo_2010.style.hide()
 
 ## Análise de Dependência
 
-A análise de dependência foi feita considerando a estatística total, jovens e idosos, por sexo. Assim, a primeira análise será em relação ao total. A razão de dependência total, jovem e de idosos foram calculados a partir dos dados do censo de 2000 e 2010. A partir desses dados e utilizando as fórmulas definidas na metodologia, foi possível chegar a tabela abaixo que mostra as razões por sexo e o mesmo definido para o Brasil como um todo:
+\ \ \ A análise de dependência foi realizada considerando as estatísticas totais, bem como as específicas para jovens e idosos, diferenciadas por sexo. Inicialmente, apresentaremos a análise em relação ao total. As razões de dependência total, jovem e idoso foram calculadas com base nos dados dos censos de 2000 e 2010. Utilizando as fórmulas definidas na metodologia, elaborou-se a tabela abaixo, que exibe as razões de dependência por sexo, além da razão total para o Brasil como um todo.
 
 ```{python}
 def calcular_rdt(df, unidade):
@@ -339,11 +341,11 @@ dep_total_2010 = pd.DataFrame({
 pd.concat([dep_total_2010, dep_total_2000], axis=0).style.hide()
 ```
 
-A razão de dependência de jovens (RDJ) era significativamente maior no censo de 2000, tanto para o sexo masculino quanto para o feminino. No Brasil, em 2000, considerando apenas o sexo masculino, havia 46 jovens dependentes para cada 100 pessoas em idade ativa. Esse valor caiu para 35,32 no censo de 2010. A única situação que apresentou um aumento na dependência foi a dos idosos em 2010. Para as mulheres, a queda na dependência total, especialmente entre os jovens, foi ainda mais acentuada, refletindo uma redução na dependência das mulheres em relação às pessoas economicamente ativas.
+\ \ \ A razão de dependência de jovens (RDJ) era significativamente maior no censo de 2000, tanto para o sexo masculino quanto para o feminino. No Brasil, em 2000, havia 46 jovens dependentes para cada 100 pessoas em idade ativa, no caso dos homens. Esse valor caiu para 35,32 no censo de 2010. A única situação que apresentou um aumento na dependência foi a dos idosos em 2010. Para as mulheres, a redução na dependência total, especialmente entre os jovens, foi ainda mais acentuada, refletindo uma diminuição na dependência das mulheres em relação à população economicamente ativa.
 
 ## Análise do índice de envelhecimento por sexo
 
-\ \ \ O índice de envelhecimento foi calculado para o sexo feminino e masculino, considerando a estatística para o estado do Rio de Janeiro e Brasil como um todo. Os valores cálculados podem ser observados abaixo.
+\ \ \ O Índice de Envelhecimento foi calculado separadamente para os sexos feminino e masculino, tanto para o estado do Rio de Janeiro quanto para o Brasil como um todo. Os valores calculados estão apresentados abaixo.
 
 ```{python}
 def calcular_ie(df, unidade):
@@ -384,19 +386,19 @@ pd.concat([velhice_total_2010, velhice_total_2000], axis=0).style.hide()
 
 \vspace{12pt}
 
-\ \ \ De 2000 para 2010, observa-se um aumento significativo no Índice de Envelhecimento em todas as categorias (por sexo e por unidade da federação). Esse aumento reflete o processo de envelhecimento populacional em andamento tanto no Rio de Janeiro quanto no Brasil como um todo.
+\ \ \ Entre 2000 e 2010, observa-se um aumento significativo no Índice de Envelhecimento em todas as categorias (por sexo e por unidade da federação). Esse aumento reflete o contínuo processo de envelhecimento populacional, tanto no Rio de Janeiro quanto no Brasil como um todo.
 
 \vspace{12pt}
 
-\ \ \ O IE no Rio de Janeiro (50,59) era consideravelmente maior do que o do Brasil (32,32), indicando que o estado já tinha uma população feminina mais envelhecida em comparação ao país como um todo. Essa diferença aumenta ainda mais, com o Rio de Janeiro atingindo um IE de 73,37, enquanto o Brasil atinge 50,67. Isso mostra que a população feminina do Rio de Janeiro envelheceu em um ritmo mais rápido do que a média nacional.
+\ \ \ Em 2000, o Índice de Envelhecimento (IE) para o sexo feminino no Rio de Janeiro (50,59) era consideravelmente maior do que o do Brasil (32,32), indicando que o estado já apresentava uma população feminina mais envelhecida em comparação com a média nacional. Essa diferença aumentou ainda mais até 2010, com o Rio de Janeiro atingindo um IE de 73,37, enquanto o Brasil alcançou 50,67. Isso demonstra que a população feminina do Rio de Janeiro envelheceu a um ritmo mais rápido do que a média nacional.
 
 \vspace{12pt}
 
-\ \ \ O IE masculino no Rio de Janeiro (34,78) também era maior do que o do Brasil (25,62), embora a diferença seja menor comparada ao sexo feminino. Em 2010, essa diferença permanece, com o Rio de Janeiro atingindo um IE masculino de 49,90, em comparação com 39,18 no Brasil. Assim como no caso feminino, a população masculina do Rio de Janeiro também envelheceu mais rapidamente do que a média nacional.
+\ \ \ O IE masculino no Rio de Janeiro (34,78) também era superior ao do Brasil (25,62), embora a diferença seja menor em comparação com o sexo feminino. Em 2010, essa diferença persistiu, com o Rio de Janeiro alcançando um IE masculino de 49,90, em comparação com 39,18 no Brasil. Assim como no caso das mulheres, a população masculina do Rio de Janeiro também envelheceu mais rapidamente do que a média nacional.
 
 ## Idade Mediana
 
-\ \ \ Para o cálculo da idade mediana foi considerado a frequência acumulado da população.Como pode ser observado na tabela abaixo, a população total masculina do Rio de Janeiro no censo de 2000 é de 6.900.335. Dividindo o total por 2, temos que a mediana da população é 3450167,5. Ou seja, a mediana está no intervalo de 20 a 29 anos. Assim, temos o seguinte cálculo da idade mediana para os homens com os dados do censo de 2000:
+\ \ \ Para o cálculo da idade mediana, foi considerada a frequência acumulada da população. Conforme mostrado na tabela abaixo, a população total masculina do Rio de Janeiro no censo de 2000 era de 6.900.335. Dividindo esse total por 2, obtemos que a mediana da população é 3.450.167,5, o que indica que a mediana está no intervalo de 20 a 29 anos. Assim, o cálculo da idade mediana para os homens com os dados do censo de 2000 é:
 
 $$
 M_d = 20 + \left(\frac{3.450.167,5 - 2.493.359}{1.208.174}\right) \times 9
@@ -406,7 +408,7 @@ $$
 M_d = 20,7919
 $$
 
-Assim, a idade mediana para os homens do estado do Rio de Janeiro é de 20,7919. Agora considerando o Brasil como um todo no ano de 2000 para os homens, temos que a soma total é de 83.576.015. Ou seja, tomando a mediana da população, temos 41.788.007,5. Portanto, a mediana do Brasil está no intervalo de 20 a 29 anos, assim como o do Rio de Janeiro. Agora calculando a mediana para a população masculina do ano de 2000, temos que:
+\ \ \ Portanto, a idade mediana para os homens no estado do Rio de Janeiro em 2000 é de 20,7919 anos. Considerando o Brasil como um todo no ano de 2000, a população masculina total era de 83.576.015. Dividindo por 2, a mediana da população é 41.788.007,5, o que também coloca a mediana no intervalo de 20 a 29 anos, assim como no Rio de Janeiro. Calculando a mediana para a população masculina de 2000, temos:
 
 $$
 M_d = 20 + \left(\frac{41.788.007,5 -  34.526.048}{14.862.546}\right)
@@ -416,17 +418,17 @@ $$
 M_d = 20,4886
 $$
 
-Portanto, a idade mediana da população masculina do estado Rio de Janeiro é bastante semelhante a da população masculina geral no censo de 2000.
+\ \ \ Portanto, a idade mediana da população masculina do estado do Rio de Janeiro é bastante semelhante à da população masculina geral no censo de 2000.
 
 ```{python}
 homem_etario_2000.style.hide()
 ```
 
-Agora prosseguindo de forma semelhante para o cálculo da idade mediana das mulheres no ano de 2000, podemos seguir da mesma forma com a tabela abaixo:
+\ \ \ De maneira semelhante, para o Brasil, a idade mediana das mulheres com os dados do censo de 2000 é:
 
 \vspace{12pt}
 
-Da tabela vemos que o total de mulheres no estado do Rio de Janeiro no ano de 2000 é de 7.490.947. Portanto, tomando a metade desse total, temos 3.745.473,5. Ou seja, a idade mediana está no intervalo de 30 a 39 anos. Assim, prosseguindo com o cálculo da idade mediana para as mulheres no estado do Rio de Janeiro, tem-se:
+\ \ \ Na tabela, vemos que o total de mulheres no estado do Rio de Janeiro em 2000 era de 7.490.947. Dividindo esse total por 2, obtemos 3.745.473,5, o que indica que a idade mediana está no intervalo de 30 a 39 anos. Assim, o cálculo da idade mediana para as mulheres no estado do Rio de Janeiro é:
 
 $$
 M_d = 30 + \left(\frac{3.745.473,5 - 3.700.536}{1.257.964}\right) = 30.0357
@@ -442,7 +444,7 @@ $$
 mulher_etario_2000.style.hide()
 ```
 
-Para o ano de 2010 para os homens e mulheres, o cálculo pode ser feito da mesma forma. Portanto, com as duas tabelas de homens e mulheres, respectivamente, temos as seguintes tabelas:
+\ \ \ Para o ano de 2010, o cálculo da idade mediana para homens e mulheres pode ser feito da mesma forma. Portanto, com as tabelas correspondentes para homens e mulheres, temos os seguintes resultados:
 
 ```{python}
 homem_etario_2010.style.hide()
@@ -452,11 +454,11 @@ homem_etario_2010.style.hide()
 mulher_etario_2010.style.hide()
 ```
 
-A partir das tabelas, a idade mediana para os homens do estado do Rio de Janeiro em 2010 é de 30,1195 e o do Brasil é de 20,8646. Para as mulheres do Rio de Janeiro a idade mediana no ano de 2010 é de 30,4032. Já para o Brasil é de 30,027. A população masculina em relação ao Rio de Janeiro apresentou um aumento na idade mediana, mas não houve uma mudança muito grande em relação ao Brasil. Já para as mulheres, houve um aumento claro na idade mediana do Brasil.
+\ \ \ A partir das tabelas, a idade mediana para os homens no estado do Rio de Janeiro em 2010 é de 30,1195 anos, enquanto para o Brasil é de 20,8646 anos. Para as mulheres no Rio de Janeiro, a idade mediana em 2010 é de 30,4032 anos, comparada a 30,027 anos para o Brasil. A população masculina do Rio de Janeiro apresentou um aumento na idade mediana, embora não tenha ocorrido uma mudança significativa em relação à média nacional. Por outro lado, para as mulheres, houve um aumento mais claro na idade mediana no Brasil.
 
 ## Pirâmide etária
 
-\ \ \ A construção da pirâmide etária foi realizada tanto para o estado do Rio de Janeiro quanto para o Brasil, levando em consideração as populações masculina e feminina. O gráfico abaixo apresenta a pirâmide etária do estado do Rio de Janeiro. Nota-se que, em 2010, a parte superior da pirâmide aumentou em relação ao ano de 2000, o que indica um envelhecimento da estrutura populacional, especialmente entre as mulheres, representadas pela cor laranja. A comparação entre os gráficos de 2000 e 2010 revela poucas diferenças em relação ao estado do Rio de Janeiro, sugerindo que a dinâmica populacional do Rio seguia um padrão muito semelhante ao observado no Brasil como um todo nesses anos.
+\ \ \ A construção da pirâmide etária foi realizada tanto para o estado do Rio de Janeiro quanto para o Brasil, considerando as populações masculina e feminina. O gráfico abaixo mostra a pirâmide etária do estado do Rio de Janeiro. Em 2010, observa-se um aumento na parte superior da pirâmide em relação ao ano de 2000, indicando um envelhecimento da estrutura populacional, especialmente entre as mulheres, destacadas pela cor laranja. A comparação entre os gráficos de 2000 e 2010 revela poucas diferenças para o estado do Rio de Janeiro, sugerindo que a dinâmica populacional do estado seguiu um padrão muito semelhante ao observado no Brasil como um todo durante esse período.
 
 ```{python}
 piram_muie_2000 = mulher_etario_2000\
@@ -638,15 +640,15 @@ Gráfico de pirâmide da população no Brasil. O gráfico na figura à esquerda
 
 ## Índice de Myers
 
-\ \ \ O índice de Myers foi calculado para o sexo feminino e masculino, considerando as mulheres e os homems, no ano de 2010. A tabela abaixo mostra as estatísticas obtidas para o estado do Rio de Janeiro e para o Brasil.
+\ \ \ O Índice de Myers foi calculado para os sexos feminino e masculino, considerando mulheres e homens no ano de 2010. A tabela abaixo mostra as estatísticas obtidas para o estado do Rio de Janeiro e para o Brasil.
 
 \vspace{12pt}
 
-\ \ \ Os valores do Índice de Myers para o Brasil estão relativamente baixos, com 2,18 para homens e 1,75 para mulheres. Isso sugere que, de modo geral, não há uma forte tendência de arredondamento de idades ou preferências por certos dígitos, o que indica que os dados de idade são de boa qualidade. No entanto, os homens apresentam um valor ligeiramente mais alto que as mulheres, sugerindo que pode haver uma leve tendência de arredondamento maior entre eles.
+\ \ \ Os valores do Índice de Myers para o Brasil são relativamente baixos, com 2,18 para homens e 1,75 para mulheres. Isso sugere que, de maneira geral, não há uma forte tendência de arredondamento das idades ou preferências por certos dígitos, indicando que os dados etários são de boa qualidade. No entanto, os homens apresentam um valor ligeiramente mais alto do que as mulheres, sugerindo uma leve tendência de arredondamento maior entre eles.
 
 \vspace{12pt}
 
-\ \ \ No caso do Rio de Janeiro, os valores são um pouco mais elevados, especialmente para os homens (3,03), o que sugere uma maior tendência de arredondamento de idades nessa população. Esse valor, embora ainda moderado, indica uma leve concentração de idades em torno de dígitos preferenciais. Novamente, as mulheres apresentam um índice menor (2,25), o que sugere dados ligeiramente mais confiáveis em comparação aos homens.
+\ \ \ No caso do Rio de Janeiro, os valores são um pouco mais elevados, especialmente para os homens (3,03), indicando uma maior tendência de arredondamento das idades nessa população. Embora ainda moderado, esse valor sugere uma leve concentração de idades em torno de dígitos preferenciais. As mulheres no Rio de Janeiro apresentam um índice menor (2,25), sugerindo dados ligeiramente mais confiáveis em comparação aos homens.
 
 ```{r}
 library(popstudy)
