@@ -1,0 +1,126 @@
+Causa - CID-BR-10;Menor 1 ano;1 a 4 anos;5 a 9 anos;10 a 14 anos;15 a 19 anos;20 a 29 anos;30 a 39 anos;40 a 49 anos;50 a 59 anos;60 a 69 anos;70 a 79 anos;80 anos e mais
+001-031 ALGUMAS DOEN�AS INFECCIOSAS E PARASIT�RIAS;77;24;13;14;24;251;406;571;823;1289;1572;1967
+. 001 Doen�as infecciosas intestinais;12;2;2;-;-;2;3;3;6;16;29;27
+... 003 Diarr�ia e gastroenterite orig infec pres;12;2;-;-;-;1;3;3;6;10;23;21
+... 004 Outras doen�as infecciosas intestinais;-;-;2;-;-;1;-;-;-;6;6;6
+. 005-006 Tuberculose;1;1;-;2;6;61;69;89;147;117;64;30
+... 005 Tuberculose respirat�ria;-;1;-;1;5;56;66;86;144;111;63;30
+... 006 Outras tuberculoses;1;-;-;1;1;5;3;3;3;6;1;-
+. 007-015 Outras doen�as bacterianas;45;10;3;3;10;32;75;126;255;501;645;771
+... 008 Leptospirose;-;-;-;-;2;-;2;7;9;6;5;-
+... 009 Hansen�ase;-;-;-;-;-;-;-;2;2;1;1;1
+... 010 T�tano;-;-;-;-;-;-;1;-;1;-;-;-
+..... 010.3 T�tano acidental;-;-;-;-;-;-;1;-;1;-;-;-
+... 011 Difteria;-;-;-;-;-;-;-;-;-;1;-;-
+... 013 Infec��o meningoc�cica;-;1;-;1;-;1;-;1;-;-;-;-
+... 014 Septicemia;30;9;3;2;8;28;65;102;223;448;604;727
+... 015 Infec��es com transmiss�o predom sexual;15;-;-;-;-;1;1;2;2;1;3;1
+. 016-023 Doen�as virais;6;1;2;2;2;142;215;244;195;134;60;28
+... 018 Dengue;1;-;-;-;-;-;1;1;1;1;-;1
+... 020 Out febres p/arbov�rus e febr hemor virais;-;-;1;1;-;-;-;-;2;1;-;-
+... 022 Hepatite viral;-;-;-;-;2;1;1;11;19;29;23;7
+... 023 Doen p/v�rus da imunodefic humana (HIV);2;-;1;1;-;139;206;228;168;100;35;16
+. 024-027 Doen�as transmitidas por protozo�rios;-;-;-;1;-;1;5;8;2;5;6;2
+... 024 Mal�ria;-;-;-;-;-;-;1;-;-;-;-;-
+... 025 Leishmaniose;-;-;-;-;-;-;-;-;-;-;1;-
+... 026 Doen�a de Chagas;-;-;-;-;-;-;-;3;1;4;4;2
+... 027 Toxoplasmose;-;-;-;1;-;-;2;3;-;-;-;-
+. 028-030 Helmint�ases;-;1;-;-;-;-;-;-;1;1;1;1
+... 028 Esquistossomose;-;-;-;-;-;-;-;-;-;-;1;-
+... 029 Cisticercose;-;-;-;-;-;-;-;-;1;-;-;-
+... 030 Restante de helmint�ases;-;1;-;-;-;-;-;-;-;1;-;1
+. 031 Restante algumas doen� infec e parasit�rias;13;9;6;6;6;13;39;101;217;515;767;1108
+032-052 NEOPLASIAS;2;14;17;19;33;118;236;510;1417;3001;3065;2203
+. 032 Neopl malig do l�bio, cav oral e faringe;-;-;-;-;-;3;6;35;112;166;83;47
+. 033 Neoplasia maligna do es�fago;-;-;-;-;-;1;7;18;83;168;108;48
+. 034 Neoplasia maligna do est�mago;-;-;-;-;-;3;12;42;108;185;198;94
+. 035 Neoplasia maligna do c�lon,reto e �nus;-;-;-;-;-;6;23;58;194;350;326;239
+. 036 Neopl malig do f�gado e vias bil intrahep�t;-;1;1;-;1;6;10;28;52;154;127;65
+. 037 Neoplasia maligna do p�ncreas;-;-;-;-;-;-;10;33;104;187;146;116
+. 038 Neoplasia maligna da laringe;-;-;-;-;-;-;4;10;40;97;78;33
+. 039 Neopl malig da traqu�ia,br�nquios e pulm�es;-;1;-;-;2;2;8;34;146;410;419;240
+. 040 Neoplasia maligna da pele;-;-;-;-;-;-;3;5;7;11;14;20
+. 041 Neoplasia maligna da mama;-;-;-;-;-;-;-;2;3;9;10;6
+. 045 Neoplasia maligna da pr�stata;-;-;-;-;-;1;1;12;64;283;596;581
+. 046 Neoplasia maligna da bexiga;-;-;-;-;-;-;1;4;11;74;118;121
+. 047 Neopl malig mening,enc�f e out partes SNC;-;3;7;5;6;13;24;45;61;116;77;45
+. 048 Linfoma n�o-Hodgkin;-;-;3;-;1;10;19;21;25;40;55;37
+. 049 Mieloma mult e neopl malig de plasm�citos;-;-;-;-;-;1;2;7;22;43;37;27
+. 050 Leucemia;-;4;6;6;8;20;19;22;37;48;73;53
+. 051 Neoplasias in situ, benig, comport incert;-;-;-;-;2;3;8;8;29;45;54;66
+. 052 Restante de neoplasias malignas;2;5;-;8;13;49;79;126;319;615;546;365
+053-054 D SANGUE E ORG HEMAT E ALGUNS TRANS IMUNIT;7;8;3;3;2;23;29;22;48;83;94;96
+. 053 Anemias;2;4;3;1;2;20;20;16;32;69;71;77
+. 054 Rest d sangue, org hemat e alg transt imunit;5;4;-;2;-;3;9;6;16;14;23;19
+055-057 D END�CRINAS, NUTRICIONAIS E METAB�LICAS;11;6;6;7;15;33;76;198;484;960;1007;846
+. 055 Diabetes mellitus;2;-;-;1;7;17;55;145;409;836;873;682
+. 056 Desnutri��o;3;2;3;2;2;3;2;5;12;24;34;43
+. 057 Rest doen�as end�cr, nutricion e metab�licas;6;4;3;4;6;13;19;48;63;100;100;121
+058-059 TRANSTORNOS MENTAIS E COMPORTAMENTAIS;-;-;-;-;2;28;54;91;170;211;122;122
+. 058 Transt ment e comport uso subst psicoativas;-;-;-;-;1;21;41;74;145;165;74;25
+... 058.1 Trans ment e comport devid uso �lcool;-;-;-;-;-;3;23;58;120;125;48;8
+. 059 Rest transtornos mentais e comportamentais;-;-;-;-;1;7;13;17;25;46;48;97
+060-063 DOEN�AS DO SISTEMA NERVOSO;17;23;18;19;30;64;62;94;114;200;365;737
+. 060 Meningite;3;6;2;2;1;3;3;2;7;7;-;2
+. 061 Doen�a de Alzheimer;-;-;-;-;-;-;-;-;4;35;194;495
+. 062 Epilepsia;2;4;1;-;5;19;21;24;30;35;21;17
+. 063 Restante das doen�as do sistema nervoso;12;13;15;17;24;42;38;68;73;123;150;223
+064 DOEN�AS DOS OLHOS E ANEXOS;-;-;-;-;-;-;-;-;-;1;-;1
+065 DOEN�AS DO OUVIDO E DA AP�FISE MAST�IDE;-;2;1;-;-;1;-;1;1;2;2;3
+066-072 DOEN�AS DO APARELHO CIRCULAT�RIO;11;8;7;13;26;145;342;1092;2786;5087;5224;4624
+. 066 Febre reum�t aguda e doen reum cr�n cora��o;-;-;-;1;2;3;5;7;7;6;11;6
+. 067 Doen�as hipertensivas;-;-;-;1;-;5;35;157;470;887;885;958
+. 068 Doen�as isqu�micas do cora��o;-;-;-;1;10;46;120;381;1033;1778;1589;1232
+... 068.1 Infarto agudo do mioc�rdio;-;-;-;-;9;41;103;351;930;1579;1354;1033
+. 069 Outras doen�as card�acas;11;6;6;5;10;56;88;257;522;885;1044;1003
+. 070 Doen�as cerebrovasculares;-;2;1;5;4;28;79;256;677;1310;1436;1204
+. 071 Aterosclerose;-;-;-;-;-;-;-;-;-;4;5;9
+. 072 Rest doen�as do aparelho circulat�rio;-;-;-;-;-;7;15;34;77;217;254;212
+073-077 DOEN�AS DO APARELHO RESPIRAT�RIO;79;51;6;14;17;91;130;291;662;1516;2130;3041
+. 073 Influenza (gripe);-;-;-;-;-;-;1;1;1;5;19;21
+. 074 Pneumonia;37;34;2;7;10;58;82;185;401;831;1212;1965
+. 075 Out infec agudas das vias a�reas inferiores;29;6;-;-;1;-;-;-;-;3;2;5
+... 075.1 Bronquiolite;25;5;-;-;-;-;-;-;-;1;1;1
+. 076 Doen�as cr�nicas das vias a�reas inferiores;-;2;1;1;2;4;14;24;96;376;555;568
+... 076.1 Asma;-;1;-;1;1;3;5;12;11;8;7;18
+. 077 Restante  doen�as do aparelho respirat�rio;13;9;3;6;4;29;33;81;164;301;342;482
+078-082 DOEN�AS DO APARELHO DIGESTIVO;8;9;5;5;9;36;109;302;570;882;734;619
+. 078 �lcera g�strica, duodenal e p�ptica;-;-;1;1;1;2;6;8;30;57;50;39
+. 079 Peritonite;-;1;-;1;-;1;2;5;15;7;15;12
+. 080 Doen�as do f�gado;-;3;2;2;1;7;50;141;291;374;216;97
+... 080.1 Doen�a alco�lica do f�gado;-;-;-;-;-;1;15;51;98;92;40;10
+... 080.2 Fibrose e cirrose do f�gado;-;3;-;1;-;1;20;53;136;186;122;61
+... 080.3 Outras doen�as do f�gado;-;-;2;1;1;5;15;37;57;96;54;26
+. 081 Colecistite;-;-;-;-;-;1;1;1;9;14;17;25
+. 082 Rest doen�as do aparelho digestivo;8;5;2;1;7;25;50;147;225;430;436;446
+083 DOEN�AS DA PELE E TECIDO SUBCUT�NEO;-;-;-;1;1;6;9;26;49;99;144;149
+084 DOEN�AS SIST OSTEOMUSC E TECIDO CONJUNTIVO;1;6;-;3;1;6;5;21;37;47;57;77
+085-087 DOEN�AS DO APARELHO GENITURIN�RIO;8;5;3;-;6;21;42;152;283;653;969;1262
+. 085 D glomerulares e d renais t�bulo-interstic;1;1;-;-;-;2;9;37;45;97;116;128
+. 086 Insufici�ncia renal;4;2;1;-;3;12;21;78;142;258;284;285
+. 087 Rest doen�as do aparelho geniturin�rio;3;2;2;-;3;7;12;37;96;298;569;849
+093-097 ALG AFEC��ES ORIGIN NO PER�ODO PERINATAL;703;1;-;-;-;-;-;-;-;-;-;-
+. 093 Feto e recemnasc afet fat mat e compl grav;223;-;-;-;-;-;-;-;-;-;-;-
+. 094 Transt relac dura��o gesta��o e cresc fetal;55;-;-;-;-;-;-;-;-;-;-;-
+. 095 Traumatismo de parto;1;-;-;-;-;-;-;-;-;-;-;-
+. 096 Trans resp e cardiovas espec per perinatal;225;1;-;-;-;-;-;-;-;-;-;-
+. 097 Rest afec originadas no per�odo perinatal;199;-;-;-;-;-;-;-;-;-;-;-
+098-100 MALF CONG�N, DEFORM E ANOMAL CROMOSS�MICAS;254;26;12;7;9;7;6;7;10;11;5;2
+. 098 Malforma��es cong�nitas do sistema nervoso;20;5;6;2;3;1;1;-;2;3;1;-
+. 099 Malf cong�nitas do aparelho circulat�rio;109;8;2;5;2;1;3;1;3;1;2;1
+. 100 Rest de malf cong, deform e anomal Cromoss;125;13;4;-;4;5;2;6;5;7;2;1
+101-103 SINT, SIN E ACH ANORM CL�N E LAB, NCOP;23;18;8;7;51;207;339;595;1138;1663;1535;1562
+. 101 Senilidade;-;-;-;-;-;-;-;-;1;3;24;182
+. 102 Morte sem assist�ncia m�dica;-;-;-;-;-;-;-;1;1;2;-;5
+. 103 Rest sint, sin e ach anorm cl�n e laborat;23;18;8;7;51;207;339;594;1136;1658;1511;1375
+104-113 CAUSAS EXTERNAS DE MORBIDADE E MORTALIDADE;74;50;34;57;667;2625;1527;1162;925;779;612;679
+. 104 Acidentes de transporte;2;2;11;11;69;425;295;256;223;156;73;43
+. 105 Quedas;1;2;2;1;3;25;53;79;113;165;150;184
+. 106 Afogamento e submers�es acidentais;2;23;2;3;14;39;35;28;40;17;11;4
+. 107 Exposi��o � fuma�a, ao fogo e �s chamas;-;-;1;1;2;6;9;19;11;7;9;7
+. 108 Envenen, intoxic por ou expos a subst nociv;-;1;-;-;3;25;24;28;18;5;3;3
+. 109 Les�es autoprovocadas voluntariamente;-;-;-;4;21;109;112;125;87;70;40;16
+. 110 Agress�es;-;3;2;13;359;1323;713;402;179;72;38;8
+. 111 Eventos(fatos) cuja inten��o � indeterminada;2;4;1;6;113;362;146;110;123;129;132;208
+. 112 Interven��es legais e opera��es de guerra;-;-;-;-;44;198;60;13;5;5;1;-
+. 113 Todas as outras causas externas;67;15;15;18;39;113;80;102;126;153;155;206

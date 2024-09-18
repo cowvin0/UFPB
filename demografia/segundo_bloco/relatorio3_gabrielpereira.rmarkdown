@@ -1,0 +1,47 @@
+---
+format: pdf
+title: |
+  Tabela de vida e análise de indicadores de mortalidade (censo 2022)
+number-sections: false
+indent: true
+whitespace: small
+documentclass: scrreprt
+lang: pt-br
+bibliography: ../includes/bib.bib
+csl: ../includes/ufpe-abnt.csl
+subtitle: Universidade Federal da Paraíba - CCEN
+author: Gabriel de Jesus Pereira
+date: today
+date-format: long
+highlight-style: github
+fontsize: 12pt
+interlinespace: 1.5pt
+fig-cap-location: bottom
+warning: false
+echo: false
+include-in-header:
+  - text: |
+      \usepackage{pdflscape}
+      \newcommand{\blandscape}{\begin{landscape}}
+      \newcommand{\elandscape}{\end{landscape}}
+---
+
+```{r}
+library(lifecontingencies)
+library(tidyverse)
+```
+
+```{r}
+df_obito_homem <- read_csv2('demografia/segundo_bloco/dados_relatorio3/causa_morte_homem_2022.csv') |>
+  mutate(Sexo='Homem')
+
+df_obito_mulher <- read_csv2('demografia/segundo_bloco/dados_relatorio3/causa_morte_mulher_2022.csv') |>
+  mutate(Sexo='Mulher')
+
+df_obito <- rbind(df_obito_homem, df_obito_mulher)
+```
+
+```{r}
+
+```
+

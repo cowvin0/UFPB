@@ -1,0 +1,221 @@
+---
+title: Segunda avaliação de Pesquisa Operacional
+author: Gabriel de Jesus Pereira
+format: pdf
+---
+
+# Questão 1
+
+```{python}
+import pulp
+from pulp import LpMaximize, LpMinimize, LpVariable, LpProblem, lpSum, LpStatus
+```
+```{python}
+prob_min = LpProblem('model', LpMinimize)
+```
+
+```{python}
+N = ['S', 'A', 'B',
+     'C', 'D', 'E',
+     'F', 'G', 'H',
+     'T']
+
+C = {'S': {'A': 9, 'B': 8, 'C': 12},
+     'A': {'B': 8, 'D': 10},
+     'B': {'D': 12, 'E': 9},
+     'C': {'E': 10, 'F': 15},
+     'D': {'G': 8},
+     'E': {'G': 11, 'H': 14, 'F': 10},
+     'F': {'H': 5},
+     'G': {'T': 12},
+     'H': {'T': 8}
+     }
+
+# C = {
+#     1: {2: 16, 5: 13},
+#     2: {3: 12},
+#     3: {5: 9, 4: 20},
+#     5: {2: 4, 6: 14},
+#     6: {3: 7, 4: 4}}
+
+# D = {node: 0 for node in N} #definindo o lado direito das restrições
+
+E = [(i,j) for i in N for j in N if i in C.keys() if j in C[i].keys()]
+x = LpVariable.dicts('x', E,  lowBound = 0, cat='Binary')
+```
+
+```{python}
+prob_min += (9 * x['S', 'A'] + 8 * x['S', 'B'] + 12 * x['S', 'C'] +
+             8 * x['A', 'B'] + 10 * x['A', 'D'] + 12 * x['B', 'D'] +
+             9 * x['B', 'E'] + 11 * x['E', 'G'] + 8 * x['D', 'G'] +
+             12 * x['G', 'T'] + 14 * x['E', 'H'] + 8 * x['H', 'T'] +
+             10 * x['C', 'E'] + 15 * x['C', 'F'] + 10 * x['E', 'F'] +
+             5 * x['F', 'H'])
+
+prob_min += x['S', 'A'] + x['S', 'B'] + x['S', 'C'] == 1
+prob_min += x['S', 'A'] - x['A', 'B'] - x['A', 'D'] == 0
+prob_min += x['A', 'B'] + x['S', 'B'] - x['B', 'D'] - x['B', 'E'] == 0
+prob_min += x['S', 'C'] - x['C', 'E'] - x['C', 'F'] == 0
+prob_min += x['A', 'D'] + x['B', 'D'] - x['D', 'G'] == 0
+prob_min += x['D', 'G'] + x['E', 'G'] - x['G', 'T'] == 0
+prob_min += x['B', 'E'] + x['C', 'E'] - x['E', 'G'] - x['E', 'H'] - x['E', 'F'] == 0
+prob_min += x['C', 'F'] + x['E', 'F'] - x['F', 'H'] == 0
+prob_min += x['E', 'H'] + x['F', 'H'] - x['H', 'T'] == 0
+prob_min += x['G', 'T'] + x['H', 'T'] == 1
+```
+
+
+```{python}
+status_min = prob_min.solve()
+
+print("Valor da função objetivo:", prob_min.objective.value())
+
+print(f'Status\n{LpStatus[status_min]}\n')
+
+print('Valor ótimo das variáveis')
+for v in prob_min.variables():
+    print(v.name, '=', v.varValue)
+```
+
+\ \ \ Com base nos resultados do caminho mínimo, o percurso mais curto começa em S, segue para A, de A para D, de D para G, e finalmente de G para T.
+
+# Questão 2
+
+
+```{python}
+x = LpVariable.dicts('x', E,  lowBound = 0)
+
+prob_max = LpProblem('model', LpMaximize)
+prob_max += x['G', 'T'] + x['H', 'T']
+
+prob_max += x['S', 'A'] - x['A', 'B'] - x['A', 'D'] == 0
+prob_max += x['S', 'B'] + x['A', 'B'] - x['B', 'D'] - x['B', 'E'] == 0
+prob_max += x['S', 'C'] - x['C', 'E'] - x['C', 'F'] == 0
+prob_max += x['A', 'D'] + x['B', 'D'] - x['D', 'G'] == 0
+prob_max += x['B', 'E'] + x['C', 'E'] - x['E', 'G'] - x['E', 'H'] - x['E', 'F'] == 0
+prob_max += x['E', 'F'] + x['C', 'F'] - x['E', 'H'] == 0
+prob_max += x['D', 'G'] + x['E', 'G'] - x['G', 'T'] == 0
+prob_max += x['E', 'H'] + x['F', 'H'] - x['H', 'T'] == 0
+
+for i in N:
+  for j in N:
+    if (i,j) in E:
+      prob_max += x[i,j] <= C[i][j]
+```
+
+
+```{python}
+status = prob_max.solve()
+
+# print("Valor da função objetivo:", prob.objective.value())
+
+print(f'Status\n{LpStatus[status]}\n')
+
+print('Valor ótimo das variáveis')
+for v in prob_max.variables():
+    print(v.name, '=', v.varValue)
+```
+
+Pelo valor da função objetivo, o valor do fluxo máximo que chega ao destino T é de 20 unidades.
+
+# Questão 3
+
+
+```{python}
+prob_trans = pulp.LpProblem("Problema_de_Transbordo", pulp.LpMinimize)
+
+# Definindo as variáveis de decisão
+x_1_3 = pulp.LpVariable('x_1_3', lowBound=0, cat='Continuous')
+x_1_4 = pulp.LpVariable('x_1_4', lowBound=0, cat='Continuous')
+x_1_5 = pulp.LpVariable('x_1_5', lowBound=0, cat='Continuous')
+x_2_3 = pulp.LpVariable('x_2_3', lowBound=0, cat='Continuous')
+x_2_4 = pulp.LpVariable('x_2_4', lowBound=0, cat='Continuous')
+x_2_5 = pulp.LpVariable('x_2_5', lowBound=0, cat='Continuous')
+x_3_6 = pulp.LpVariable('x_3_6', lowBound=0, cat='Continuous')
+x_3_7 = pulp.LpVariable('x_3_7', lowBound=0, cat='Continuous')
+x_3_8 = pulp.LpVariable('x_3_8', lowBound=0, cat='Continuous')
+x_4_6 = pulp.LpVariable('x_4_6', lowBound=0, cat='Continuous')
+x_4_7 = pulp.LpVariable('x_4_7', lowBound=0, cat='Continuous')
+x_4_8 = pulp.LpVariable('x_4_8', lowBound=0, cat='Continuous')
+x_5_6 = pulp.LpVariable('x_5_6', lowBound=0, cat='Continuous')
+x_5_7 = pulp.LpVariable('x_5_7', lowBound=0, cat='Continuous')
+x_5_8 = pulp.LpVariable('x_5_8', lowBound=0, cat='Continuous')
+```
+
+```{python}
+prob_trans += (16 * x_1_3 + 10 * x_1_4 + 12 * x_1_5 +
+               15 * x_2_3 + 14 * x_2_4 + 17 * x_2_5 +
+               6 * x_3_6 + 8 * x_3_7 + 10 * x_3_8 +
+               7 * x_4_6 + 11 * x_4_7 + 11 * x_4_8 +
+               4 * x_5_6 + 5 * x_5_7 + 12 * x_5_8)
+
+prob_trans += x_1_3 + x_1_4 + x_1_5 == 300
+prob_trans += x_2_3 + x_2_4 + x_2_5 == 300
+prob_trans += x_3_6 + x_4_6 + x_5_6 == 200
+prob_trans += x_3_7 + x_4_7 + x_5_7 == 100
+prob_trans += x_3_8 + x_4_8 + x_5_8 == 300
+prob_trans += x_1_3 + x_2_3 - x_3_6 - x_3_7 - x_3_8 == 0
+prob_trans += x_1_4 + x_2_4 - x_4_6 - x_4_7 - x_4_8 == 0
+prob_trans += x_1_5 + x_2_5 - x_5_6 - x_5_7 - x_5_8 == 0
+```
+
+```{python}
+prob_trans.solve()
+
+# Status da solução
+status = pulp.LpStatus[prob_trans.status]
+
+# Valores ótimos das variáveis
+solution = {v.name: v.varValue for v in prob_trans.variables()}
+
+# Custo total mínimo
+total_cost = pulp.value(prob_trans.objective)
+
+print(f"Status: {status}")
+# print(f"Solução: {solution}")
+print(solution)
+print(f"Custo total mínimo: {total_cost}")
+```
+
+# Questão 4
+
+```{python}
+custos = [
+    [12, 5, 3, 2],  # Tarefa 1
+    [2, 6, 9, 5],  # Tarefa 2
+    [6, 2, 3, 2],  # Tarefa 3
+    [1, 7, 4, 2]   # Tarefa 4
+]
+
+# Definir o número de operários e tarefas
+n_operarios = len(custos)
+n_tarefas = len(custos[0])
+
+
+problema = pulp.LpProblem("Problema_de_Designacao", pulp.LpMinimize)
+
+x = pulp.LpVariable.dicts("x", [(i, j) for i in range(n_operarios) for j in range(n_tarefas)], cat="Binary")
+
+problema += pulp.lpSum([custos[i][j] * x[(i, j)] for i in range(n_operarios) for j in range(n_tarefas)])
+
+for i in range(n_operarios):
+    problema += pulp.lpSum([x[(i, j)] for j in range(n_tarefas)]) == 1
+
+for j in range(n_tarefas):
+    problema += pulp.lpSum([x[(i, j)] for i in range(n_operarios)]) == 1
+
+# Resolver o problema
+problema.solve()
+
+# Exibir a solução
+print("Status:", pulp.LpStatus[problema.status])
+
+# Exibir a designação de operários para as tarefas
+for i in range(n_operarios):
+    for j in range(n_tarefas):
+        if pulp.value(x[(i, j)]) == 1:
+            print(f"Operário {i+1} designado para Tarefa {j+1}, Custo: {custos[i][j]} horas.")
+
+# Exibir o tempo total mínimo
+print(f"Tempo total mínimo: {pulp.value(problema.objective)} horas.")
+```

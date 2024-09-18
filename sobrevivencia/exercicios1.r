@@ -215,3 +215,5 @@ tabela_ajustados |>
 tempo_mediano_isolante <- exp(qnorm(0.5) * sqrt(ajust1_lognormal$scale) + ajust1_lognormal$coefficients)
 
 # b)
+
+# ---------------------------------- segundo bloco
