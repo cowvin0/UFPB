@@ -35,18 +35,64 @@ library(tidyverse)
 
 ```{r}
 df_obito_homem <- read_csv2('demografia/segundo_bloco/dados_relatorio3/causa_morte_homem_2022.csv') |>
-  mutate(Sexo='Homem')
+  mutate(Sexo='Homens')
 
 df_obito_mulher <- read_csv2('demografia/segundo_bloco/dados_relatorio3/causa_morte_mulher_2022.csv') |>
-  mutate(Sexo='Mulher')
+  mutate(Sexo='Mulheres')
 
 df_obito <- rbind(df_obito_homem, df_obito_mulher)
-df_obito[df_obito == '-'] <- '0'
+df_obito[df_obito == "-"] <- "0"
 df_obito <- df_obito |>
-  mutate(across(-c('Causa - CID-BR-10', 'Sexo'), as.integer))
+  mutate(across(-c("Causa - CID-BR-10", "Sexo"), as.integer)) |>
+  pivot_longer(
+    cols = contains("ano"),
+    names_to = "Idade",
+    values_to = "Óbitos"
+  )
 ```
 
 
 ```{r}
-df_populacao <- readxl::read_xlsx('demografia/segundo_bloco/dados_relatorio3/populacao_2022_rj_mulher_homem.xlsx')
+df_populacao <- readxl::read_xlsx('demografia/segundo_bloco/dados_relatorio3/populacao_2022_rj_mulher_homem.xlsx') |>
+  mutate(
+    `1 a 4 anos` = `0 a 4 anos` - `Menos de 1 ano`,
+    `20 a 29 anos` = `20 a 24 anos` + `25 a 29 anos`,
+    `30 a 39 anos` = `30 a 34 anos` + `35 a 39 anos`,
+    `40 a 49 anos` = `40 a 44 anos` + `45 a 49 anos`,
+    `50 a 59 anos` = `50 a 54 anos` + `55 a 59 anos`,
+    `60 a 69 anos` = `60 a 64 anos` + `65 a 69 anos`,
+    `60 a 69 anos` = `60 a 64 anos` + `65 a 69 anos`,
+    `70 a 79 anos` = `70 a 74 anos` + `75 a 79 anos`,
+    `80 anos e mais` = `80 a 84 anos` + `85 a 89 anos` + `90 a 94 anos` + `95 a 99 anos` + `100 anos ou mais`
+  ) |>
+  select(
+    -c(
+      `0 a 4 anos`, `20 a 24 anos`,
+      `25 a 29 anos`, `30 a 34 anos`,
+      `35 a 39 anos`, `40 a 44 anos`,
+      `45 a 49 anos`, `50 a 54 anos`,
+      `55 a 59 anos`, `60 a 64 anos`,
+      `65 a 69 anos`, `70 a 74 anos`,
+      `75 a 79 anos`, `80 a 84 anos`,
+      `85 a 89 anos`, `90 a 94 anos`,
+      `95 a 99 anos`, `100 anos ou mais`)
+  ) |>
+  rename(`Menor 1 ano` = `Menos de 1 ano`) |>
+  pivot_longer(
+    cols = contains("ano"),
+    names_to = "Idade",
+    values_to = "População"
+  )
+
+```
+
+
+```{r}
+df <- df_obito |>
+  group_by(Idade, Sexo) |>
+  mutate(Óbitos_totais = sum(Óbitos)) |>
+  ungroup() |>
+  left_join(df_populacao) |>
+  mutate(Mx = Óbitos_totais / População)
+
 ```
