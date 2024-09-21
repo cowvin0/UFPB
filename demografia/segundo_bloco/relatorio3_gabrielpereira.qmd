@@ -226,6 +226,6 @@ df <- df |>
   group_by(Sexo) |>
   mutate(
     Tx = rev(cumsum(rev(Lx))),
-    ex = Tx / Ix) |>
-  select(-c(pi, qi, dx, ax, amplitude, M0, Mx, desconto))
+    ex = Tx / Ix) #|>
+  # select(-c(pi, qi, dx, ax, amplitude, M0, Mx, desconto))
 ```
