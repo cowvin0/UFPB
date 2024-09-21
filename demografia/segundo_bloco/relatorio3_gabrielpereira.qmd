@@ -34,25 +34,31 @@ library(tidyverse)
 
 
 ```{r}
-df_obito_homem <- read_csv2('demografia/segundo_bloco/dados_relatorio3/causa_morte_homem_2022.csv') |>
-  mutate(Sexo='Homens')
+# df_obito_homem <- read_csv2('demografia/segundo_bloco/dados_relatorio3/causa_morte_homem_2022.csv') |>
+#   mutate(Sexo='Homens')
 
-df_obito_mulher <- read_csv2('demografia/segundo_bloco/dados_relatorio3/causa_morte_mulher_2022.csv') |>
-  mutate(Sexo='Mulheres')
+# df_obito_mulher <- read_csv2('demografia/segundo_bloco/dados_relatorio3/causa_morte_mulher_2022.csv') |>
+#   mutate(Sexo='Mulheres')
+
+df_obito_homem <- read_csv2('demografia/segundo_bloco/obitos_externas_homens2022.csv') |>
+  mutate(Sexo="Homens") |>
+  select(-Idade) |>
+  drop_na()
+df_obito_mulher <- read_csv2('demografia/segundo_bloco/obitos_externas_mulheres2022.csv') |>
+  mutate(Sexo="Mulheres") |>
+  select(-Idade) |>
+  drop_na()
 
 df_obito <- rbind(df_obito_homem, df_obito_mulher)
 df_obito[df_obito == "-"] <- "0"
 df_obito <- df_obito |>
-  mutate(across(-c("Causa - CID-BR-10", "Sexo"), as.integer)) |>
+  # mutate(across(-c("Causa - CID-BR-10", "Sexo"), as.integer)) |>
   pivot_longer(
     cols = contains("ano"),
     names_to = "Idade",
-    values_to = "Óbitos"
-  ) |>
-  filter(
-    str_detect(`Causa - CID-BR-10`, "-"),
-    `Causa - CID-BR-10` != ". 048 Linfoma n�o-Hodgkin",
-    `Causa - CID-BR-10` != ". 085 D glomerulares e d renais t�bulo-interstic")
+    values_to = "Óbitos_externos"
+  )  |>
+  mutate(Idade = str_replace(Idade, "Menor de 1 ano", "Menor 1 ano"))
 ```
 
 
@@ -90,21 +96,27 @@ df_populacao <- readxl::read_xlsx('demografia/segundo_bloco/dados_relatorio3/pop
 
 ```
 
+```{r}
+df_obito_total <- read_csv2('demografia/segundo_bloco/obito_masculino_feminino_2022.csv') |>
+  pivot_longer(
+    cols = contains("ano"),
+    names_to = "Idade",
+    values_to = "Óbitos_totais"
+  ) |>
+  left_join(df_obito)
+```
 
 ```{r}
-df <- df_obito |>
-  group_by(Idade, Sexo) |>
-  mutate(Óbitos_totais = sum(Óbitos)) |>
-  ungroup() |>
+df_tabuanormal <- df_obito_total |>
   left_join(df_populacao) |>
   mutate(
     Mx = Óbitos_totais / População,
-    desconto = 1 - Óbitos / Óbitos_totais,
+    M0 = ifelse(Idade == c("Menor 1 ano", "1 a 4 anos"), Mx, NA),
     ax = case_when(
-      Sexo == "Homens" & Idade == "Menor 1 ano" ~ ifelse(Mx >= .107, .33, .045 + 2.684 * Mx),
-      Sexo == "Mulheres" & Idade == "Menor 1 ano" ~ ifelse(Mx >= .107, .35, .053 + 2.8 * Mx),
-      Sexo == "Homens" & Idade == "1 a 4 anos" ~ ifelse(Mx >= .107, 1.352, 1.651 + 2.816 * Mx),
-      Sexo == "Mulheres" & Idade == "1 a 4 anos" ~ ifelse(Mx >= .107, 1.361, 1.522 + 1.518 * Mx),
+      Sexo == "Homens" & Idade == "Menor 1 ano" ~ ifelse(M0 >= .107, .33, .045 + 2.684 * M0),
+      Sexo == "Mulheres" & Idade == "Menor 1 ano" ~ ifelse(M0 >= .107, .35, .053 + 2.8 * M0),
+      Sexo == "Homens" & Idade == "1 a 4 anos" ~ ifelse(M0 >= .107, 1.352, 1.651 + 2.816 * M0),
+      Sexo == "Mulheres" & Idade == "1 a 4 anos" ~ ifelse(M0 >= .107, 1.361, 1.522 + 1.518 * M0),
       TRUE ~ .5
     ),
     amplitude = case_when(
@@ -113,35 +125,107 @@ df <- df_obito |>
       Idade == "5 a 9 anos" ~ 4,
       Idade == "10 a 14 anos" ~ 4,
       Idade == "15 a 19 anos" ~ 4,
-      Idade == "80 anos e mais" ~ 9,
       TRUE ~ 9,
     ),
-    pi = (1 - (1 - ax) * amplitude * Mx) / (1 + ax * amplitude * Mx),
+    qi = case_when(
+      Idade == "80 anos e mais" ~ 1,
+      TRUE ~ amplitude * Mx / (1 + amplitude * (1 - ax) * Mx)
+    ),
+    Ix = ifelse(Idade == "Menor 1 ano", 100000, NA))
+
+
+for (sex in unique(df_tabuanormal$Sexo)) {
+  df_sex = df_tabuanormal[df_tabuanormal$Sexo == sex,]
+  for (x in 1:(nrow(df_sex) - 1)) {
+    df_sex$Ix[x + 1] = (1 - df_sex$qi[x]) * df_sex$Ix[x]
+  }
+  df_tabuanormal[df_tabuanormal$Sexo == sex,] = df_sex
+}
+
+df_tabuanormal <- df_tabuanormal |>
+  mutate(
+    dx = Ix * qi,
+    Lx = NA)
+
+for (sex in unique(df_tabuanormal$Sexo)) {
+  df_sex = df_tabuanormal[df_tabuanormal$Sexo == sex,]
+  for (x in 1:(nrow(df_sex))) {
+    if (df_sex$ax[x] != .5) {
+      df_sex$Lx[x] <- df_sex$amplitude[x] * (df_sex$Ix[x] - df_sex$dx[x]) + df_sex$dx[x] * (1 - df_sex$ax[x]) * df_sex$amplitude[x]
+    } else {
+      df_sex$Lx[x] = df_sex$amplitude[x] * (2 * df_sex$Ix[x] - df_sex$dx[x]) / 2
+    }
+  }
+  df_tabuanormal[df_tabuanormal$Sexo == sex,] = df_sex
+}
+
+df_tabuanormal <- df_tabuanormal |>
+  group_by(Sexo) |>
+  mutate(
+    Tx = rev(cumsum(rev(Lx))),
+    ex = Tx / Ix) |>
+  select(-c(qi, dx, ax, amplitude, M0, Mx))
+```
+
+```{r}
+df <- df_obito_total |>
+  left_join(df_populacao) |>
+  mutate(
+    Mx = Óbitos_totais / População,
+    M0 = ifelse(Idade == c("Menor 1 ano", "1 a 4 anos"), Mx, NA),
+    desconto = 1 - Óbitos_externos / Óbitos_totais,
+    ax = case_when(
+      Sexo == "Homens" & Idade == "Menor 1 ano" ~ ifelse(M0 >= .107, .33, .045 + 2.684 * M0),
+      Sexo == "Mulheres" & Idade == "Menor 1 ano" ~ ifelse(M0 >= .107, .35, .053 + 2.8 * M0),
+      Sexo == "Homens" & Idade == "1 a 4 anos" ~ ifelse(M0 >= .107, 1.352, 1.651 + 2.816 * M0),
+      Sexo == "Mulheres" & Idade == "1 a 4 anos" ~ ifelse(M0 >= .107, 1.361, 1.522 + 1.518 * M0),
+      TRUE ~ .5
+    ),
+    amplitude = case_when(
+      Idade == "Menor 1 ano" ~ 1,
+      Idade == "1 a 4 anos" ~ 3,
+      Idade == "5 a 9 anos" ~ 4,
+      Idade == "10 a 14 anos" ~ 4,
+      Idade == "15 a 19 anos" ~ 4,
+      TRUE ~ 9,
+    ),
+    pi = case_when(
+      Idade == "80 anos e mais" ~ 0,
+      TRUE ~ (1 - (1 - ax) * amplitude * Mx) / (1 + ax * amplitude * Mx)
+    ),
     qi = 1 - pi ^ desconto,
-    Ix = ifelse(Idade == "Menor 1 ano", 100000, NA)) |>
-    distinct(Sexo, Idade, .keep_all = TRUE) |>
-    select(-`Causa - CID-BR-10`)
+    Ix = ifelse(Idade == "Menor 1 ano", 100000, NA))
 
 
 for (sex in unique(df$Sexo)) {
   df_sex = df[df$Sexo == sex,]
-  for (x in 1:(nrow(df_sex) -1)) {
+  for (x in 1:(nrow(df_sex) - 1)) {
     df_sex$Ix[x + 1] = (1 - df_sex$qi[x]) * df_sex$Ix[x]
   }
   df[df$Sexo == sex,] = df_sex
 }
 
-# for (sex in unique(df$Sexo)) {
-#   df_sex = df[df$Sexo == sex, ]
-#   for (doenca in unique(df_sex$`Causa - CID-BR-10`)) {
-#     df_doenca = df_sex[df_sex$`Causa - CID-BR-10` == doenca, ]
-#     for (x in 1:(nrow(df_doenca) - 1)) {
-#       df_doenca$Ix[x + 1] = (1 - df_doenca$qi[x]) * df_doenca$Ix[x]
-#     }
-#     df[df$Sexo == sex & df$`Causa - CID-BR-10` == doenca, ] = df_doenca
-#   }
-# }
+df <- df |>
+  mutate(
+    dx = Ix * qi,
+    Lx = NA)
+
+for (sex in unique(df$Sexo)) {
+  df_sex = df[df$Sexo == sex,]
+  for (x in 1:(nrow(df_sex))) {
+    if (df_sex$ax[x] != .5) {
+      df_sex$Lx[x] <- df_sex$amplitude[x] * (df_sex$Ix[x] - df_sex$dx[x]) + df_sex$dx[x] * (1 - df_sex$ax[x]) * df_sex$amplitude[x]
+    } else {
+      df_sex$Lx[x] = df_sex$amplitude[x] * (2 * df_sex$Ix[x] - df_sex$dx[x]) / 2
+    }
+  }
+  df[df$Sexo == sex,] = df_sex
+}
 
 df <- df |>
-  mutate(dx = Ix * qi)
+  group_by(Sexo) |>
+  mutate(
+    Tx = rev(cumsum(rev(Lx))),
+    ex = Tx / Ix) |>
+  select(-c(pi, qi, dx, ax, amplitude, M0, Mx, desconto))
 ```
