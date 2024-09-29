@@ -54,6 +54,22 @@ A TBM é um indicador que deve se tomar cuidado, pois depende do nível da morta
 
 ## Padronização
 
+A padronização tem como objetivo eliminar o efeito da composição etária sobre os indicadores que se deseja comparar, ajustado-os segundo uma mesma distribuição etária padrão como, por exemplo, a do Brasil. Existem dois tipos de padronização, a padronização direta e a padronização indireta.
+
+\vspace{12pt}
+
+A padronização direta é dada por:
+
+$$
+_nO_x^{esp_i} = _nM_x^j \cdot _nP^P_x \text{ e } O^{esp_j} = \sum_{x = 0}^{\infty} {_nO_x^{esp_j}}
+$$
+em que $_nO_x^{esp_i}$ representa os óbitos esperados por idade $x$ na área $j$; $O^{esp_j}$ é o total dos óbitos esperados da área $j$; $_nM_x^j$ é a taxa de mortalidade específica por idade $x$ na área $j$; $_nP^P_x$ é a população adotada como padrão $P$ na idade $x$. Portanto, para se calcular a taxa bruta de mortalidade padronizada, para cada área $j$, tem-se a seguinte expressão:
+
+$$
+TBM^P_j = \frac{O^{esp_j}}{P^P}
+$$
+em que $P^P$ é a população total padrão.
+
 ## Taxa específica de mortalidade
 
 Existem diversas taxas específicas de mortalidade. No entanto, nesse trabalho foi utilizado a taxa especifica de mortalidade por faixa etária, que é expressa da seguinte forma:
@@ -128,7 +144,71 @@ A taxa de mortalidade perinatal é considerada um importante indicador de saúde
 
 ## Tábua de vida
 
-INTRODUZIR TÁBUA DE VIDA PELAS COMPONENTES E DEFINIÇÕES GERAIS. NO FIM, FALAR SOBRE A TÁBUA DE DECREMENTO
+A tábua de vida é um importante instrumento para avaliar o envelhecimento de uma população. Ela fornece a expectativa de vida de um individuo de uma certa idade. Existem dois tipos de tábua de vida, a tábua de vida de coorte que é baseada na experiência continuada da mortalidade de um grupo real de indivíduos desde o nascimento até a morte do último dele. Existe também a tábua de vida de corrente, que é formada pela experiência de mortalidade de um grupo de indivíduos de uma população real.
+
+\vspace{12pt}
+
+A construção de uma tábua de vida possui também algumas suposições. A população deve ser fechada, ou seja, não existe dinâmica de migração e portanto não há mudanças na sociedade, exceto a perda devido a morte. A outra suposição é que para cada idade, exceto para os primeiros anos de vida, as mortes devem ser igualmente distribuídas em intervalo de idade.
+
+\vspace{12pt}
+
+A tábua de vida possui 10 elementos para a sua contrução. O primeiro deles são os intervalos de idade, o segundo é o número de indivíduos $_nP_x$ em cada um desses intervalos de idade. Há também o número de óbitos $_nD_x$ em cada intervalo de idade. Com o número de morte e da população em cada intervalo, calcula-se a razão dos óbitos para cada intervalo, o qual é definido da seguinte forma:
+
+$$
+_nM_x = \frac{_nD_x}{_nP_x}
+$$
+
+A partir da razão de óbito e de outras quantidades, é possível obter também a probabilidade de morrer $_nq_x$ entre um intervalo de idade específica:
+
+$$
+{_nq_x} = \frac{n\cdot {_nM_x}}{1 + n\left(1 - {_na_x} \right){_nM_x}}
+$$
+onde $_na_x$ é o fator de separação, que permite saber a fração de tempo vivida pelas pessoas que morreram durante aquele intervalo. O fator de separação pode ser definido pelo nível de desenvolvimento de uma região, como pode ser visto na tabela abaixo:
+
+![](../includes/ax.png)
+
+No entanto, nesse trabalho foi utilizado a tabela abaixo e para idades acima de 5 anos foi considerado o valor de 0,5.
+
+![](../includes/ax2.png)
+
+Outra componente da tábua de vida é a raiz da tábua de vida $I_0$, o qual foi considerado o valor inicial de 100.000. A partir desse valor inicial, é calculado o número de sobreviventes a cada intervalo de idade. Sua fórmula é dada por:
+
+$$
+I_{x + n} = I_x - _nd_x
+$$
+onde $_nd_x$ é o número de óbitos no intervalo de idade e é definido por $_nd_x = I_x {_nq_x}$. A partir dessas quantidades, é calculado o número de anos vividos pelos sobreviventes do grupo inicial de indivíduos entre os intervalos de idade $_nL_x$. Sua fórmula é dada por:
+
+$$
+_nL_x = n\cdot I_{x + n} + {_nd_x} \left(1 - {_na_x}\right) \cdot n
+$$
+Para idades acima de 5 anos, a fórmula se torna:
+
+$$
+_nL_x = n \cdot \frac{\left(I_x + I_{x + n}\right)}{2}
+$$
+pois $_na_x$ foi assumido como 0,5 para idades acima de 5 anos. A partir de $_nL_x$ é calculado o número total de anos que se espera viver a partir da idade exata $x$, que nada mais é do que o acumulado da ordem inversa dos valores de $_nL_x$ e no fim inverter a ordem do resultado do acumulado. Sua fórmula é dada por:
+
+$$
+T_x = _nL_x + T_{x + n}
+$$
+
+Por fim, com todos esse valores calculados, é possível calcular a expectativa de vida do indivíduo no intervalo de idade. Ele corresponde ao número médio de anos de vida esperados pelas pessoas na idade $x$:
+
+$$
+e_x = \frac{T_x}{I_x}
+$$
+
+Caso se deseja remover alguns fatores externos para o cálculo da tábua de vida, existe a tábua de vida de múltiplo decremento. A sua construção diverge da tábua de vida comum apenas pela componente $_nq_x$, que é substituida pela probabilidade de morte. A probabilidade líquida de morte $q_x$ é dada por:
+
+$$
+q_{i, j} = 1 - \hat{p}_i ^ {\frac{D_i - D_{ij}}{D_i}}
+$$
+onde $\hat{p}_i$ é o estimador da probabilidade de um individuo sobreviver no intervalo de idade. Sua fórmula é dada por:
+
+$$
+\hat{p}_i = \frac{1 - \left(1 - a_{i}^{'} \cdot n_i \cdot M_i\right)}{1 + a_{i}^{'} \cdot n_i \cdot M_i}
+$$
+em que $M_i$ é a taxa de mortalidade na idade $i$, $a_i ^ {'}$ é o fator de separação, $n_i$ é o intervalo de classe para o grupo etário. $D_i$ é o número de óbitos ocorridos na idade $i$, $D_{ij}$ é o número de óbitos ocorridos na idade $i$ e na causa $j$.
 
 ```{r}
 # obito causa externa 2022
@@ -262,7 +342,11 @@ df_2010 <- df_populacao_2010 |>
 
 ## Taxa bruta de mortalidade
 
+A partir da tabela apresentada, as Taxas Brutas de Mortalidade (TBM) foram calculadas para o estado do Rio de Janeiro em 2010 e 2022, separadas por sexo. Essas taxas refletem a quantidade de óbitos por cada 1.000 pessoas em cada ano e grupo.
+
+
 ```{r}
+#| layout-ncol: 2
 TBM_2022 = df_2022 |>
   group_by(Sexo) |>
   summarise(
@@ -278,13 +362,21 @@ TBM_2010 = df_2010 |>
     obito = sum(Óbitos_totais),
     TBM = obito / pop * 1000
   )
+
+TBM_2010 |>
+  rename(`TBM 2010` = TBM) |>
+  knitr::kable()
+
+TBM_2022 |>
+  rename(`TBM 2022` = TBM) |>
+  knitr::kable()
 ```
 
 ```{r}
 tibble(
   Sexo = c("Masculino", "Feminino"),
   `2010` = c(
-    TBM_2010[2,]$TBM, TBM_2010[1,]$TBM
+    TBM_2010[1,]$TBM, TBM_2010[2,]$TBM
   ),
   `2022` = c(
     TBM_2022[1,]$TBM, TBM_2022[2,]$TBM
@@ -293,7 +385,15 @@ tibble(
   knitr::kable()
 ```
 
+ A taxa bruta de mortalidade para os homens foi de 8,88 óbitos por 1.000 pessoas. Isso significa que, de cada mil homens no Rio de Janeiro em 2010, aproximadamente 8,88 faleceram. A taxa foi mais baixa para as mulheres, com 6,98 óbitos por 1.000 pessoas, mostrando que, em 2010, a mortalidade entre as mulheres foi inferior à dos homens.
+
+ \vspace{12pt}
+
+ Houve um aumento significativo na taxa de mortalidade para os homens, subindo para 10,10 óbitos por 1.000 pessoas, sugerindo um agravamento das condições de saúde ou envelhecimento da população masculina nesse período. Houve um aumento significativo na taxa de mortalidade para os homens, subindo para 10,10 óbitos por 1.000 pessoas, sugerindo um agravamento das condições de saúde ou envelhecimento da população masculina nesse período.
+
 ## Taxa especifica de mortalidade
+
+A Taxa Específica de Mortalidade (TME) apresentada na tabela refere-se à mortalidade calculada para diferentes faixas etárias e por sexo (homens e mulheres) nos anos de 2010 e 2022. Essa taxa mostra a proporção de óbitos em cada grupo específico de idade, permitindo uma análise mais detalhada das dinâmicas de mortalidade conforme a idade avança.
 
 ```{r}
 tme <- df_2010 |>
@@ -302,21 +402,37 @@ tme <- df_2010 |>
     df_2022 |>
       mutate(`TME 2022` = Óbitos_totais / População),
     by = join_by(Sexo, Idade)
-  ) |>
-  select(-starts_with("População") & -starts_with("Óbitos"))
+  )  |>
+  rename(
+    `População 2022` = População.y,
+    `População 2010` = População.x,
+    `Óbitos 2022` = Óbitos_totais.y,
+    `Óbitos 2010` = Óbitos_totais.x
+  )
+  # select(-starts_with("População") & -starts_with("Óbitos"))
 
 tme |>
   knitr::kable()
 ```
 
+A mortalidade em 2010 foi de 0,01639 (aproximadamente 1,6% dos nascidos vivos morreram antes de completar 1 ano). Essa taxa permanece quase estável em 2022 (0,01638), sugerindo pouca variação na mortalidade infantil. A mortalidade para homens com 80 anos ou mais é bastante elevada, com 12,7% de mortalidade em 2010 e uma leve diminuição para 12,2% em 2022. Esse grupo é o mais vulnerável, embora haja uma pequena melhora. A mortalidade é muito alta para mulheres com 80 anos ou mais, com uma taxa de 10,2% em 2010, diminuindo para 10,4% em 2022, refletindo melhorias moderadas. No entanto, nessa faixa de idade O TME para as mulheres ainda é menor comparado aos homens.
+
 ## Taxa de mortalidade infantil
+
+Abaixo tem os nascidos vivos para homens e mulheres no ano de 2010 e 2022 no estado do Rio de Janeiro:
+
 ```{r}
 nascidos_2010_2020 <- tibble(
   Sexo = c("Homens", "Mulheres"),
   `2010` = c(110269, 104944),
   `2022` = c(92055, 88309)
 )
+
+nascidos_2010_2020 |>
+  knitr::kable()
 ```
+
+A Taxa de Mortalidade Infantil (TMI) apresentada na tabela mostra o número de óbitos de crianças menores de 1 ano por 1.000 nascidos vivos, separados por sexo (homens e mulheres) para os anos de 2010 e 2022 no estado do Rio de Janeiro.
 
 ```{r}
 tmi <- tibble(
@@ -329,6 +445,8 @@ tmi |>
   knitr::kable()
 ```
 
+Para homens, a TMI foi de 14,75 em 2010 e reduziu para 13,85 em 2022. Para mulheres, a TMI foi de 13,07 em 2010 e caiu para 12,39 em 2022. Tanto para homens quanto para mulheres, a taxa de mortalidade infantil diminuiu de 2010 para 2022, indicando uma melhoria nas condições de saúde neonatal e infantil, assim como na qualidade dos serviços de saúde para recém-nascidos.
+
 ## Taxa de mortalidade neonatal
 
 ```{r}
@@ -336,6 +454,8 @@ tmi |>
 ```
 
 ## Taxa de mortalidade neonatal precoce
+
+A taxa de mortalidade neonatal precoce para o sexo masculino foi de 7,48 para 1000 habitantes, no ano de 2010. Houve uma redução no ano de 2022 para 6,82 para 1000 habitantes. Pela tabela abaixo, é possivel ver também que para o sexo feminino esse número foi menor para os dois anos analisados, sofrendo uma redução ainda maior no ano de 2022, de 5,61  para mil habitantes.
 
 ```{r}
 tmnp <- tibble(
