@@ -1,0 +1,57 @@
+---
+format: pdf
+title: |
+  Resumo sobre a apresentação: Diferenciais na Cobertura das Bases de Dados de Óbitos no Brasil em 2010
+number-sections: false
+indent: true
+whitespace: small
+documentclass: scrreprt
+lang: pt-br
+bibliography: ../includes/bib.bib
+csl: ../includes/ufpe-abnt.csl
+subtitle: Universidade Federal da Paraíba - CCEN
+author: Gabriel de Jesus Pereira
+date: today
+date-format: long
+highlight-style: github
+fontsize: 12pt
+interlinespace: 1.5pt
+fig-cap-location: bottom
+warning: false
+echo: false
+include-in-header:
+  - text: |
+      \usepackage{pdflscape}
+      \newcommand{\blandscape}{\begin{landscape}}
+      \newcommand{\elandscape}{\end{landscape}}
+---
+
+A apresentação discute e apresenta resultados sobre diferentes bases para a cobertura de óbitos, fazendo a comparação fontes de dados, como o SIM e o próprio censo do IBGE.
+
+\vspace{12pt}
+
+São apresentadas três fontes distintas de dados sobre óbitos no Brasil. A primeira é o Sistema de Informações sobre Mortalidade (SIM) do DATASUS/MS, seguido pelo Sistema de Registro Civil (RC) do IBGE. Ambos são exemplos de registros administrativos contínuos, ou seja, a coleta de dados ocorre de forma regular e ininterrupta, diferentemente de censos ou pesquisas, que são realizados em intervalos específicos. Assim, essas duas fontes capturam informações à medida que os eventos, como óbitos e nascimentos, acontecem.
+
+\vspace{12pt}
+
+Uma característica importante dessas bases de dados é que ambas têm a mesma origem documental: a Declaração de Óbito (DO), emitida em três vias. Uma via permanece na instituição de saúde onde ocorreu o óbito, outra é entregue à família, e a terceira é encaminhada às secretarias municipais e estaduais de saúde, que enviam os dados ao DATASUS, alimentando o SIM. A via entregue à família é utilizada para a emissão da certidão de óbito no cartório. Com essa informação, o cartório comunica o IBGE, que, por sua vez, atualiza o Registro Civil.
+
+\vspace{12pt}
+
+Uma diferença importante entre esses sistemas é que o SIM depende de um processo mais descentralizado, necessitando de uma boa estrutura nos órgãos públicos de saúde, enquanto o Registro Civil é mais centralizado, sendo gerido diretamente pelo IBGE.
+
+\vspace{12pt}
+
+A outra fonte de dados sobre óbitos é o IBGE, que atua mais como uma fonte alternativa. Nesse caso, o IBGE está sujeito a erros de memória e inconsistências no período de referência, pois as informações sobre os óbitos são fornecidas pelos entrevistados, que podem cometer equívocos ao relatar os dados.
+
+\vspace{12pt}
+
+Em algumas regiões do país, podem ocorrer discrepâncias entre os óbitos registrados no SIM e no RC. Isso se deve aos fluxos distintos de processamento dos dados, apesar de ambos utilizarem o mesmo documento de origem. Essas discrepâncias são mais frequentes na região Norte, onde o número de óbitos cadastrados no SIM é superior ao registrado no RC.
+
+\vspace{12pt}
+
+Por fim, foram realizadas comparações para identificar qual fonte de dados sobre óbitos possui maior cobertura regional. Para isso, foram analisadas as relações entre a cobertura e algumas variáveis estatísticas, como o Índice de Desenvolvimento Humano Municipal (IDHM). Constatou-se que o censo oferece maior cobertura nos municípios menos desenvolvidos. O mesmo padrão foi observado em relação ao Índice Brasileiro de Privação: municípios com maior privação apresentam maior cobertura pelo censo, enquanto essa participação diminui significativamente nos municípios menos privados.
+
+\vspace{12pt}
+
+Essas relações se invertem quando considerados os dados do SIM e do RC. Comparando apenas o RC com o SIM, o último demonstra uma cobertura superior na maioria dos territórios, e, nos poucos casos em que isso não ocorre, a diferença é mínima. Nas regiões Norte e em algumas partes do Nordeste, o censo parece ter maior capacidade de captar os óbitos. Existem também indícios de que a base do censo tem uma cobertura maior em locais menos desenvolvidos ou municípios menores.

@@ -32,19 +32,112 @@ library(lifecontingencies)
 library(tidyverse)
 ```
 
+# Metodologia
+
+## Obtenção dos dados
+
+\ \ \ Os dados demográficos utilizados neste estudo foram obtidos de duas fontes principais. As informações sobre a população por faixa etária foram extraídas do TABNET, uma ferramenta desenvolvida pelo DATASUS. O TABNET é um tabulador genérico de domínio público que facilita a organização e consulta rápida de dados conforme os critérios definidos, enquanto o DATASUS fornece informações essenciais para a análise da saúde pública e variáveis demográficas, contribuindo para a formulação de políticas e programas de saúde. Os dados populacionais por faixa etária foram obtidos a partir do sistema Sidra. Para os dados de natalidade e mortalidade, eles foram obtidos a partir do sistema de dados abertos do governo do Rio de Janeiro, o qual contempla uma grande quantidade de dados sobre estatísticas vitais. É importante destacar que os dados analisados correspondem aos censos de 2010 e 2022.
+
+## Recursos computacionais
+
+\ \ \ As análises apresentadas neste estudo foram realizadas utilizando a linguagem de programação R [@rlang], com o auxílio de todo ecossistema Tidyverse [@tidy] para manipulação de dados e do pacote ggplot [@ggplot] para visualização gráfica. Os documentos do relatório foram elaborados com o Quarto [@quarto], um sistema de escrita e publicação científica. Todo o código-fonte utilizado nas análises está disponível no GitHub [@github].
+
+## Taxa bruta de mortalidade
+
+A taxa bruta de mortalidade corresponde ao risco que os indíviduos de uma população têm de morrer no decorrer de um determinado período, geralmente um ano. A sua fórmula é dada por:
+
+$$
+TBM = \frac{O}{P} \cdot 1000
+$$
+
+A TBM é um indicador que deve se tomar cuidado, pois depende do nível da mortalidade, da estrutura etária, do sexo, e de muitos fatores específicos, como a incidência de morbidade, etc. Cada um desses elementos pode variar de um ano para o outro, e a combinação desses fatores pode causar flutuações na TBM.
+
+## Padronização
+
+## Taxa específica de mortalidade
+
+Existem diversas taxas específicas de mortalidade. No entanto, nesse trabalho foi utilizado a taxa especifica de mortalidade por faixa etária, que é expressa da seguinte forma:
+
+$$
+TME = \frac{\text{Número de óbitos em uma faixa etária}}{\text{População dessa faixa etária}} \cdot 1000
+$$
+
+O TME faixa etária mede o número de óbitos em uma faixa específica por mil habitantes dessa mesma faixa etári em um determinado período.
+
+## Taxa de mortalidade infantil
+
+A taxa de mortalidade infantil é também uma taxa específica, mas referente à mortalidade ocorrida durante o primeiro ano de vida. Assim, a taxa de mortalidade infantil mede o risco que os nascidos vivos com menos de um ano tem de morrer. A sua fórmula é dada por:
+
+$$
+TMI = \frac{\text{Número de óbitos de crianças menores de 1 ano}}{\text{Número total de nascidos vivos}} \cdot 1000
+$$
+
+A taxa de mortalidade infantil é considerada um dos indicadores mais sensíveis da qualidade de vida e do desenvolvimento socioeconômico, pois reflete diretamente o estado de saúde das mães durante a gravidez e o acesso a serviçoes de pré-natal e partos seguros. Disponibilidade e qualidade dos cuidados médicos para recém-nascidos e crianças. Saneamento másico e nutrição, educação e políticas sociais. Embora seja um indicador amplamente utilizado, a TMI não captura toda a complexidade das condições de saúde de uma população, pois não inclui informações sobre a mortalidade de crianças entre 1 e 5 anos. Além disso, pode ser influenciada por fatores como o sub-registro de nascimentos e óbitos em algumas regiões.
+
+\vspace{12pt}
+
+O RIPSA defente uma categorização para uma TMI por mil nascidos vivos. Uma TMI abaixo de 20 é considerada baixa, entre 20 e 49 é considerada intermediária e acima de 50 é considerada alta.
+
+## Taxa de mortalidade neonatal
+
+A Taxa de Mortalidade Neonatal (TMN) é um indicador demográfico que mede o número de óbitos de recém-nascidos (crianças com menos de 27 dias de vida) por mil nascidos vivos em um determinado período, geralmente um ano. A sua fórmula é dada por:
+
+$$
+TMN = \frac{\text{Número de óbitos de crianças com menos de 27 dias}}{\text{Número total de nascidos vivos}} \cdot 1000
+$$
+
+A taxa de mortalidade neonatal é um indicador de extrema importância porque reflete problemas de saúde durante a gravidez, como hipertensão, diabetes gestacional, ou má nutrição, podem aumentar o risco de mortalidade neonatal. A qualidade do cuidado oferecido às mães e aos recém-nascidos, especialmente no momento do parto e nos primeiros dias de vida, tem um impacto significativo na TMN.
+
+## Taxa de mortalidade neonatal precoce
+
+A Taxa de Mortalidade Neonatal Precoce (TMNP) refere-se ao número de óbitos de recém-nascidos que ocorrem nos primeiros 6 dias de vida por mil nascidos vivos. Ela é uma subcategoria da taxa de mortalidade neonatal e foca especificamente nas mortes que acontecem no período neonatal precoce, que é considerado o mais vulnerável da vida de um bebê. Para calcular o TMNP, tem-se a seguinte fórmula:
+
+$$
+TMNP = \frac{\text{Número de óbitos de crianças com menos de 6 dias}}{\text{Número total de nascidos vivos}} \cdot 1000
+$$
+
+A taxa de mortalidade neonatal precoce é um indicador crucial para a avaliação da saúde pública e da qualidade dos cuidados perinatais, porque a maioria das mortes neonatais acontece nos primeiros dias de vida.
+
+## Taxa de mortalidade tardia
+
+A Taxa de Mortalidade Neonatal Tardia (TMNT) refere-se ao número de óbitos de recém-nascidos que ocorrem entre o 7º e o 27º dia de vida por mil nascidos vivos. Ela é uma subcategoria da taxa de mortalidade neonatal e engloba as mortes que acontecem após a primeira semana de vida, durante o período neonatal tardio. Esse período é crucial para a adaptação dos recém-nascidos à vida fora do útero, e as causas de morte tendem a ser diferentes das observadas na fase neonatal precoce. A sua fórmula é dada por:
+
+$$
+TMNT = \frac{\text{Número de óbitos de crianças entre 7 e 27 dias de vida}}{\text{Número total de nascidos vivos}} \cdot 1000
+$$
+
+## Taxa de Mortalidade Pós-Neonatal
+
+A Taxa de Mortalidade Pós-Neonatal (TMPN) refere-se ao número de óbitos de crianças que ocorrem entre o 28º dia e o primeiro ano de vida, por mil nascidos vivos. Ela é uma subcategoria da taxa de mortalidade infantil e engloba as mortes que ocorrem após o período neonatal (os primeiros 27 dias), mas antes da criança completar um ano de vida. Ela é expressa por:
+
+$$
+TMPN = \frac{\text{Número de óbitos de crianças entre 28 e 1 ano de vida}}{\text{Número total de nascidos vivos}} \cdot 1000
+$$
+
+A taxa de mortalidade pós-neonatal é um indicador importante da saúde infantil e das condições de vida durante os primeiros meses de vida da criança. Diferentemente da mortalidade neonatal, cujas causas estão mais relacionadas a fatores gestacionais e ao parto, a mortalidade pós-neonatal está mais ligada ao ambiente em que a criança vive, à nutrição e ao acesso a cuidados médicos.
+
+## Taxa de mortalidade perinatal
+
+A Taxa de Mortalidade Perinatal (TMP) é um indicador que engloba as mortes que ocorrem no final da gestação e logo após o nascimento, refletindo tanto a saúde materna quanto as condições do sistema de saúde para garantir um parto seguro. A TMP inclui os óbitos fetais ocorridos a partir da 22ª semana de gestação e as mortes de recém-nascidos até o 6º dia de vida. A fórmula utilizada para calcular a taxa de mortalidade perinatal é:
+
+$$
+TMP = \frac{\text{Número óbitos fetais e de óbitos de crianças de até 6 dias de vida, de mães residentes}}{\text{Número total de nascidos (vivos e mortos)}}
+$$
+
+A taxa de mortalidade perinatal é considerada um importante indicador de saúde pública, pois reflete diretamente a qualidade dos cuidados de saúde durante o período pré-natal, o parto e os primeiros dias de vida. Um sistema de saúde eficiente, com monitoramento e intervenções adequadas durante a gravidez e o parto, pode reduzir significativamente a mortalidade perinatal.
+
+## Tábua de vida
+
+INTRODUZIR TÁBUA DE VIDA PELAS COMPONENTES E DEFINIÇÕES GERAIS. NO FIM, FALAR SOBRE A TÁBUA DE DECREMENTO
 
 ```{r}
-# df_obito_homem <- read_csv2('demografia/segundo_bloco/dados_relatorio3/causa_morte_homem_2022.csv') |>
-#   mutate(Sexo='Homens')
+# obito causa externa 2022
 
-# df_obito_mulher <- read_csv2('demografia/segundo_bloco/dados_relatorio3/causa_morte_mulher_2022.csv') |>
-#   mutate(Sexo='Mulheres')
-
-df_obito_homem <- read_csv2('demografia/segundo_bloco/obitos_externas_homens2022.csv') |>
+df_obito_homem <- read_csv2('obitos_externas_homens2022.csv') |>
   mutate(Sexo="Homens") |>
   select(-Idade) |>
   drop_na()
-df_obito_mulher <- read_csv2('demografia/segundo_bloco/obitos_externas_mulheres2022.csv') |>
+df_obito_mulher <- read_csv2('obitos_externas_mulheres2022.csv') |>
   mutate(Sexo="Mulheres") |>
   select(-Idade) |>
   drop_na()
@@ -63,7 +156,9 @@ df_obito <- df_obito |>
 
 
 ```{r}
-df_populacao <- readxl::read_xlsx('demografia/segundo_bloco/dados_relatorio3/populacao_2022_rj_mulher_homem.xlsx') |>
+# População 2022
+
+df_populacao <- readxl::read_xlsx('dados_relatorio3/populacao_2022_rj_mulher_homem.xlsx') |>
   mutate(
     `1 a 4 anos` = `0 a 4 anos` - `Menos de 1 ano`,
     `20 a 29 anos` = `20 a 24 anos` + `25 a 29 anos`,
@@ -97,14 +192,189 @@ df_populacao <- readxl::read_xlsx('demografia/segundo_bloco/dados_relatorio3/pop
 ```
 
 ```{r}
-df_obito_total <- read_csv2('demografia/segundo_bloco/obito_masculino_feminino_2022.csv') |>
+# obito total 2022 marculino e feminino
+
+df_obito_total <- read_csv2('obito_masculino_feminino_2022.csv') |>
   pivot_longer(
     cols = contains("ano"),
     names_to = "Idade",
     values_to = "Óbitos_totais"
-  ) |>
+  )
+
+df_2022 <- df_populacao |>
+  left_join(df_obito_total)
+
+df_obito_total <- df_obito_total |>
   left_join(df_obito)
 ```
+
+```{r}
+# população 2010 masculino e feminino
+
+df_populacao_2010  <- read_csv2('dados_relatorio3/populacao_2010_rj_mulher_homem.csv') |>
+  mutate(Sexo = ifelse(Sexo == "Masculino", "Homens", "Mulheres")) |>
+  pivot_longer(
+    cols = contains("ano"),
+    names_to = "Idade",
+    values_to = "População"
+  )
+```
+
+```{r}
+# obito total 2010 masculino e feminino
+
+df_obito_total_2010  <- read_csv2('dados_relatorio3/obito_masculino_feminino_2010.csv') |>
+  mutate(
+      Sexo = ifelse(Sexo == "Masculino", "Homens", "Mulheres"),
+      `20 a 29 anos` = `20 a 24 anos` + `25 a 29 anos`,
+      `30 a 39 anos` = `30 a 34 anos` + `35 a 39 anos`,
+      `40 a 49 anos` = `40 a 44 anos` + `45 a 49 anos`,
+      `50 a 59 anos` = `50 a 54 anos` + `55 a 59 anos`,
+      `60 a 69 anos` = `60 a 64 anos` + `65 a 69 anos`,
+      `60 a 69 anos` = `60 a 64 anos` + `65 a 69 anos`,
+      `70 a 79 anos` = `70 a 74 anos` + `75 a 79 anos`,
+    ) |>
+  select(
+    -c(
+      `20 a 24 anos`, `25 a 29 anos`,
+      `30 a 34 anos`, `35 a 39 anos`,
+      `40 a 44 anos`, `45 a 49 anos`,
+      `50 a 54 anos`, `55 a 59 anos`,
+      `60 a 64 anos`, `65 a 69 anos`,
+      `70 a 74 anos`, `75 a 79 anos`)
+  ) |>
+  rename(
+    `Menor 1 ano` = `Menor de 1 ano`,
+    `1 a 4 anos` = `1 a  4 anos`,
+    `5 a 9 anos` = `5 a  9 anos`
+  ) |>
+  pivot_longer(
+    cols = contains("ano"),
+    names_to = "Idade",
+    values_to = "Óbitos_totais"
+  )
+
+df_2010 <- df_populacao_2010 |>
+  left_join(df_obito_total_2010)
+```
+
+# Resultados
+
+## Taxa bruta de mortalidade
+
+```{r}
+TBM_2022 = df_2022 |>
+  group_by(Sexo) |>
+  summarise(
+    pop = sum(População),
+    obito = sum(Óbitos_totais),
+    TBM = obito / pop * 1000
+  )
+
+TBM_2010 = df_2010 |>
+  group_by(Sexo) |>
+  summarise(
+    pop = sum(População),
+    obito = sum(Óbitos_totais),
+    TBM = obito / pop * 1000
+  )
+```
+
+```{r}
+tibble(
+  Sexo = c("Masculino", "Feminino"),
+  `2010` = c(
+    TBM_2010[2,]$TBM, TBM_2010[1,]$TBM
+  ),
+  `2022` = c(
+    TBM_2022[1,]$TBM, TBM_2022[2,]$TBM
+  )
+) |>
+  knitr::kable()
+```
+
+## Taxa especifica de mortalidade
+
+```{r}
+tme <- df_2010 |>
+  mutate(`TME 2010` = Óbitos_totais / População) |>
+  left_join(
+    df_2022 |>
+      mutate(`TME 2022` = Óbitos_totais / População),
+    by = join_by(Sexo, Idade)
+  ) |>
+  select(-starts_with("População") & -starts_with("Óbitos"))
+
+tme |>
+  knitr::kable()
+```
+
+## Taxa de mortalidade infantil
+```{r}
+nascidos_2010_2020 <- tibble(
+  Sexo = c("Homens", "Mulheres"),
+  `2010` = c(110269, 104944),
+  `2022` = c(92055, 88309)
+)
+```
+
+```{r}
+tmi <- tibble(
+  Sexo = c("Homens", "Mulheres"),
+  `2010` = c(1626 / 110269 * 1000, 1372 / 104944 * 1000),
+  `2022` = c(1275 / 92055 * 1000, 1094 / 88309 * 1000)
+)
+
+tmi |>
+  knitr::kable()
+```
+
+## Taxa de mortalidade neonatal
+
+```{r}
+
+```
+
+## Taxa de mortalidade neonatal precoce
+
+```{r}
+tmnp <- tibble(
+  Sexo = c("Homens", "Mulheres"),
+  `2010` = c(825 / 110269 * 1000, 710 / 104944 * 1000),
+  `2022` = c(628 / 92055 * 1000, 496 / 88309 * 1000)
+)
+
+tmnp |>
+  knitr::kable()
+```
+
+## Taxa de mortalidade neonatal tardia
+
+```{r}
+tmnt <- tibble(
+  Sexo = c("Homens", "Mulheres"),
+  `2010` = c(257 / 110269 * 1000, 210 / 104944 * 1000),
+  `2022` = c(204 / 92055 * 1000, 195 / 88309 * 1000)
+)
+
+tmnt |>
+  knitr::kable()
+```
+
+## Taxa de mortalidade pós-neonatal
+
+```{r}
+tmpn <- tibble(
+  Sexo = c("Homens", "Mulheres"),
+  `2010` = c(544 / 110269 * 1000, 451 / 104944 * 1000),
+  `2022` = c(442 / 92055 * 1000, 402 / 88309 * 1000)
+)
+
+tmpn |>
+  knitr::kable()
+```
+
+## Taxa de mortalidade perinatal
 
 ```{r}
 df_tabuanormal <- df_obito_total |>
