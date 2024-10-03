@@ -338,12 +338,51 @@ df_2010 <- df_populacao_2010 |>
   left_join(df_obito_total_2010)
 ```
 
+## Taxa bruta de natalidade
+
+A taxa bruta de natalidade é um indicador demográfico que mede o número de nascimentos vivos por 1.000 habitantes em uma determinada população e período, geralmente um ano. Ela é calculada pela fórmula:
+
+$$
+TBN = \frac{\text{Número de Nascimentos Vivos}}{\text{População Total}} \cdot 1.000
+$$
+
+Esse indicador é utilizado para analisar a dinâmica populacional e pode refletir questões sociais, econômicas e de saúde pública de uma região. Por exemplo, taxas de natalidade elevadas costumam ser observadas em países em desenvolvimento, onde há menos acesso a métodos contraceptivos e onde fatores culturais podem influenciar a quantidade de filhos por família. Em contrapartida, em países desenvolvidos, as taxas de natalidade geralmente são menores, refletindo um envelhecimento populacional e mudanças nos padrões familiares.
+
+## Taxa de fecundidade geral
+
+A taxa de fecundidade geral (ou taxa geral de fecundidade) é um indicador demográfico que mede o número de nascimentos vivos por 1.000 mulheres em idade fértil (geralmente consideradas aquelas entre 15 e 49 anos) em uma determinada população e período, geralmente um ano. Sua fórmula é:
+
+$$
+TFG = \frac{\text{Número de Nascimentos Vivos}}{\text{Número de Mulheres em Idade Fértil}} \cdot 1.000
+$$
+
+Esse indicador é mais preciso que a taxa bruta de natalidade para analisar a capacidade reprodutiva de uma população, pois foca especificamente nas mulheres que estão biologicamente aptas a ter filhos. A taxa de fecundidade geral elimina o efeito da estrutura etária geral da população, concentrando-se no grupo relevante para a análise de fecundidade.
+
+## Taxa específica de fecundidade
+
+A Taxa Específica de Fecundidade (TEF) é um indicador demográfico que mede o número de nascimentos vivos por 1.000 mulheres em uma faixa etária específica em um determinado período, geralmente um ano. Diferente da taxa geral de fecundidade, a TEF permite uma análise mais detalhada, observando como a fecundidade varia entre diferentes grupos etários de mulheres. Sua fórmula é:
+
+$$
+TEF = \frac{\text{Número de Nascimentos Vivos em uma Faixa Etária}}{\text{Número de Mulheres na Mesma Faixa Etária}} \cdot 1.000
+$$
+
+As TEFs são geralmente calculadas para grupos de mulheres em intervalos de cinco anos, como 15-19, 20-24, 25-29, e assim por diante, até 45-49 anos. Isso permite identificar padrões como em quais faixas etárias as mulheres têm mais filhos e como a fecundidade varia ao longo da vida reprodutiva.
+
+## Taxa de fecundidade total
+
+A Taxa de Fecundidade Total (TFT) é um indicador demográfico que estima o número médio de filhos que uma mulher teria ao longo de sua vida reprodutiva, caso ela seguisse as taxas de fecundidade específicas observadas para cada faixa etária em um determinado período. Ela é calculada somando-se as Taxas Específicas de Fecundidade (TEF) para todas as faixas etárias de mulheres em idade fértil (geralmente de 15 a 49 anos). A sua fórmula é data por:
+
+$$
+TFT = \sum \left( \frac{\text{Taxa específica de fecundidade para cada faixa etária}}{1.000} \right) \cdot \text{amplitude}
+$$
+
+Essa medida é considerada uma das mais importantes em demografia porque reflete diretamente o comportamento reprodutivo da população em um dado período, independentemente da estrutura etária atual. A TFT oferece uma projeção do número médio de filhos por mulher, se as condições observadas em determinado ano permanecessem constantes.
+
 # Resultados
 
 ## Taxa bruta de mortalidade
 
 A partir da tabela apresentada, as Taxas Brutas de Mortalidade (TBM) foram calculadas para o estado do Rio de Janeiro em 2010 e 2022, separadas por sexo. Essas taxas refletem a quantidade de óbitos por cada 1.000 pessoas em cada ano e grupo.
-
 
 ```{r}
 #| layout-ncol: 2
