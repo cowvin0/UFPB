@@ -1,0 +1,27 @@
+---
+format: pdf
+title: |
+  Resumo
+number-sections: false
+indent: true
+whitespace: small
+documentclass: scrreprt
+lang: pt-br
+bibliography: ../includes/bib.bib
+csl: ../includes/ufpe-abnt.csl
+subtitle: Universidade Federal da Paraíba - CCEN
+author: Gabriel de Jesus Pereira
+date: today
+date-format: long
+highlight-style: github
+fontsize: 12pt
+interlinespace: 1.5pt
+fig-cap-location: bottom
+warning: false
+echo: false
+include-in-header:
+  - text: |
+      \usepackage{pdflscape}
+      \newcommand{\blandscape}{\begin{landscape}}
+      \newcommand{\elandscape}{\end{landscape}}
+---
