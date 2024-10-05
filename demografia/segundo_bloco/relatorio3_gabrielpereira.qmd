@@ -488,9 +488,18 @@ Para homens, a TMI foi de 14,75 em 2010 e reduziu para 13,85 em 2022. Para mulhe
 
 ## Taxa de mortalidade neonatal
 
-```{r}
+A tabela abaixo é a quantidade de óbitos ocorridos no período neonatal no ano de 2010 e 2022, para o sexo masculino e feminino:
 
+```{r}
+mortalidade_neonatal <- tibble(
+  Sexo = c("Homens", "Mulheres"),
+  `2010` = c(1082, 920),
+  `2022` = c(832, 691)
+)
+mortalidade_neonatal |> knitr::kable()
 ```
+
+A partir dessa tabela, é possível
 
 ## Taxa de mortalidade neonatal precoce
 
