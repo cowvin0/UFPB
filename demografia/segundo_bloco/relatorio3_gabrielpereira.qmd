@@ -507,7 +507,18 @@ mortalidade_neonatal <- tibble(
 mortalidade_neonatal |> knitr::kable()
 ```
 
-A partir dessa tabela, é possível
+A partir dessa tabela, é possível calcular a taxa de mortalidade neonatal para os anos e sexos considerados no estudo. Assim, obtém-se a tabela abaixo:
+
+```{r}
+tmn <- tibble(
+  Sexo = c("Homens", "Mulheres"),
+  `2010` = c(1082 / 110269 * 1000, 920 / 104944 * 1000),
+  `2022` = c(832 / 92055 * 1000, 691 / 88309 * 1000)
+)
+tmn |> knitr::kable()
+```
+
+A taxa de mortalidade neonatal entre os meninos foi de 9,81, no ano de 2010. Essa taxa sofreu uma diminuição para 9,03 no ano de 2022. Para o sexo feminino, pode-se observar o mesmo comportamento das taxas anteriores, a taxa é menor quando comparada às taxas de mortalidade do sexo feminino. A taxa para o sexo feminino sofreu uma diminuição para 7,82 óbitos em período neonatal para 1000 nascidos vivos do sexo, no ano de 2022.
 
 ## Taxa de mortalidade neonatal precoce
 
@@ -560,9 +571,30 @@ A taxa de mortalidade pós-neonatal para meninos teve uma redução leve entre 2
 
 ## Taxa de mortalidade perinatal
 
-```{r}
+Abaixo tem o óbito total no período perinatal para o sexo feminino e masculino nos anos de 2010 e 2022:
 
+```{r}
+tabela_perinatal <- tibble(
+  Sexo = c("Homens", "Mulheres"),
+  `2010` = c(1365 + 825, 1167 + 710),
+  `2022` = c(1134 + 628, 1005 + 496)
+)
+tabela_perinatal |> knitr::kable()
 ```
+
+A partir dessa tabela, foi obtido a taxa de mortalidade perinatal, como pode ser observado na tabela abaixo:
+
+```{r}
+tmp <- tibble(
+  Sexo = c("Homens", "Mulheres"),
+  `2010` = c((1365 + 825) / 110269 * 1000, (1167 + 710) / 104944 * 1000),
+  `2022` = c((1134 + 628) / 92055 * 1000, (1005 + 496) / 88309 * 1000)
+)
+
+tmp |> knitr::kable()
+```
+
+Para o sexo masculino, a taxa de mortalidade perinatal foi de 19,86‰, sofrendo uma redução no ano de 2022 para 19,14%. Para o sexo feminino, essa taxa foi menor nos dois anos considerando, sofrendo ainda uma redução para 16,99% no ano de 2022. Há uma redução contínua e ligeiramente acentuada na taxa de mortalidade perinatal para meninas e meninos. Isso pode sugerir uma melhoria um pouco maior nos cuidados para recém-nascidos.
 
 ## Taxa de mortalidade materna
 
