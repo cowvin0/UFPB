@@ -519,6 +519,15 @@ tmnp |>
 ## Taxa de mortalidade neonatal tardia
 
 ```{r}
+tabela_neonatal_tardia <- tibble(
+  Sexo = c("Homens", "Mulheres"),
+  `2010` = c(257, 210),
+  `2022` = c(204, 195)
+)
+tabela_neonatal_tardia |> knitr::kable()
+```
+
+```{r}
 tmnt <- tibble(
   Sexo = c("Homens", "Mulheres"),
   `2010` = c(257 / 110269 * 1000, 210 / 104944 * 1000),
@@ -530,6 +539,15 @@ tmnt |>
 ```
 
 ## Taxa de mortalidade pós-neonatal
+
+```{r}
+tabela_pos_neonatal <- tibble(
+  Sexo = c("Homens", "Mulheres"),
+  `2010` = c(544, 451),
+  `2022` = c(442, 402)
+)
+tabela_pos_neonatal |> knitr::kable()
+```
 
 ```{r}
 tmpn <- tibble(
@@ -601,8 +619,13 @@ df_tabuanormal <- df_tabuanormal |>
   group_by(Sexo) |>
   mutate(
     Tx = rev(cumsum(rev(Lx))),
-    ex = Tx / Ix) |>
-  select(-c(qi, dx, ax, amplitude, M0, Mx))
+    ex = Tx / Ix) #|>
+  # select(-c(qi, dx, ax, amplitude, M0, Mx))
+
+df_tabuanormal |> mutate(across(is.numeric, \(x) round(x, 3))) |>
+ knitr::kable()
+
+write.csv(df_tabuanormal, "~/Downloads/tabua_normal.csv", row.names=FALSE)
 ```
 
 ```{r}
@@ -665,5 +688,9 @@ df <- df |>
   mutate(
     Tx = rev(cumsum(rev(Lx))),
     ex = Tx / Ix) #|>
-  # select(-c(pi, qi, dx, ax, amplitude, M0, Mx, desconto))
+  #select(-c(pi, qi, dx, ax, amplitude, M0, Mx, desconto))
+
+df |> knitr::kable()
+
+write.csv(df, "~/Downloads/tabua_decremento.csv", row.names=FALSE)
 ```
