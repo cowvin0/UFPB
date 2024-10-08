@@ -142,6 +142,14 @@ $$
 
 A taxa de mortalidade perinatal é considerada um importante indicador de saúde pública, pois reflete diretamente a qualidade dos cuidados de saúde durante o período pré-natal, o parto e os primeiros dias de vida. Um sistema de saúde eficiente, com monitoramento e intervenções adequadas durante a gravidez e o parto, pode reduzir significativamente a mortalidade perinatal.
 
+## Taxa de mortalidade materna
+
+A Taxa de Mortalidade Materna (TMM) é um indicador fundamental de saúde pública que reflete a qualidade dos cuidados de saúde para mulheres durante a gravidez, parto e o período pós-parto. Ela mede o número de óbitos de mulheres por causas relacionadas à gestação ou complicações durante o parto e até 42 dias após o término da gravidez, por cada 100.000 nascidos vivos. A sua fórmula é dada por:
+
+$$
+TMM = \frac{\text{Número de mortes maternas}}{\text{Número de nascidos vivos}} \cdot 100.000
+$$
+
 ## Tábua de vida
 
 A tábua de vida é um importante instrumento para avaliar o envelhecimento de uma população. Ela fornece a expectativa de vida de um individuo de uma certa idade. Existem dois tipos de tábua de vida, a tábua de vida de coorte que é baseada na experiência continuada da mortalidade de um grupo real de indivíduos desde o nascimento até a morte do último dele. Existe também a tábua de vida de corrente, que é formada pela experiência de mortalidade de um grupo de indivíduos de uma população real.
@@ -499,7 +507,18 @@ mortalidade_neonatal <- tibble(
 mortalidade_neonatal |> knitr::kable()
 ```
 
-A partir dessa tabela, é possível
+A partir dessa tabela, é possível calcular a taxa de mortalidade neonatal para os anos e sexos considerados no estudo. Assim, obtém-se a tabela abaixo:
+
+```{r}
+tmn <- tibble(
+  Sexo = c("Homens", "Mulheres"),
+  `2010` = c(1082 / 110269 * 1000, 920 / 104944 * 1000),
+  `2022` = c(832 / 92055 * 1000, 691 / 88309 * 1000)
+)
+tmn |> knitr::kable()
+```
+
+A taxa de mortalidade neonatal entre os meninos foi de 9,81, no ano de 2010. Essa taxa sofreu uma diminuição para 9,03 no ano de 2022. Para o sexo feminino, pode-se observar o mesmo comportamento das taxas anteriores, a taxa é menor quando comparada às taxas de mortalidade do sexo feminino. A taxa para o sexo feminino sofreu uma diminuição para 7,82 óbitos em período neonatal para 1000 nascidos vivos do sexo, no ano de 2022.
 
 ## Taxa de mortalidade neonatal precoce
 
@@ -517,6 +536,8 @@ tmnp |>
 ```
 
 ## Taxa de mortalidade neonatal tardia
+
+Os dados da taxa de mortalidade neonatal tardia apresentados para o estado do Rio de Janeiro mostram a quantidade de óbitos de crianças entre 7 e 27 dias de vida, por 1.000 nascidos vivos, discriminados por sexo para os anos de 2010 e 2022.
 
 ```{r}
 tabela_neonatal_tardia <- tibble(
@@ -538,7 +559,11 @@ tmnt |>
   knitr::kable()
 ```
 
+Houve uma redução na taxa de mortalidade neonatal tardia para meninos entre 2010 e 2022, de 2,33 para 2,21 por 1.000 nascidos vivos. Isso indica uma leve melhora nos cuidados neonatais oferecidos a esse grupo, reduzindo os óbitos nesse período crítico. Para as meninas, observa-se um pequeno aumento na taxa de mortalidade neonatal tardia, de 2,00 para 2,21 por 1.000 nascidos vivos entre 2010 e 2022. Essa elevação pode indicar uma piora em alguns fatores de saúde neonatal ou outros desafios relacionados ao atendimento adequado para esse grupo durante o período neonatal tardio.
+
 ## Taxa de mortalidade pós-neonatal
+
+A taxa de mortalidade pós-neonatal mede o número de óbitos de crianças com idades entre 27 dias e menos de um ano por 1.000 nascidos vivos. Essa taxa é um indicador crucial para entender a qualidade dos cuidados recebidos após o período neonatal imediato e as condições de vida que impactam a saúde infantil.
 
 ```{r}
 tabela_pos_neonatal <- tibble(
@@ -560,7 +585,54 @@ tmpn |>
   knitr::kable()
 ```
 
+A taxa de mortalidade pós-neonatal para meninos teve uma redução leve entre 2010 e 2022. Essa diminuição de aproximadamente 4,93 para 4,80 por 1.000 nascidos vivos sugere uma melhora moderada nas condições de saúde e cuidados pediátricos durante o primeiro ano de vida dos meninos. Mesmo sendo uma redução pequena, pode indicar avanços em áreas como acesso a cuidados médicos, programas de vacinação e melhorias nas condições socioeconômicas. No caso das meninas, houve um aumento na taxa de mortalidade pós-neonatal entre 2010 e 2022, de 4,30 para 4,55 por 1.000 nascidos vivos. Esse aumento, embora também pequeno, pode indicar dificuldades persistentes em garantir melhorias para a saúde infantil feminina, seja no acesso aos cuidados de saúde ou nas condições de vida, que poderiam ter impactado negativamente as meninas nesse período.
+
 ## Taxa de mortalidade perinatal
+
+Abaixo tem o óbito total no período perinatal para o sexo feminino e masculino nos anos de 2010 e 2022:
+
+```{r}
+tabela_perinatal <- tibble(
+  Sexo = c("Homens", "Mulheres"),
+  `2010` = c(1365 + 825, 1167 + 710),
+  `2022` = c(1134 + 628, 1005 + 496)
+)
+tabela_perinatal |> knitr::kable()
+```
+
+A partir dessa tabela, foi obtido a taxa de mortalidade perinatal, como pode ser observado na tabela abaixo:
+
+```{r}
+tmp <- tibble(
+  Sexo = c("Homens", "Mulheres"),
+  `2010` = c((1365 + 825) / 110269 * 1000, (1167 + 710) / 104944 * 1000),
+  `2022` = c((1134 + 628) / 92055 * 1000, (1005 + 496) / 88309 * 1000)
+)
+
+tmp |> knitr::kable()
+```
+
+Para o sexo masculino, a taxa de mortalidade perinatal foi de 19,86‰, sofrendo uma redução no ano de 2022 para 19,14%. Para o sexo feminino, essa taxa foi menor nos dois anos considerando, sofrendo ainda uma redução para 16,99% no ano de 2022. Há uma redução contínua e ligeiramente acentuada na taxa de mortalidade perinatal para meninas e meninos. Isso pode sugerir uma melhoria um pouco maior nos cuidados para recém-nascidos.
+
+## Taxa de mortalidade materna
+
+A Taxa de Mortalidade Materna (TMM) é um indicador importante da saúde pública que mede o número de óbitos de mulheres durante a gestação, parto ou até 42 dias após o término da gravidez, por 100.000 nascidos vivos.
+
+```{r}
+tibble(
+  Ano = c(2010, 2022),
+  TMM = c(196 / 104944 * 100000, 160 / 88309 * 100000)
+) |>
+  knitr::kable()
+```
+
+A TMM apresentou uma ligeira queda de 186,7663 em 2010 para 181,1820 em 2022. Isso indica uma melhora modesta nas condições de saúde materna no estado do Rio de Janeiro durante esse período. Embora a redução não seja grande, ela pode refletir avanços em áreas como:
+
+- Acesso a serviços de saúde pré-natal e obstétricos.
+- Melhores práticas durante o parto.
+- Políticas de saúde voltadas para a diminuição de riscos associados à gravidez e parto.
+
+
 
 ```{r}
 df_tabuanormal <- df_obito_total |>
