@@ -522,6 +522,19 @@ A taxa de mortalidade neonatal entre os meninos foi de 9,81, no ano de 2010. Ess
 
 ## Taxa de mortalidade neonatal precoce
 
+A mortalidade no período neonatal precoce total para o sexo masculino e feminino nos anos de 2010 e 2022 estão na tabela abaixo:
+
+```{r}
+tabela_neonatal_precoce <- tibble(
+  Sexo = c("Homens", "Mulheres"),
+  `2010` = c(825, 710),
+  `2022` = c(628, 496)
+)
+
+tabela_neonatal_precoce |>
+  knitr::kable()
+```
+
 A taxa de mortalidade neonatal precoce para o sexo masculino foi de 7,48 para 1000 habitantes, no ano de 2010. Houve uma redução no ano de 2022 para 6,82 para 1000 habitantes. Pela tabela abaixo, é possivel ver também que para o sexo feminino esse número foi menor para os dois anos analisados, sofrendo uma redução ainda maior no ano de 2022, de 5,61  para mil habitantes.
 
 ```{r}
@@ -616,12 +629,12 @@ Para o sexo masculino, a taxa de mortalidade perinatal foi de 19,86‰, sofrendo
 
 ## Taxa de mortalidade materna
 
-A Taxa de Mortalidade Materna (TMM) é um indicador importante da saúde pública que mede o número de óbitos de mulheres durante a gestação, parto ou até 42 dias após o término da gravidez, por 100.000 nascidos vivos.
+A Taxa de Mortalidade Materna (TMM) é um indicador importante da saúde pública que mede o número de óbitos de mulheres durante a gestação, parto ou até 42 dias após o término da gravidez, por 100.000 nascidos vivos. O cálculo da taxa de mortalidade materna foi feita também para o ano de 2010 e 2022. No ano de 2010, o total de mortes maternas foi de 180 e para 2022 é de 125.
 
 ```{r}
 tibble(
   Ano = c(2010, 2022),
-  TMM = c(196 / 104944 * 100000, 160 / 88309 * 100000)
+  TMM = c(180 / (104944 + 110269) * 100000, 125 / (88309 + 92055) * 100000)
 ) |>
   knitr::kable()
 ```
@@ -632,7 +645,71 @@ A TMM apresentou uma ligeira queda de 186,7663 em 2010 para 181,1820 em 2022. Is
 - Melhores práticas durante o parto.
 - Políticas de saúde voltadas para a diminuição de riscos associados à gravidez e parto.
 
+## Taxa bruta de natalidade
 
+A taxa bruta de natalidade foi calculada para os nascidos vivos do sexo masculino e feminino no ano de 2010 e 2022, como foi mostrado na tabela dos resultados da taxa de mortalidade infantil. Foi considerado também o total da população do Rio de Janeiro para os anos de 2010 e 2022, que foi de  15.989.929 e 16.055.174, respectivamente. Assim, a partir dessas informações, foi obtida a tabela abaixo:
+
+<!-- ```{r}
+pop_total <- tibble(
+  Sexo = c("Homens", "Mulheres"),
+  `2010` = c(7625679, 8364250),
+  `2022` = c(7577675, 8477499)
+)
+
+pop_total  |>
+  knitr::kable()
+``` -->
+
+```{r}
+tbn <- tibble(
+  Sexo = c("Homens", "Mulheres"),
+  `2010` = c(110269 / (7625679 + 8364250) * 1000, 104944 / (7625679 + 8364250) * 1000),
+  `2022` = c(92055 / (7577675 + 8477499) * 1000, 88309 / (7577675 + 8477499) * 1000)
+)
+tbn |> knitr::kable()
+```
+
+Em 2010, a taxa bruta de natalidade foi de 6,89 nascimentos de meninos por mil habitantes. Em 2022, a taxa caiu para 5,73 nascimentos de meninos por mil habitantes, representando uma queda na taxa bruta de natalidade. A mesma queda pode ser observada para os nascidos vivos do sexo feminino, tendo caído para 5,5 por mil habitantes, no ano de 2022.
+
+## Taxa de fecundidade geral
+
+A taxa de fecundidade geral foi calculada a partir dos dados do censo de 2022 e 2010, considerando os intervalos de idades de 15 a 19, 20 a 29, 30 a 39 e 40 a 49 anos de idade, do ano de 2010 e 2022. Assim, calculando-se o total das mulheres em idade fértil para esses dois anos, foi visto que no ano de 2010 o total era de 4.482.651 e no ano de 2022 foi de 4.196.083. Dessa forma, utilizando a mesma tabela de nascidos vivos para o sexo masculino e feminino mostrado na tabela anterior, foi possível chegar as seguintes taxas de fecundidade geral, para o sexo masculino e feminino:
+
+```{r}
+tfg <- tibble(
+  Sexo = c("Homens", "Mulheres"),
+  `2010` = c(110269 / 4482651 * 1000, 104944 / 4482651 * 1000),
+  `2022` = c(92055 / 4196083 * 1000, 88309 / 4196083 * 1000)
+)
+tfg |> knitr::kable()
+```
+
+Para o ano de 2010 a taxa de fecundidade geral foi de 24,60 nascimentos masculinos por 1.000 mulheres em idade fértil. Para 2022 a taxa caiu para 21,94 nascimentos masculinos por 1.000 mulheres em idade fértil. Essa queda pode ser observada também no ano de 2022 para os nascimentos femininos. A taxa caiu para 21,05 nascimentos femininos por 1.000 mulheres em idade fértil. Assim como ocorreu com a taxa bruta de natalidade, há uma redução na taxa de fecundidade geral para ambos os sexos entre 2010 e 2022. Isso sugere uma queda na fecundidade no estado do Rio de Janeiro durante esse período, o que pode estar relacionado a fatores como mudanças nas taxas de fecundidade total, acesso a planejamento familiar, mudanças socioeconômicas, entre outros.
+
+<!-- ```{r}
+df_populacao |>
+  filter(Sexo == "Mulheres") |>
+  filter(
+    Idade %in% c(
+      "15 a 19 anos", "20 a 29 anos",
+      "30 a 39 anos", "40 a 49 anos"
+    )
+  ) |> pull(População) |> sum()
+df_populacao_2010 |>
+  filter(Sexo == "Mulheres") |>
+  filter(
+    Idade %in% c(
+      "15 a 19 anos", "20 a 29 anos",
+      "30 a 39 anos", "40 a 49 anos"
+    )
+  ) |> pull(População) |> sum()
+``` -->
+
+## Taxa de fecundidade específica
+
+```{r}
+df_
+```
 
 ```{r}
 df_tabuanormal <- df_obito_total |>
