@@ -708,7 +708,111 @@ df_populacao_2010 |>
 ## Taxa de fecundidade específica
 
 ```{r}
-df_
+idade_mae_feminino <- tibble(
+  `Idade` = c(
+    "15 a 19 anos", "20 a 29 anos",
+    "30 a 39 anos", "40 a 49 anos"
+  ),
+  Sexo = "Mulheres",
+  `2010 mães` = c(
+    17663, 27064 + 26627,
+    20136 + 9947, 2499 + 152
+    ) ,
+  `2022 mães` = c(
+    9511, 21569 + 22364,
+    18321 + 12066, 3810 + 260
+    )
+)
+
+idade_mae_masculino <- tibble(
+  `Idade` = c(
+    "15 a 19 anos", "20 a 29 anos",
+    "30 a 39 anos", "40 a 49 anos"
+  ),
+  Sexo = "Homens",
+  `2010 mães` = c(
+    18916, 28339 + 27964,
+    20946 + 10497, 2598 + 161
+    ) ,
+  `2022 mães` = c(
+    9841, 22461 + 23164,
+    19201 + 12617, 4069 + 287
+    )
+)
+
+pop_2010 <- df_populacao_2010 |>
+  filter(Sexo == "Mulheres") |>
+  filter(
+    Idade %in% c(
+      "15 a 19 anos", "20 a 29 anos",
+      "30 a 39 anos", "40 a 49 anos"
+    )
+  ) |>
+  rename(`2010 mulheres` = População) |>
+  select(-Sexo)
+
+pop_2022 <- df_populacao |>
+  filter(Sexo == "Mulheres") |>
+  filter(
+    Idade %in% c(
+      "15 a 19 anos", "20 a 29 anos",
+      "30 a 39 anos", "40 a 49 anos"
+    )
+  ) |>
+  rename(`2022 mulheres` = População) |>
+  select(-Sexo)
+
+pop <- left_join(pop_2010, pop_2022)
+
+idade_mae <- rbind(idade_mae_feminino, idade_mae_masculino)
+
+tefs <- left_join(idade_mae, pop) |>
+  mutate(
+    `TEF 2010` = `2010 mães` / `2010 mulheres` * 1000,
+    `TEF 2022` = `2022 mães` / `2022 mulheres` * 1000
+  )
+
+tefs |> knitr::kable()
+
+# df_etaria_fecundidade_feminino <- read_csv2('dados_relatorio3/nascidos_vivos_faixaet_mae_feminino.csv')
+# df_etaria_fecundidade_masculino <- read_csv2('dados_relatorio3/nascidos_vivos_faixaet_mae_masculino.csv')
+
+# df_etaria_fecundidade_feminino
+# df_etaria_fecundidade_masculino
+```
+
+
+## Taxa de fecundidade total
+
+```{r}
+tft <- tibble(
+  Sexo = c("Homens", "Mulheres"),
+  `TFT 2010` = c(
+    tefs |>
+    filter(Sexo == "Homens") |>
+    pull(`TEF 2010`) |> sum(),
+    tefs |>
+    filter(Sexo == "Mulheres") |>
+    pull(`TEF 2010`) |> sum()
+  ),
+  `TFT 2022` = c(
+    tefs |>
+    filter(Sexo == "Homens") |>
+    pull(`TEF 2022`) |> sum(),
+    tefs |>
+    filter(Sexo == "Mulheres") |>
+    pull(`TEF 2022`) |> sum()
+  )
+) |>
+  mutate(
+    `TFT 2010` = `TFT 2010` / 100,
+    `TFT 2022` = `TFT 2022` / 100
+  )
+
+tft |> knitr::kable()
+
+# 10 * sum(tefs$`TEF 2010`) / 1000
+# 10 * sum(tefs$`TEF 2022`) / 1000
 ```
 
 ```{r}
@@ -726,11 +830,11 @@ df_tabuanormal <- df_obito_total |>
     ),
     amplitude = case_when(
       Idade == "Menor 1 ano" ~ 1,
-      Idade == "1 a 4 anos" ~ 3,
-      Idade == "5 a 9 anos" ~ 4,
-      Idade == "10 a 14 anos" ~ 4,
-      Idade == "15 a 19 anos" ~ 4,
-      TRUE ~ 9,
+      Idade == "1 a 4 anos" ~ 4,
+      Idade == "5 a 9 anos" ~ 5,
+      Idade == "10 a 14 anos" ~ 5,
+      Idade == "15 a 19 anos" ~ 5,
+      TRUE ~ 10,
     ),
     qi = case_when(
       Idade == "80 anos e mais" ~ 1,
@@ -768,13 +872,11 @@ df_tabuanormal <- df_tabuanormal |>
   group_by(Sexo) |>
   mutate(
     Tx = rev(cumsum(rev(Lx))),
-    ex = Tx / Ix) #|>
-  # select(-c(qi, dx, ax, amplitude, M0, Mx))
+    ex = Tx / Ix) |>
+  select(-c(qi, dx, ax, amplitude, M0, Mx, Tx, Lx, Ix))
 
 df_tabuanormal |> mutate(across(is.numeric, \(x) round(x, 3))) |>
  knitr::kable()
-
-write.csv(df_tabuanormal, "~/Downloads/tabua_normal.csv", row.names=FALSE)
 ```
 
 ```{r}
@@ -793,11 +895,11 @@ df <- df_obito_total |>
     ),
     amplitude = case_when(
       Idade == "Menor 1 ano" ~ 1,
-      Idade == "1 a 4 anos" ~ 3,
-      Idade == "5 a 9 anos" ~ 4,
-      Idade == "10 a 14 anos" ~ 4,
-      Idade == "15 a 19 anos" ~ 4,
-      TRUE ~ 9,
+      Idade == "1 a 4 anos" ~ 4,
+      Idade == "5 a 9 anos" ~ 5,
+      Idade == "10 a 14 anos" ~ 5,
+      Idade == "15 a 19 anos" ~ 5,
+      TRUE ~ 10,
     ),
     pi = case_when(
       Idade == "80 anos e mais" ~ 0,
@@ -836,10 +938,8 @@ df <- df |>
   group_by(Sexo) |>
   mutate(
     Tx = rev(cumsum(rev(Lx))),
-    ex = Tx / Ix) #|>
-  #select(-c(pi, qi, dx, ax, amplitude, M0, Mx, desconto))
+    ex = Tx / Ix) |>
+  select(-c(pi, qi, dx, ax, amplitude, M0, Mx, desconto, Tx, Lx, Ix))
 
 df |> knitr::kable()
-
-write.csv(df, "~/Downloads/tabua_decremento.csv", row.names=FALSE)
 ```
