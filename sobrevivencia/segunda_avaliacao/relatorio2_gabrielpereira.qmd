@@ -1,0 +1,667 @@
+---
+format: pdf
+title: Análise de sobrevivência com dados de diálise - Segunda Avaliação
+number-sections: false
+indent: true
+whitespace: small
+documentclass: scrreprt
+lang: pt-br
+bibliography: includes/bib.bib
+csl: includes/ufpe-abnt.csl
+subtitle: Universidade Federal da Paraíba - CCEN
+author: Gabriel de Jesus Pereira
+date: today
+date-format: long
+highlight-style: github
+fontsize: 12pt
+interlinespace: 1.5pt
+fig-cap-location: bottom
+warning: false
+# echo: false
+include-in-header:
+  - text: |
+      \usepackage{pdflscape}
+      \newcommand{\blandscape}{\begin{landscape}}
+      \newcommand{\elandscape}{\end{landscape}}
+---
+
+# Questão 1
+
+Com seu banco de dados utilizado na primeira prova, escolhido em: <http://sobrevida.fiocruz.br/dados.html>. A partir do banco de dados escolhido por você, faça o que se pede a seguir.
+
+## a)
+
+Ajuste o modelo de Cox aos dados. Interprete os coeficientes do modelo escolhido. Quais critérios você considerou para obter os modelos?
+
+```{r}
+library(flexsurv)
+library(survminer)
+library(discSurv)
+library(survival)
+library(tidyverse)
+library(vroom)
+library(ggsurvfit)
+library(mice)
+```
+
+
+```{r echo=FALSE}
+df <- read_delim("includes/dialcompete.txt", delim = " ") |>
+  mutate(
+    intervalo = cut(
+      tempo,
+      breaks = 1:44,
+      labels = paste0("[", 1:43, ",",  2:44, ")"),
+      right = FALSE
+    )
+  )
+```
+
+```{r eval=FALSE}
+df <- read_delim("sobrevivencia/segunda_avaliacao/includes/dialcompete.txt", delim = " ") |>
+  mutate(
+    intervalo = cut(
+      tempo,
+      breaks = 1:44,
+      labels = paste0("[", 1:43, ",",  2:44, ")"),
+      right = FALSE
+    )
+  )
+```
+
+
+## Questão 2:
+
+Escolha um dos bancos de dados disponíveis no seguinte endereço eletrônico: **http://sobrevida.fiocruz.br/dados.html**. A partir do banco de dados escolhido por você, faça o que se pede a seguir
+
+### 2a)
+
+Faça uma análise exploratória do banco de dados e forneça interpretações pausíveis acerca das variáveis que encontram-se disponíveis.
+
+\vspace{12pt}
+
+O banco de dados intitulado "Diálise -- eventos competitivos (SUS)" tem como objetivo analisar eventos aos quais pacientes em diálise estão expostos, como transplante, óbito por causa renal e óbito por outras causas. Esse banco contém 6 variáveis diferentes, incluindo o ID do paciente, a idade ao iniciar a diálise, o motivo do óbito (seja por causa renal, por outra causa ou transplante, censura). Além disso, há informações sobre a doença do paciente, que pode ser hipertensão, diabetes, problemas renais, condições congênitas ou outras. O banco também inclui o status, indicando se ocorreu falha ou censura, e o tempo até a ocorrência de um dos possíveis eventos.
+
+\vspace{12pt}
+
+Conforme o gráfico abaixo, observa-se que os pacientes que iniciam o tratamento de diálise mais tarde tendem a ser aqueles com doenças congênitas ou diabetes. Em contrapartida, pessoas com doenças renais geralmente começam o tratamento mais cedo. É importante notar que a idade ao iniciar a diálise pode influenciar sua eficácia.
+
+```{r}
+df |>
+  select(-intervalo) |>
+  ggplot(aes(x = idade, fill = doenca)) +
+  geom_density(alpha = 0.3) +
+  theme_bw() +
+  labs(y = "Densidade", x = "Idade")
+```
+
+Pelo gráfico abaixo vemos que a maior parte dos pacientes são hipertensos, enquanto a menor parte tem doenças congênitas. Além disso, óbito por causa renal é a mais frequente. Por último, os dados de sobrevivência tem 1767 censura e apenas 686 falhas.
+
+```{r}
+df |>
+  select(-intervalo) |>
+  pivot_longer(
+    cols = c(doenca, motivo),
+    names_to = "Variável",
+    values_to = "teste"
+  ) |>
+  ggplot(aes(x = fct_infreq(teste))) +
+  geom_bar() +
+  facet_wrap(vars(Variável), scales = "free") +
+  theme_bw() +
+  labs(y = "Quantidade", x = "")
+```
+
+
+### 2b)
+
+Considerando a variável de tempo até ocorrência do evento de interesse na base de dados escolhida, forneça as seguintes informações:
+
+\vspace{12pt}
+
+**i)** É possível montar uma tabela para descrever os dados de acordo com o número de ocorrências do evento de interesse registradas em intervalos de tempo da pesquisa? Se sim, apresente-a.
+
+```{r}
+tabela_eventos <- df |>
+  group_by(intervalo) |>
+  mutate(
+    falha = sum(status, na.rm = TRUE),
+    censura = sum(status == 0, na.rm = TRUE),
+    amplitude = (\(x) {
+      inter = as.character(intervalo) |>
+        gsub(pattern = "\\[|\\(|\\)", replacement = "") |>
+        strsplit(",")
+
+      sapply(
+        X = inter,
+        FUN = \(x) {
+          as.numeric(x[2]) - as.numeric(x[1])
+        })
+    })(),
+  ) |>
+  ungroup() |>
+  arrange(intervalo) |>
+  filter(status != 0) |>
+  select(-c(
+    status, id, idade,
+    doenca, motivo)
+  ) |>
+  distinct(intervalo, .keep_all = TRUE)
+
+nj <- nrow(df)
+for (x in 2:nrow(tabela_eventos)) {
+  nj[x] <-  nj[x - 1] - (tabela_eventos$falha[x - 1] + tabela_eventos$censura[x - 1])
+}
+
+tabela_eventos |>
+  mutate(risco = nj) |>
+  knitr::kable()
+```
+
+
+**ii**. Apresente o cálculo de sobrevivência empírica (pela definição apresentada na aula 1). Apresente também as estimativas empíricas das seguintes quantidades: função densidade, função de risco, função de risco acumulada.
+
+\vspace{12pt}
+
+Os estimadores da função empírica consideram o caso em que não há censura nos dados. Os seus estimadores de função de densidade, risco, sobrevivência e risco acumulado são definidos da seguintes forma:
+
+$$
+\hat{f}\left(t\right) = \frac{\text{nº falhas no intervalo começando em t}}{\left(\text{nº total de indivíduos no estudo}\right) \left(\text{Amplitude do intervalo}\right)}
+$$
+
+$$
+\hat{S}\left(t\right) = \frac{\text{nº de indivíduos sob risco até o tempo t}}{\text{nº total de indivíduos no estudo}}
+$$
+
+$$
+\hat{h}\left(t\right) = \frac{\text{nº de falha no intervalo iniciado em t}}{\text{nº de indivíduos sob risco em t} \left(\text{Amplitude do intervalo}\right)}
+$$
+
+Para o cálculo da taxa de risco acumulado, considerou-se a relação entre $H(t)$ e a função de sobrevivência, definida como $H(t) = -\log S(t)$. Além disso, para calcular a variância da função de sobrevivência e seu intervalo de confiança, utilizou-se a mesma expressão do estimador de Kaplan-Meier, que, como será discutido adiante, é uma adaptação da função empírica para o caso em que há censura nos dados de sobrevivência. Assim, definimos a seguinte expressão de variância:
+
+$$
+\hat{Var}\left(\hat{S}\left(t\right)\right) = \left[\hat{S}\left(t\right)\right]^2 \sum_{j: t_j < t} \frac{d_j}{n_j\left(n_j - d_j\right)}
+$${#eq-varkap}
+
+\vspace{12pt}
+
+Dessa forma, temos a tabela com as estimativas da empírica:
+
+```{r}
+#| label: tbl-empirica
+#| tbl-cap: Estimativas empíricas
+
+# empirica
+
+tabela_empirica <- tabela_eventos |>
+  mutate(
+    risco = nj,
+    `S(t)` = nj / nrow(df),
+    `f(t)` = falha / (amplitude * nrow(df)),
+     `h(t)` = falha / (risco * amplitude),
+     `H(t)` = - log(`S(t)`),
+     seS = `S(t)` ^ 2 * cumsum(falha / (risco * (risco - falha))),
+     across(`S(t)`:`H(t)`, ~ round(.x, 4)),
+     lower = `S(t)` - qnorm(1 - 0.05 / 2) * sqrt(seS),
+     upper = `S(t)` + qnorm(1 - 0.05 / 2) * sqrt(seS)
+  ) |>
+  mutate(upper = ifelse(upper > 1, 1, upper))
+
+tabela_empirica |>
+  select(-amplitude, -tempo, -seS) |>
+  relocate(lower, .before = `f(t)`) |>
+  relocate(upper, .after = lower) |>
+  mutate(across(where(is.double), \(x) round(x, 3))) |>
+  knitr::kable()
+```
+
+\newpage
+
+**iii**. Apresente o cálculo da função de sobrevivência $S\left(t\right)$ considerando os seguintes estimadores: Kaplan-Meier, Nelson-Aalen e Tabela de Vida. Para cada versão desses estimadores, apresente também as estimativas das seguintes quantidades: função densidade, função de risco, função de risco acumulada. Interprete os resultados.
+
+\vspace{12pt}
+
+O primeiro estimador a ser calculado foi o de tabela de vida, que consiste em dividir o eixo do tempo em um certo número de intervalos. Ele define duas quantidades $d_j$ e $n_j$:
+
+$$
+d_j = \text{ nº de falhas no intervalo } [t_{j-1}, t_j) \text{ e}
+$$
+
+$$
+n_j = \left[\text{nº sob risco em } t_{j-1} \right]  - \left[\frac{1}{2} \text{x nº de censuras em } [t_{j_1}, t_j)\right]
+$$
+
+A partir dessas duas quantidades é possível obter a estimativa para $S\left(t\right)$. Assim, a estimativa é definida da seguinte forma
+
+$$
+\hat{S}\left(t\right) = \prod_{i = 1}^{j}\left(1 - \frac{d_{i-1}}{n_{i - 1}}\right)
+$$
+
+O cálculo das funções de risco, densidade e sobrevivência para o estimador de tabela de vida foi realizado com o pacote **discSurv** e a sua função **lifeTable**. Essa função também entrega a variância (com expressão semelhante aquela da @eq-varkap) da função de sobrevivência, o que nos permite fazer o cálculo do intervalo de confiança. Assim, a tabela a seguir contem as quantidades para o estimador de tabela de vida:
+
+```{r}
+#| tbl-cap: Estimativas tabela de vida
+
+tabela_de_vida <- lifeTable(
+  as.data.frame(df),
+  timeColumn = "tempo",
+  eventColumn = "status"
+  )$Output |>
+  as_tibble() |>
+  rename(
+    risco = n,
+    falha = events,
+    censura = dropouts,
+    `S(t)` = S,
+    `h(t)` = hazard,
+    `H(t)` = cumHazard
+  ) |>
+  mutate(
+    intervalo = tabela_empirica$intervalo,
+    upper = `S(t)` + qnorm(1 - 0.05/2) * seS,
+    lower = `S(t)` - qnorm(1 - 0.05/2) * seS,
+    `f(t)` = `h(t)` * `S(t)`, tempo = tabela_empirica$tempo,
+    estimador = "Tabela de Vida"
+  ) |>
+  relocate(tempo, .before = risco) |>
+  relocate(lower, .before = `h(t)`) |>
+  relocate(upper, .after = lower) |>
+  relocate(intervalo, .after = tempo) |>
+  relocate(`S(t)`, .before = lower) |>
+  select(-c(atRisk, seHazard, seS, seCumHazard, margProb))
+
+tabela_de_vida |>
+  select(-tempo, -estimador) |>
+  mutate(across(where(is.double), \(x) round(x, 3))) |>
+  knitr::kable()
+```
+
+As estimativas de Kaplan-Meier podem ser obtidas de forma semelhantes àquelas da tabela de vida. Da mesma forma, defini-se duas quantidades $n_j$ e $d_j$. $n_j$ é o número de indivíduos sob risco em $t_j$, ou seja, os indivíduos que não falharam e não foram censurados até o instante imediatamente anterior a $t_j$. Assim, o estimador de Kaplan-Meier é definido como:
+
+$$
+\hat{S}\left(t\right) = \prod_{j: t_j < t}\left(1 - \frac{d_{j}}{n_{j}}\right)
+$$
+
+A variância da sobrevivência é a mesma mostrada anteriormente na @eq-varkap. A taxa de risco é calculada como:
+
+$$
+\hat{h}_{KM} = \frac{1}{h} \left(1 - \frac{n_j - d_j}{n_j}\right)
+$$
+em que $h$ é a amplitude do intervalo. Não obstante, para a obtenção da densidade, foi simplesmente utilizado a expressão $f\left(t\right) = S\left(t\right) h\left(t\right)$. Assim, temos a seguinte tabela com as estimativas do estimador de Kaplan-Meier:
+
+```{r}
+#| tbl-cap: Etimativas Kaplan-Meier
+
+# kaplan meier
+ekm <- survfit(
+  Surv(df$tempo, df$status) ~ 1,
+  conf.type = "plain"
+)
+
+tabela_ekm <- ekm |>
+  summary() |>
+  (\(x) {
+    tibble(
+      tempo = x$time,
+      risco = x$n.risk,
+      falha = x$n.event,
+      censura = x$n.censor,
+      `S(t)` = x$surv,
+      upper = x$upper,
+      lower = x$lower,
+      `H(t)` = x$cumhaz,
+      amplitude = tabela_eventos$amplitude
+    ) |>
+    mutate(
+      intervalo = tabela_empirica$intervalo,
+      `h(t)` = (1 - (risco - falha) / risco) / amplitude,
+      `f(t)` = `h(t)` * `S(t)`,
+      estimador = "Kaplan-Meier"
+    ) |>
+    select(-amplitude) |>
+    relocate(intervalo, .after = tempo)
+  })()
+
+tabela_ekm |>
+  select(-tempo, -estimador) |>
+  mutate(across(where(is.double), \(x) round(x, 3))) |>
+  relocate(intervalo, .before = risco) |>
+  knitr::kable()
+```
+
+O Estimador de Nelson-Aalen se baseia na função de sobrevivência expressa por:
+
+$$
+S\left(t\right) = exp\{-H\left(t\right)\}
+$$
+
+O estimador de Nelson-Aalen estima a função acumulada da taxa de risco para só depois estimar a função de sobrevivência. Portanto, temos o seguinte estimador de Nelson-Aalen:
+
+$$
+\tilde{H}\left(t\right) = \sum_{j: t_j < t} \left(\frac{d_j}{n_j}\right)
+$$
+em que $n_j$ e $d_j$ são definidos como no estimador de Kaplan-Meier. A variância da sobrevivência pode ser obtido substituindo $\tilde{S}\left(t\right)$ em $\hat{S}\left(t\right)$ da variância de Kaplan-Meier:
+
+$$
+\hat{Var}\left(\tilde{S}\left(t\right)\right) = \left[\tilde{S}\left(t\right)\right]^2 \sum_{j: t_j < t} \left(\frac{d_j}{n_j^2}\right)
+$$
+
+Para obter a estimativa para obter a estimativa da taxa de risco $h\left(t\right)$ foi utilizada a função **diff** do R para obter as diferenças sucessivas. Com as estimativas da função da taxa de risco obtidas, agora é possível estimar a densidade utilizando as relações entre as funções. Assim, temos as estimativas na tabela a seguir:
+
+```{r}
+#| tbl-cap: Estimativas Nelson-Aalen
+
+# nelson alen
+
+alen <- survfit(
+  Surv(tempo, status) ~ 1,
+  type = "fleming-harrington",
+  data = df,
+  conf.type = "plain"
+)
+
+tabela_alen <- alen |>
+  summary() |>
+  (\(x) {
+    tab <- tibble(
+      tempo = x$time,
+      risco = x$n.risk,
+      falha = x$n.event,
+      censura = x$n.censor,
+      `S(t)` = x$surv,
+      lower = x$lower,
+      upper = x$upper,
+      `H(t)` = x$cumhaz,
+      amplitude = tabela_eventos$amplitude
+    )
+    ht <- c(tab$`H(t)`[1], diff(tab$`H(t)`))
+
+    tab |>
+      mutate(
+        `h(t)` = c(`H(t)`[1], diff(`H(t)`)),
+        `f(t)` = `h(t)` * `S(t)`,
+        intervalo = tabela_ekm$intervalo,
+        estimador = "Aalen"
+      ) |>
+      select(-amplitude) |>
+      relocate(intervalo, .before = risco)
+  })()
+
+tabela_alen |>
+  select(-tempo, -estimador) |>
+  mutate(across(where(is.double), \(x) round(x, 3))) |>
+  knitr::kable()
+```
+
+Observando o gráfico abaixo das curvas dos três estimadores, vemos que eles não apresentam uma diferença muito grande na estimação da função de sobrevivência. A única que subestima um pouco a sobrevivência é a tabela de vida, pois considera também a quantidade de censura presente em cada intervalo.
+
+```{r}
+juntos <- select(tabela_alen, - intervalo) |>
+  rbind(tabela_ekm |> select(-intervalo)) |>
+  rbind(tabela_de_vida |> select(-intervalo))
+
+juntos |>
+  ggplot(aes(x = tempo, y = `S(t)`, color = estimador)) +
+  geom_step() +
+  geom_ribbon(
+    aes(ymin = lower, ymax = upper, fill = estimador), alpha = 0.3
+  ) +
+  facet_wrap(vars(estimador)) +
+  theme_bw()
+```
+
+Com base na função de taxa de falha, observamos que as estimativas dos diferentes estimadores são bastante semelhantes. Além disso, nota-se que a taxa de falha diminui de forma quase contínua ao longo do estudo, aumentando novamente apenas no final.
+
+```{r}
+juntos |>
+  ggplot(aes(x = tempo, y = `h(t)`, color = estimador)) +
+  geom_line() +
+  facet_wrap(vars(estimador)) +
+  theme_bw()
+```
+
+**iv**. Explique como o teste de LogRank deve ser aplicado. Escolha uma variável qualitativa de sua base e realize o teste de comparação de curvas de sobrevivência. Interprete adequadamente os resultados.
+
+O teste de LogRank serve para comparação de grupos. A hipótese nula é se as curvas de sobrevivência são iguais ($H_0: S_{1}\left(t\right) = S_{2}\left(t\right)$). Para isso, é utilizada a seguinte estatística de teste
+
+$$
+T = \frac{\left[\sum_{j = 1}^k \left(d_{2j} - w_{2j}\right)\right]}{\sum_{j = 1}^k \left(V_j\right)_{2}}
+$$
+que para grandes amostras segue uma distribuição qui-quadrado com 1 grau de liberdade. Aqui $d$ representa a quantidade de falhas, $w$ é a média das falhas do grupo e $V$ é a variância da falha do grupo.
+
+\vspace{12pt}
+
+Para aplicar o teste nos dados de sobrevivência foi considerada a variável da doença de cada paciente. Assim, foram comparados aqueles pacientes com hipertensão, diabetes, renal, congênita ou outras doenças. O teste foi feito comparando os grupos 2 a 2, gerando a seguinte tabela:
+
+
+```{r}
+grupos <- list("outr", "hiper", "diab", "rim", "cong")
+results <- list()
+results_tibble <- tibble::tibble(
+  comparação = character(),
+  estatística = numeric(),
+  `p-valor` = numeric()
+)
+
+for (i in 1:(length(grupos) - 1)) {
+  for (j in (i + 1):length(grupos)) {
+    grupo1 <- grupos[[i]]
+    grupo2 <- grupos[[j]]
+    data_subset <- df[df$doenca %in% c(grupo1, grupo2),]
+
+    test_result <- survdiff(
+      Surv(data_subset$tempo, data_subset$status) ~ data_subset$doenca
+    )
+    statistic <- test_result$chisq
+    pvalue <- test_result$pvalue
+    result_name <- paste(grupo1, grupo2, sep = " vs ")
+
+    results_tibble <- results_tibble |>
+      add_row(
+        comparação = result_name,
+        estatística = statistic,
+        `p-valor` = pvalue
+      )
+  }
+}
+results_tibble |>
+  arrange(`p-valor`) |>
+  knitr::kable()
+```
+
+Pela tabela, podemos ver que os únicos grupos diferentes são os pacientes hipertensão e doença renal, diabetes e outras doenças, hipertensão e diabetes, e diabetes e renal.
+
+\vspace{12pt}
+
+De fato, observando os grupos pelo gráfico abaixo, podemos ver claramente os resultados do teste. Além disso, é possível ver claramente que a sobrevivência do grupo com diabetes é aquela que mais descresce rapidamente, e as pessoas com doença congênitas é a segunda que mais decresce rapidamente. Como foi visto anteriormente na análise exploratória, os pacientes com diabetes e doenças congênitas são aqueles que mais demoram para iniciar o tratamento de diálise, o que pode ser uma das causas dessa diminuição acelerada. No entanto, o grupo de congênitos tem muitas observações censuradas, o que é preciso ter cuidado ao se analisar sua curva.
+
+```{r}
+ekm_gp <- survfit(
+  Surv(df$tempo, df$status) ~ df$doenca, conf.type = "plain"
+)
+ekm_gp |>
+ ggsurvfit() +
+ add_confidence_interval()
+```
+
+
+**v**. Apresente o cálculo da função de sobrevivência $S\left(t\right)$ considerando as seguintes distribuções de probabilidade: Exponencial, Weibull, Gama, Log-Normal, Gama Generalizada e as duas distribuições da questão 1 que você identificou. Apresente os valores do AIC e BIC apenas para os ajustes baseados nas distribuições Exponencial, Weibull, Gama, Log-Normal e gama Generalizada. Como você pode comparar as estimativas geradas por essas distribuições a partir do teste de razão de verossimilhanças? Interprete os resultados.
+
+\vspace{12pt}
+
+
+```{r}
+expo_fit <- flexsurvreg(
+  Surv(df$tempo, df$status) ~ 1,
+  dist = "exponential")
+
+weib_fit <- flexsurvreg(
+  Surv(df$tempo, df$status) ~ 1,
+  dist = "weibull")
+
+gengamma_fit <- flexsurvreg(
+  Surv(df$tempo, df$status) ~ 1,
+  dist = "gengamma")
+
+lognormal_fit <- flexsurvreg(
+  Surv(df$tempo, df$status) ~ 1,
+  dist = "lognormal")
+
+gamma_fit <- flexsurvreg(
+  Surv(df$tempo, df$status) ~ 1,
+  dist = "gamma")
+
+dists <- list(
+  expo_fit, weib_fit,
+  gengamma_fit, lognormal_fit,
+  gamma_fit)
+
+alltho <- lapply(dists, \(x) {
+  name <- x$call$dist
+  x |>
+  summary() |>
+  (\(y) {
+    y <- y[[1]]
+    tibble(
+      tempo = y$time,
+      `S(t)` = y$est,
+      lower = y$lcl,
+      upper = y$ucl,
+      estimador = name
+    )
+    })()
+  }) |>
+  Reduce(f = rbind)
+```
+
+Pelo teste de razão de verossimilhanças, vemos que a log-normal, ao nível de 5% de significância, apresenta um bom ajuste nos dados de sobrevivência.
+
+\vspace{12pt}
+
+No entanto, pelo gráfico, as outras distribuições também parecem se ajustar bem aos dados de sobrevivência. Não obstante, a distribuição log-normal foi aquela também que apresentou o menor AIC e BIC.
+
+```{r}
+tibble(
+  Modelo = c(
+    "Gama Generalizado", "Exponencial",
+    "Weibull", "Log-Normal", "Gama"
+    ),
+  logvero = c(
+    logLik(gengamma_fit), logLik(expo_fit),
+    logLik(weib_fit), logLik(lognormal_fit),
+    logLik(gamma_fit)
+    ),
+  AIC = c(
+    AIC(gengamma_fit), AIC(expo_fit),
+    AIC(weib_fit), AIC(lognormal_fit),
+    AIC(gamma_fit)
+    ),
+  BIC = c(
+    BIC(gengamma_fit), BIC(expo_fit),
+    BIC(weib_fit), BIC(lognormal_fit),
+    BIC(gamma_fit)
+    )
+  ) |>
+  mutate(
+    TRV = 2 * (logvero[1] - logvero[1:5]),
+    `p-valor` = 1 - pchisq(TRV[1:5], df = c(0, 2, 1, 1, 1))
+  ) |>
+  knitr::kable()
+```
+
+
+
+```{r}
+
+alltho |>
+  ggplot(aes(x = tempo, y = `S(t)`)) +
+  geom_line() +
+  geom_step(
+    data = select(tabela_ekm, -estimador),
+    aes(x = tempo, y = `S(t)`)
+    ) +
+  geom_ribbon(
+    data = select(tabela_ekm, -estimador),
+    aes(ymin = lower, ymax = upper, fill = "Kaplan-Meier"),
+    alpha = 0.3, fill = "blue"
+    ) +
+  geom_ribbon(
+    data = alltho,
+    aes(ymin = lower, ymax = upper, fill = "Estimador"),
+    alpha = 0.3, fill = "red"
+    ) +
+  facet_wrap(vars(estimador), scales = "free") +
+  theme_bw()
+```
+
+O scatterplot abaixo nos ajuda a ver melhor a diferença entre o ajuste das curvas de cada distribuição. Abaixo vemos claramente que a lognormal é aquela que os pontos estão mais pŕoximos da reta. Portanto, como a log normal é aquela que menos demostra distanciamentos marcantes da reta, ela é a que melhor se ajusta aos dados de sobrevivência.
+
+```{r}
+alltho |>
+  pivot_wider(
+    names_from = estimador,
+    values_from = -tempo
+  ) |>
+  mutate(Kaplan = tabela_ekm$`S(t)`) |>
+  pivot_longer(
+    cols = starts_with("S(t)"),
+    names_to = "Estimador",
+    values_to = "S(t)"
+  ) |>
+  ggplot(aes(x = Kaplan, y = `S(t)`)) +
+  geom_point() +
+  geom_abline() +
+  facet_wrap(vars(Estimador), scales = "free") +
+  theme_bw()
+```
+
+
+Pela método de linearização, conseguimos também análisar qual consegue se ajustar melhor aos dados. No entanto, o que consegue mostrar as diferenças foi o segundo método, que de fato é possível ver que a que menos tem desvio da reta é a lognormal.
+
+```{r}
+alltho |>
+  mutate(
+    `S(t)` = case_when(
+      estimador == "exponential" ~ -log(`S(t)`),
+      estimador == "weibull" ~ log(-log(`S(t)`)),
+      estimador == "lognormal" ~ qnorm(`S(t)`),
+      estimador == "gamma" ~ log(-log(`S(t)`)),
+      estimador == "gengamma" ~ log(-log(`S(t)`)),
+      .default = `S(t)`
+    ),
+    tempo = ifelse(estimador == "exponential", tempo, log(tempo))
+  ) |>
+  ggplot(aes(x = tempo, y = `S(t)`)) +
+  geom_point() +
+  facet_wrap(vars(estimador), scales = "free") +
+  theme_bw()
+```
+
+Abaixo tem as estimativas das funções de sobrevivência da questão 1.
+
+```{r}
+st1 <- \(t) exp(-t/5)
+st2 <- \(t) 1 / (1 + t)
+
+tibble(
+  tempo = 1:43,
+  `S1(t)` = st1(tempo),
+  `S2(t)` = st2(tempo)
+) |>
+  knitr::kable()
+```
+
+**viii** Considerando os resultados, o que é possível concluir sobre a sobrevivência dos pacientes na sua base de dados.
+
+\vspace{12pt}
+
+
+Analisando a base de dados de diálise, constatou-se que os pacientes que iniciam o tratamento com antecedência apresentam uma função de sobrevivência que decresce mais lentamente. Em contrapartida, aqueles que iniciam o tratamento tardiamente têm uma probabilidade de sobrevivência que diminui em um período mais curto. Além disso, pacientes com doenças congênitas e diabetes tendem a falecer mais rapidamente
+
+\vspace{12pt}
+
+Foi possível ver também que a função de sobrevivência que melhor se ajustou aos dados foi a log-normal. Além disso, uma das maiores causas de óbito é de causa renal.
+
+\vspace{12pt}
+
+**Os itens vi e vii foram omitidos pois já foram sendo feitos durante a solução dos outros exercícios.**
