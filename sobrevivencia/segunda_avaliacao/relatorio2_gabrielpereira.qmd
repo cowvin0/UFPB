@@ -83,12 +83,12 @@ fit_cox <- coxph(
 summary(fit_cox)
 ```
 
-Ao analisar primeiro os pacientes com diabetes, observa-se que a razão de risco é aproximadamente 1,41, indicando que eles têm um risco 41% maior de sofrer o evento (óbito, transplante, etc.) em comparação com o grupo de referência. No entanto, o valor-p sugere que esse resultado não é estatisticamente significativo ao nível de 5%. Para os pacientes com hipertensão, a razão de risco é aproximadamente 0,85, indicando uma leve redução no risco de ocorrência do evento, como o óbito. Além disso, a idade contribui para o aumento do risco, pois o seu coeficiente estimado é negativo. O nível de concordância do modelo foi de 58,2%, indicando que o modelo não possui um poder preditivo tão bom assim.
+Ao analisar primeiro os pacientes com diabetes, observa-se que a razão de risco é aproximadamente 1,41, indicando que eles têm um risco 41% maior de sofrer o evento (óbito, transplante, etc.) em comparação com o grupo de referência. No entanto, o valor-p sugere que esse resultado não é estatisticamente significativo ao nível de 5%. Para os pacientes com hipertensão, a razão de risco é aproximadamente 0,85, indicando uma leve redução no risco de ocorrência do evento. Além disso, a idade contribui para o aumento do risco, pois o seu coeficiente estimado é positivo. O nível de concordância do modelo foi de 58,2%, indicando que o modelo não possui um poder preditivo tão bom assim.
 
 
 \vspace{12pt}
 
-Para a doença renal, indica uma redução de 26% no risco de ocorrência do evento para pacientes com doença renal. Para o grupo de outras doenças, o risco é cerca de 20% menor para aqueles com outras doenças. Para cada aumento de um ano de idade, o risco de ocorrência do evento aumenta em aproximadamente 1.1%.
+Para a doença renal, indica uma redução de 26% no risco de ocorrência do evento para pacientes com doença renal. Para o grupo de outras doenças, o risco é cerca de 20% menor para aqueles com outras doenças.
 
 ## (b) Verifique a proporcionalidade dos riscos de acordo com o método que você desejar
 
@@ -120,7 +120,7 @@ Através do método gráfico, não foram encontrados indícios de violação da 
 cox.zph(fit_cox, transform = "identity")
 ```
 
-Por fim, foram utilizados os resíduos padronizados de Schoenfeld para analisar a suposição de riscos proporcionais, conforme ilustrado nos gráficos abaixo. A partir do gráfico de resíduos padronizados de Schoenfeld para a variável idade, utilizada na construção do modelo, não há evidências que sugiram a rejeição da hipótese nula de riscos proporcionais, uma vez que não são observadas tendências ao longo do tempo. O mesmo resultado se aplica à variável doença, pois também não se identificam tendências evidentes ao longo do tempo.
+Por fim, foram utilizados os resíduos padronizados de Schoenfeld para analisar a suposição de riscos proporcionais, conforme ilustrado nos gráficos abaixo. A partir do gráfico de resíduos padronizados de Schoenfeld para a variável idade, utilizada na construção do modelo, não há evidências que sugiram a rejeição da hipótese de riscos proporcionais, uma vez que não são observadas tendências ao longo do tempo. O mesmo resultado se aplica à variável doença, pois também não se identificam tendências evidentes ao longo do tempo.
 
 ```{r}
 #| fig-width: 5
@@ -130,7 +130,7 @@ plot(cox.zph(fit_cox))
 
 ## (c) Faça uma análise de resíduos do modelo que você escolheu. Qual ou quais resíduos você escolheu? Interprete.
 
-Os resíduos escolhidos foi o resíduo de martingal e de deviance. O resíduo de martigal é uma modificação dos resíduos de Cox-Snell e é visto como uma estimativa do número de falhas em excesso observado na amostra. Ele é definido da seguinte forma:
+Os resíduos escolhidos foram o resíduo de martingal e o de deviance. O resíduo de martingal é uma modificação dos resíduos de Cox-Snell e é visto como uma estimativa do número de falhas em excesso observadas na amostra. Ele é definido da seguinte forma:
 
 $$
 m_i = \delta_i - e_i
@@ -139,7 +139,7 @@ em que $\delta_i$ é a variável indicadora de falha e $e_i$ os resíduos de Cox
 
 \vspace{12pt}
 
-O gráfico abaixo são os resíduos martingal versus o preditor linear do modelo de Cox ajustado. O gráfico não sugere a existência de outliers. É possível verificar o mesmo pelo gráfico dos resíduos de deviance. No entanto, o gráfico dos resíduos apresentam problemas na adequação do modelo, pois não apresentam um comportamento aleatório dos resíduos em torno de 0. Os resíduos deviance são definidos da seguinte forma:
+O gráfico abaixo mostra os resíduos de martingal em relação ao preditor linear do modelo de Cox ajustado. O gráfico não sugere a presença de outliers. O mesmo pode ser verificado no gráfico dos resíduos de deviance. No entanto, ambos os gráficos apresentam problemas de adequação do modelo, uma vez que os resíduos não exibem um comportamento aleatório em torno de 0. Os resíduos de deviance são definidos da seguinte forma:
 
 $$
 d_i = \text{sinal}\left(m_i\right)\{-2 \left[m_i + \log\left(\delta_i - m_i\right)\right]\} ^{1/2}
@@ -176,10 +176,9 @@ dev
 
 Ajuste seu modelo utilizando os modelos paramétricos de regressão Exponencial e Weibull.
 
+\vspace{12pt}
+
 Primeiramente, foi realizada uma análise gráfica, separada por grupos, para identificar os melhores candidatos à modelagem dos dados em estudo. Os gráficos abaixo ilustram essa análise: o primeiro corresponde ao modelo exponencial, e o segundo ao modelo Weibull. No gráfico do modelo exponencial, observa-se que alguns grupos seguem aproximadamente uma linha reta, mas há desvios consideráveis na parte superior. Já no gráfico da distribuição Weibull, a maioria dos grupos apresenta um bom ajuste aos dados, sugerindo que este modelo pode ser uma boa opção para a análise.
-
-<!-- Primeiro foi analisado visualmente e por grupo, os melhores candidatos para a análise dos dados em estudo. Assim tem-se os gráfico abaixo, em que o primeiro é considerando o modelo exponencial e o segundo é o modelo de weibull. Pelo primeiro gráfico (exponencial), é possivel ver que alguns dos grupos conseguem se aproximar bem a uma reta, mas acaba desviando bastante na parte de cima. No entanto,  pelo gráfico da distribuição weibull, é possível ver que a maior parte dos grupos conseguem se ajustar bem aos dados e, portanto, pode ser uma boa candidata para a análise em questão. -->
-
 
 ```{r}
 #| fig-width: 5
@@ -226,25 +225,23 @@ legend(2.7, -3.0, pch=1:5,
      bty="n", cex=.8)
 ```
 
-O coeficiente estimado para a idade é 0,01203, com um intervalo de confiança de 95% entre 0,00645 e 0,01761. Isso indica que, para cada ano adicional de idade, o risco aumenta em aproximadamente 1,2%.
+O coeficiente estimado para a idade é 0,01203, com um intervalo de confiança de 95% entre 0,00645 e 0,01761. Isso indica que a idade ao iniciar a diálise apresenta um aumento no risco do evento.
 
 \vspace{12pt}
 
-O coeficiente estimado para a categoria de diabetes é 0,36694, com um intervalo de confiança de 95% entre -0,12249 e 0,85637. A razão de risco correspondente é 1,44331, mas, como o intervalo de confiança inclui 0, o efeito não é estatisticamente significativo.
+O coeficiente estimado para a categoria de diabetes é 0,36694, com um intervalo de confiança de 95% entre -0,12249 e 0,85637. A razão de risco correspondente é 1,44331, mas, indicando que os pacientes com diabetes apresentam um risco 44% maior de sofrer o evento.
 
 \vspace{12pt}
 
-No caso de hipertensão (doencahiper), o coeficiente estimado é 0,44802, com uma razão de risco de 1,53266. No entanto, o intervalo de confiança de 95% (-0,16519 a 0,29948) inclui 0, sugerindo que o efeito da hipertensão no risco de falha não é significativo.
+No caso de hipertensão (doencahiper), o coeficiente estimado é 0,44802, com uma razão de risco de 1,53266.
 
 \vspace{12pt}
 
-Para outras doenças (doencaoutr), o coeficiente estimado é 0,13290, com uma razão de risco de 0,80272, também sem significância estatística, já que o intervalo de confiança de 95% inclui 0.
+Para outras doenças (doencaoutr), o coeficiente estimado é 0,13290, com uma razão de risco de 0,80272, também sem significância estatística, já que o intervalo de confiança de 95% inclui 0. Os pertencentes ao grupo de outras doenças apresentam uma redução no risco dos eventos de óbitos considerados (transplante, óbito por causa renal, ...).
 
 \vspace{12pt}
 
-Em relação à doença renal (doencarim), o coeficiente estimado é 0,28170, com uma razão de risco de 0,73191. No entanto, esse efeito também não é estatisticamente significativo, pois o intervalo de confiança de 95% inclui 0.
-
-<!-- O coeficiente estimado para idade é 0.01203, com um intervalo de confiança de 95% entre 0.00645 e 0.01761. Isso sugere que, para cada ano adicional de idade, o risco aumenta em aproximadamente 1.2%. O coeficiente estimado para a categoria de doença diabetes é 0.36694, com um intervalo de confiança de 95% que vai de -0.12249 a 0.85637. O hazard ratio correspondente é 1.44331. Para hipertensão (doencahiper): O coeficiente estimado é 0.44802, com um hazard ratio de 1.53266. No entanto, o intervalo de confiança (-0.16519 a 0.29948) inclui 0, sugerindo que o efeito de hipertensão no risco de falha não é significativo. Para outras doenças (doencaoutr): O coeficiente estimado é 0.13290, com um hazard ratio de 0.80272, também sem significância estatística (IC 95% inclui 0). Para doença renal (doencarim): O coeficiente estimado é 0.28170, com um hazard ratio de 0.73191, também não significativo (IC 95% inclui 0). -->
+Em relação à doença renal (doencarim), o coeficiente estimado é 0,28170, com uma razão de risco de 0,73191. Os pacientes pertencentes às doenças de rim apresentam uma redução no risco dos eventos. No entanto, é importante dizer que apenas a variável de idade possuí significância, pois é o único que não contém o valor 0 em seu intervalo de confiança.
 
 ```{r}
 fit_exp <- flexsurvreg(
@@ -254,7 +251,7 @@ fit_exp <- flexsurvreg(
 fit_exp
 ```
 
-O gráfico abaixo mostra que  o modelo exponencial parece apresentar um bom ajuste. No entanto, no gráfico a direita, não parece apresentar um bom ajuste.
+O gráfico abaixo mostra que  o modelo exponencial parece apresentar um bom ajuste. No entanto, no gráfico a direita, não parece apresentar um bom ajuste, pois há um desvio para valores maiores que 0,6 nos resíduos de Cox-Snell.
 
 ```{r}
 res_exp <- resid(fit_exp, type = "coxsnell")
@@ -279,25 +276,23 @@ legend(1.3, 0.9, lty=c(1,2), c("Kaplan-Meier","Exponencial padrão"),
        lwd=1, bty="n", cex=0.8)
 ```
 
-O coeficiente estimado para a idade é -0,01226, com um intervalo de confiança de 95% entre -0,01806 e -0,00646. Isso indica que a idade tem um efeito negativo sobre o tempo de sobrevivência, ou seja, à medida que a idade aumenta, o tempo de sobrevivência diminui. A razão de risco associada (exp(est) = 0,98782) sugere que, a cada ano adicional de idade, o risco de falha aumenta em cerca de 1,22% (uma vez que a razão de risco é ligeiramente menor que 1).
+Agora analisando os resultados do modelo de Weibull. O coeficiente estimado para a idade é -0,01226, com um intervalo de confiança de 95% entre -0,01806 e -0,00646. Isso indica que a idade tem um efeito negativo sobre o tempo de sobrevivência, ou seja, à medida que a idade aumenta, o tempo de sobrevivência diminui. A razão de risco associada (exp(est) = 0,98782) sugere que, a cada ano adicional de idade, o risco de falha aumenta em cerca de 1,22% (uma vez que a razão de risco é ligeiramente menor que 1).
 
 \vspace{12pt}
 
-O coeficiente estimado para diabetes é -0,37534, com um intervalo de confiança de 95% entre -0,88369 e 0,13300, indicando que a diabetes pode estar associada a um risco menor de falha, embora o intervalo de confiança inclua 0. A razão de risco é 0,68705, mas, como o intervalo de confiança inclui 0, o efeito não é estatisticamente significativo ao nível de 5%.
+O coeficiente estimado para diabetes é -0,37534, com um intervalo de confiança de 95% entre -0,88369 e 0,13300, indicando que a diabetes pode estar associada a um risco menor de falha, embora o intervalo de confiança inclua 0. A razão de risco é 0,68705, mas, como o intervalo de confiança inclui 0, o efeito não é estatisticamente significativo ao nível de 5%. Além disso, o tempo mediano até a ocorrência do evento de pacientes com diabetes é 1,455 vezes menor daqueles pacientes que não tiveram diabetes.
 
 \vspace{12pt}
 
-O coeficiente estimado para hipertensão é 0,17018, com um intervalo de confiança entre -0,31233 e 0,65269. A razão de risco estimada é 1,18552, sugerindo um risco de falha levemente maior para pacientes com hipertensão. No entanto, o efeito também não é estatisticamente significativo, pois o intervalo de confiança de 95% inclui 0.
+O coeficiente estimado para hipertensão é 0,17018, com um intervalo de confiança entre -0,31233 e 0,65269. A razão de risco estimada é 1,18552, sugerindo um risco de falha levemente maior para pacientes com hipertensão. No entanto, o efeito também não é estatisticamente significativo, pois o intervalo de confiança de 95% inclui 0. O tempo mediano até a ocorrência do evento para os pacientes com hipertensão é quase 1,2 vezes maior que dos pacientes que não tem hipertensão.
 
 \vspace{12pt}
 
-Para outras doenças (doencaoutr), o coeficiente estimado é 0,22870 (razão de risco = 1,25697), mas o intervalo de confiança também inclui 0, sugerindo ausência de significância estatística.
+Para outras doenças (doencaoutr), o coeficiente estimado é 0,22870 (razão de risco = 1,25697), mas o intervalo de confiança também inclui 0, sugerindo ausência de significância estatística. Para o grupo de pacientes que pertence a outros doenças, o tempo mediano até a ocorrência do evento é 1,25 vezes maior do que os pacientes que não pertecem a esse grupo.
 
 \vspace{12pt}
 
-No caso de doença renal (doencarim), o coeficiente estimado é 0,31916 (razão de risco = 1,37598), mas, da mesma forma, o efeito não apresenta significância estatística, já que o intervalo de confiança de 95% inclui 0.
-
-<!-- O coeficiente estimado para a idade é -0.01226, com um intervalo de confiança de 95% entre -0.01806 e -0.00646. Isso indica que a idade tem um efeito negativo no tempo de sobrevivência, ou seja, à medida que a idade aumenta, o tempo de sobrevivência diminui. O hazard ratio associado (exp(est)=0.98782exp(est)=0.98782) sugere que a cada ano adicional de idade, o risco de falha aumenta em cerca de 1.22% (já que o hazard ratio é ligeiramente menor que 1). O coeficiente estimado para diabetes é -0.37534, com um intervalo de confiança de 95% entre -0.88369 e 0.13300, indicando que a diabetes pode estar associada a um risco menor de falha, embora o intervalo de confiança inclua 0. O hazard ratio é 0.68705, mas, como o IC inclui 0, o efeito não é estatisticamente significativo ao nível de 5%. O coeficiente para hipertensão é 0.17018, com um intervalo de confiança de -0.31233 a 0.65269. O hazard ratio estimado é 1.18552, sugerindo um risco de falha levemente maior para pacientes com hipertensão, mas o efeito também não é estatisticamente significativo, já que o IC 95% inclui 0. Para outras doenças (doencaoutr), o coeficiente estimado é 0.22870 (HR = 1.25697), mas o intervalo de confiança também inclui 0, sugerindo ausência de significância. Para doença renal (doencarim), o coeficiente estimado é 0.31916 (HR = 1.37598), sem significância estatística, dado que o IC 95% inclui 0. -->
+No caso de doença renal (doencarim), o coeficiente estimado é 0,31916 (razão de risco = 1,37598), mas, da mesma forma, o efeito não apresenta significância estatística, já que o intervalo de confiança de 95% inclui 0. O tempo mediano até a ocorrência do evento para os pacientes pertencentes ao grupo de doença renal é 1,37 vezes maior do que os pacientes que não pertencem.
 
 ```{r}
 fit_wei <- flexsurvreg(
