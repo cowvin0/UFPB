@@ -229,11 +229,11 @@ O coeficiente estimado para a idade é 0,01203, com um intervalo de confiança d
 
 \vspace{12pt}
 
-O coeficiente estimado para a categoria de diabetes é 0,36694, com um intervalo de confiança de 95% entre -0,12249 e 0,85637. A razão de risco correspondente é 1,44331, mas, indicando que os pacientes com diabetes apresentam um risco 44% maior de sofrer o evento.
+O coeficiente estimado para a categoria de diabetes é 0,36694, com um intervalo de confiança de 95% entre -0,12249 e 0,85637. A razão de risco correspondente é 1,44331, mas, indicando que os pacientes com diabetes tem um tempo mediano até a ocorrência do evento 1,44 vezes maior que os que não pertencem ao grupo de diabetes.
 
 \vspace{12pt}
 
-No caso de hipertensão (doencahiper), o coeficiente estimado é 0,44802, com uma razão de risco de 1,53266.
+No caso de hipertensão (doencahiper), o coeficiente estimado é 0,44802, com uma razão de risco de 1,53266. O tempo mediano de vida até a ocorrência do evento é 1,53 maior para os pacientes que pertencem ao grupo de hipertensão.
 
 \vspace{12pt}
 
