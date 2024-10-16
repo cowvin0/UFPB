@@ -70,6 +70,8 @@ TBM^P_j = \frac{O^{esp_j}}{P^P}
 $$
 em que $P^P$ é a população total padrão.
 
+
+
 ## Taxa específica de mortalidade
 
 Existem diversas taxas específicas de mortalidade. No entanto, nesse trabalho foi utilizado a taxa especifica de mortalidade por faixa etária, que é expressa da seguinte forma:
@@ -464,6 +466,98 @@ tme |>
 
 A mortalidade em 2010 foi de 0,01639 (aproximadamente 1,6% dos nascidos vivos morreram antes de completar 1 ano). Essa taxa permanece quase estável em 2022 (0,01638), sugerindo pouca variação na mortalidade infantil. A mortalidade para homens com 80 anos ou mais é bastante elevada, com 12,7% de mortalidade em 2010 e uma leve diminuição para 12,2% em 2022. Esse grupo é o mais vulnerável, embora haja uma pequena melhora. A mortalidade é muito alta para mulheres com 80 anos ou mais, com uma taxa de 10,2% em 2010, diminuindo para 10,4% em 2022, refletindo melhorias moderadas. No entanto, nessa faixa de idade O TME para as mulheres ainda é menor comparado aos homens.
 
+## Taxa de mortalidade padronizada
+
+```{r}
+pop_br_2010 <- tibble(
+  Idade = c(
+    "Menor 1 ano", 	"1 a 4 anos",
+    "5 a 9 anos", 	"10 a 14 anos",
+    "15 a 19 anos", "20 a 29 anos",
+    "30 a 39 anos", "40 a 49 anos",
+    "50 a 59 anos", "60 a 69 anos",
+    "70 a 79 anos", "80 anos e mais"
+    ),
+  Homens = c(
+    1378532, 5638455,
+    7624144, 8725413,
+    8558868, 17091222,
+    14484322,	12012583,
+    8737339, 5265099,
+    2757891, 1133122
+    ),
+  Mulheres = c(
+    1334712,	5444460,
+    7345231, 8441348,
+    8432002, 17258381,
+    15148771,	12830135,
+    9679282, 6084830,
+    3547194, 1802463
+  )
+) |>
+  pivot_longer(
+    cols = c(Homens, Mulheres),
+    names_to = "Sexo",
+    values_to = "População Brasil - 2010"
+  )
+```
+
+```{r}
+pop_br_2022 <- readxl::read_xlsx('dados_relatorio3/pop_br_2022.xlsx') |>
+  mutate(
+    `1 a 4 anos` = `0 a 4 anos` - `Menos de 1 ano`,
+    `20 a 29 anos` = `20 a 24 anos` + `25 a 29 anos`,
+    `30 a 39 anos` = `30 a 34 anos` + `35 a 39 anos`,
+    `40 a 49 anos` = `40 a 44 anos` + `45 a 49 anos`,
+    `50 a 59 anos` = `50 a 54 anos` + `55 a 59 anos`,
+    `60 a 69 anos` = `60 a 64 anos` + `65 a 69 anos`,
+    `60 a 69 anos` = `60 a 64 anos` + `65 a 69 anos`,
+    `70 a 79 anos` = `70 a 74 anos` + `75 a 79 anos`,
+    `80 anos e mais` = `80 a 84 anos` + `85 a 89 anos` + `90 a 94 anos` + `95 a 99 anos` + `100 anos ou mais`
+  ) |>
+  select(
+    -c(
+      `0 a 4 anos`, `20 a 24 anos`,
+      `25 a 29 anos`, `30 a 34 anos`,
+      `35 a 39 anos`, `40 a 44 anos`,
+      `45 a 49 anos`, `50 a 54 anos`,
+      `55 a 59 anos`, `60 a 64 anos`,
+      `65 a 69 anos`, `70 a 74 anos`,
+      `75 a 79 anos`, `80 a 84 anos`,
+      `85 a 89 anos`, `90 a 94 anos`,
+      `95 a 99 anos`, `100 anos ou mais`)
+  ) |>
+  rename(`Menor 1 ano` = `Menos de 1 ano`) |>
+  pivot_longer(
+    cols = contains("ano"),
+    names_to = "Idade",
+    values_to = "População Brasil - 2022"
+  ) |>
+  left_join(pop_br_2010, by = c("Sexo", "Idade")) |>
+  left_join(
+    tme |>
+      select(c(Sexo, Idade, `TME 2010`, `TME 2022`)),
+      by = c("Sexo", "Idade")
+  )
+
+pop_br_2022 |>
+  knitr::kable()
+```
+
+```{r}
+pop_br_2022 |>
+  group_by(Sexo) |>
+  summarise(
+    `O_esp 2010` = sum(`TME 2010` * `População Brasil - 2010`),
+    `O_esp 2022` = sum(`TME 2022` * `População Brasil - 2022`),
+    `Total População 2010` = sum(`População Brasil - 2010`),
+    `Total População 2022` = sum(`População Brasil - 2022`),
+    `TBM 2010` = `O_esp 2010` / `Total População 2010` * 1000,
+    `TBM 2022` = `O_esp 2022` / `Total População 2022` * 1000,
+  ) |>
+  knitr::kable()
+```
+
 ## Taxa de mortalidade infantil
 
 Abaixo tem os nascidos vivos para homens e mulheres no ano de 2010 e 2022 no estado do Rio de Janeiro:
@@ -645,6 +739,40 @@ A TMM apresentou uma ligeira queda de 186,7663 em 2010 para 181,1820 em 2022. Is
 - Melhores práticas durante o parto.
 - Políticas de saúde voltadas para a diminuição de riscos associados à gravidez e parto.
 
+## Taxa de mortalidade por causa
+
+```{r}
+tme |>
+  group_by(Sexo) |>
+  summarize(
+    `Total População 2010` = sum(`População 2010`),
+    `Total População 2022` = sum(`População 2022`)
+  ) |>
+  knitr::kable()
+```
+
+```{r}
+causas_obs <- tibble(
+  Sexo = c(
+    "Mulheres", "Homens"
+  ),
+  `2010` = c(10062, 17991),
+  `2022` = c(12056, 17387)
+)
+causas_obs |> knitr::kable()
+```
+
+```{r}
+tibble(
+  Sexo = c(
+    "Mulheres", "Homens"
+  ),
+  `2010` = c(10062 / 8364250, 17991 / 7625679) * 1000,
+  `2022` = c(12056 / 8477499, 17387 / 7577675) * 1000
+) |>
+  knitr::kable()
+```
+
 ## Taxa bruta de natalidade
 
 A taxa bruta de natalidade foi calculada para os nascidos vivos do sexo masculino e feminino no ano de 2010 e 2022, como foi mostrado na tabela dos resultados da taxa de mortalidade infantil. Foi considerado também o total da população do Rio de Janeiro para os anos de 2010 e 2022, que foi de  15.989.929 e 16.055.174, respectivamente. Assim, a partir dessas informações, foi obtida a tabela abaixo:
@@ -784,36 +912,67 @@ tefs |> knitr::kable()
 
 ## Taxa de fecundidade total
 
+A tabela apresenta a taxa de fecundidade total (TFT) no estado do Rio de Janeiro nos anos de 2010 e 2022, considerando o sexo da criança. Em 2010, a taxa de fecundidade para nascimentos masculinos foi de 0.8285, enquanto para nascimentos femininos foi de 0.7880. Já em 2022, esses valores caíram para 0.0874 para meninos e 0.0839 para meninas. Isso indica uma queda acentuada nas taxas de fecundidade total ao longo do período, sugerindo uma diminuição significativa no número de nascimentos. Essa redução pode estar relacionada a fatores como mudanças no comportamento reprodutivo, maior acesso a métodos contraceptivos, ou transformações socioeconômicas e demográficas no estado.
+
 ```{r}
 tft <- tibble(
   Sexo = c("Homens", "Mulheres"),
   `TFT 2010` = c(
     tefs |>
+    mutate(
+      n = case_when(
+        Idade == "15 a 19 anos" ~ 5,
+        TRUE ~ 10
+      ),
+      `TEF 2010` = n * `TEF 2010`
+    ) |>
     filter(Sexo == "Homens") |>
     pull(`TEF 2010`) |> sum(),
     tefs |>
+    mutate(
+      n = case_when(
+        Idade == "15 a 19 anos" ~ 5,
+        TRUE ~ 10
+      ),
+      `TEF 2010` = n * `TEF 2010`
+    ) |>
     filter(Sexo == "Mulheres") |>
     pull(`TEF 2010`) |> sum()
   ),
   `TFT 2022` = c(
     tefs |>
+    mutate(
+      n = case_when(
+        Idade == "15 a 19 anos" ~ 5,
+        TRUE ~ 10
+      ),
+      `TEF 2010` = n * `TEF 2010`
+    ) |>
     filter(Sexo == "Homens") |>
     pull(`TEF 2022`) |> sum(),
     tefs |>
+    mutate(
+      n = case_when(
+        Idade == "15 a 19 anos" ~ 5,
+        TRUE ~ 10
+      ),
+      `TEF 2010` = n * `TEF 2010`
+    ) |>
     filter(Sexo == "Mulheres") |>
     pull(`TEF 2022`) |> sum()
   )
 ) |>
   mutate(
-    `TFT 2010` = `TFT 2010` / 100,
-    `TFT 2022` = `TFT 2022` / 100
+    `TFT 2010` = `TFT 2010` / 1000,
+    `TFT 2022` = `TFT 2022` / 1000
   )
 
 tft |> knitr::kable()
-
-# 10 * sum(tefs$`TEF 2010`) / 1000
-# 10 * sum(tefs$`TEF 2022`) / 1000
 ```
+
+\newpage
+
+## Tábua de vida sem decremento
 
 ```{r}
 df_tabuanormal <- df_obito_total |>
@@ -878,6 +1037,9 @@ df_tabuanormal <- df_tabuanormal |>
 df_tabuanormal |> mutate(across(is.numeric, \(x) round(x, 3))) |>
  knitr::kable()
 ```
+
+
+## Tábua de vida com decremento
 
 ```{r}
 df <- df_obito_total |>
