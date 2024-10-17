@@ -468,6 +468,8 @@ A mortalidade em 2010 foi de 0,01639 (aproximadamente 1,6% dos nascidos vivos mo
 
 ## Taxa de mortalidade padronizada
 
+A partir da tabela abaixo foi calculado a taxa de mortalidade padronizada. A padronização considerada foi a população brasileira total, separado pela idade. A partir da taxa de mortalidade específica calculada anteriormente, basta realizar os calculos descritos na metodologia.
+
 ```{r}
 pop_br_2010 <- tibble(
   Idade = c(
@@ -501,6 +503,7 @@ pop_br_2010 <- tibble(
     values_to = "População Brasil - 2010"
   )
 ```
+
 
 ```{r}
 pop_br_2022 <- readxl::read_xlsx('dados_relatorio3/pop_br_2022.xlsx') |>
@@ -544,6 +547,8 @@ pop_br_2022 |>
   knitr::kable()
 ```
 
+A partir dos cálculos realizados foi calculado os componentes necessários para o cálculo da taxa de mortalidade padronizada. As taxas de mortalidade padronizada são as últimas duas colunas da tabela abaixo:
+
 ```{r}
 pop_br_2022 |>
   group_by(Sexo) |>
@@ -552,11 +557,13 @@ pop_br_2022 |>
     `O_esp 2022` = sum(`TME 2022` * `População Brasil - 2022`),
     `Total População 2010` = sum(`População Brasil - 2010`),
     `Total População 2022` = sum(`População Brasil - 2022`),
-    `TBM 2010` = `O_esp 2010` / `Total População 2010` * 1000,
-    `TBM 2022` = `O_esp 2022` / `Total População 2022` * 1000,
+    `TBM 2010 - Padronizada` = `O_esp 2010` / `Total População 2010` * 1000,
+    `TBM 2022 - Padronizada` = `O_esp 2022` / `Total População 2022` * 1000,
   ) |>
   knitr::kable()
 ```
+
+Para facilidade de interpretação, a taxa de mortalidade padronizada foi multiplicada por 1000. A taxa de mortalidade padronizada para o ano de 2022 apresentou um aumento em relação ao ano de 2010, tanto para o sexo masculino quanto para o sexo feminino, o mesmo padrão já apresentado pela taxa bruta de mortalidade sem a padronização pela população brasileira. No entanto, esse aumento foi mais acentuado na taxa bruta de mortalidade sem a padronização.
 
 ## Taxa de mortalidade infantil
 
@@ -753,12 +760,25 @@ tme |>
 
 ```{r}
 causas_obs <- tibble(
-  Sexo = c(
-    "Mulheres", "Homens"
+  Causa = c(
+    "Doenças do aparelho circulatório",
+    "Causas externas de morbidade e mortalidade"
   ),
-  `2010` = c(10062, 17991),
-  `2022` = c(12056, 17387)
-)
+  Feminino = c(19128, 3262),
+  Masculino = c(19397, 9362)
+) |>
+  mutate(Ano = 2022)
+
+causas_obs_2010 <- tibble(
+  Causa = c(
+    "Doenças do aparelho circulatório",
+    "Causas externas de morbidade e mortalidade"
+  ),
+  Feminino = c(18128, 2925),
+  Masculino = c(19397, 9362)
+) |>
+  mutate(Ano = 2010)
+
 causas_obs |> knitr::kable()
 ```
 
@@ -835,6 +855,8 @@ df_populacao_2010 |>
 
 ## Taxa de fecundidade específica
 
+A tabela abaixo contém as informações utilizadas para o cálculo da taxa de fecundidade específica para o estado do Rio de Janeiro, nos anos de 2010 e 2022. O cálculo foi realizado considerando os nascidos vivos do sexo masculino e feminino. As colunas "2010 mães" e "2022 mães" é a quantidade de nascidos vivos de mães em uma determinada faixa etária. Já as colunas de "2010 mulheres" e "2022 mulheres" é a quantidade total da população feminina por faixa etária.
+
 ```{r}
 idade_mae_feminino <- tibble(
   `Idade` = c(
@@ -909,10 +931,37 @@ tefs |> knitr::kable()
 # df_etaria_fecundidade_masculino
 ```
 
+A partir da tabela, é possível ver claramente que a taxa de fecundidade específica diminuiu para a maioria das idades, indicando aquele padrão que foi visto analisando os outros indicadores de fecundidade. No entanto, houve um aumento na taxa de fecundidade específica entre as idades de 30 a 39 anos e de 40 a 49 anos, indicando que agora as mulheres possam estar pretendendo ter filhos mais tarde devido a melhores condições de trabalho e até mesmo maiores oportunidades de estudo.
+
 
 ## Taxa de fecundidade total
 
 A tabela apresenta a taxa de fecundidade total (TFT) no estado do Rio de Janeiro nos anos de 2010 e 2022, considerando o sexo da criança. Em 2010, a taxa de fecundidade para nascimentos masculinos foi de 0.8285, enquanto para nascimentos femininos foi de 0.7880. Já em 2022, esses valores caíram para 0.0874 para meninos e 0.0839 para meninas. Isso indica uma queda acentuada nas taxas de fecundidade total ao longo do período, sugerindo uma diminuição significativa no número de nascimentos. Essa redução pode estar relacionada a fatores como mudanças no comportamento reprodutivo, maior acesso a métodos contraceptivos, ou transformações socioeconômicas e demográficas no estado.
+
+```{r}
+tefs2 <- tefs |>
+  group_by(Idade) |>
+  summarise(
+    `2010 mães` = sum(`2010 mães`),
+    `2022 mães` = sum(`2022 mães`),
+    `2010 mulheres` = sum(`2010 mulheres`),
+    `2022 mulheres` = sum(`2022 mulheres`),
+  ) |>
+  mutate(
+    `TEF 2010` = `2010 mães` / `2010 mulheres` * 1000,
+    `TEF 2022` = `2022 mães` / `2022 mulheres` * 1000,
+    n = case_when(
+      Idade == "15 a 19 anos" ~ 5,
+      TRUE ~ 10
+    ),
+  ) #|>
+  # summarise(
+  #   `TFT 2010` = sum(n * `TEF 2010`),
+  #   `TFT 2022` = sum(n * `TEF 2022`),
+  # )
+
+tefs2
+```
 
 ```{r}
 tft <- tibble(
@@ -970,7 +1019,8 @@ tft <- tibble(
 tft |> knitr::kable()
 ```
 
-\newpage
+
+\blandscape
 
 ## Tábua de vida sem decremento
 
@@ -1032,12 +1082,16 @@ df_tabuanormal <- df_tabuanormal |>
   mutate(
     Tx = rev(cumsum(rev(Lx))),
     ex = Tx / Ix) |>
-  select(-c(qi, dx, ax, amplitude, M0, Mx, Tx, Lx, Ix))
+  select(-c(amplitude, ax, qi, Mx, M0, dx, Óbitos_externos))
+  # select(-c(qi, dx, ax, amplitude, M0, Mx, Tx, Lx, Ix))
 
 df_tabuanormal |> mutate(across(is.numeric, \(x) round(x, 3))) |>
  knitr::kable()
 ```
 
+\elandscape
+
+\blandscape
 
 ## Tábua de vida com decremento
 
@@ -1101,7 +1155,10 @@ df <- df |>
   mutate(
     Tx = rev(cumsum(rev(Lx))),
     ex = Tx / Ix) |>
-  select(-c(pi, qi, dx, ax, amplitude, M0, Mx, desconto, Tx, Lx, Ix))
+  select(-c(pi, qi, dx, ax, amplitude, M0, Mx, desconto))
+  # select(-c(pi, qi, dx, ax, amplitude, M0, Mx, desconto, Tx, Lx, Ix))
 
 df |> knitr::kable()
 ```
+
+\elandscape
