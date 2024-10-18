@@ -748,6 +748,8 @@ A TMM apresentou uma ligeira queda de 186,7663 em 2010 para 181,1820 em 2022. Is
 
 ## Taxa de mortalidade por causa
 
+As taxas de mortalidade por doenças do aparelho circulatório e causas externas de morbidade e mortalidade foram calculadas com base nos dados dos censos populacionais de 2010 e 2022 para o estado do Rio de Janeiro, conforme a tabela abaixo:
+
 ```{r}
 tme |>
   group_by(Sexo) |>
@@ -758,39 +760,36 @@ tme |>
   knitr::kable()
 ```
 
+A partir da tabela abaixo, que apresenta as taxas de mortalidade pelas duas causas analisadas, observa-se que os homens possuem taxas de mortalidade mais elevadas em ambas as categorias. Isso pode ser atribuído a fatores sociais e comportamentais, uma vez que, historicamente, as mulheres tendem a cuidar mais da saúde de forma preventiva e a adotar comportamentos de menor risco. Além disso, a taxa de mortalidade para as mulheres em 2022 nas causas externas de morbidade e mortalidade no ano de 2022 caiu para abaixo de 1 caso em 1000 mulheres.
+
 ```{r}
 causas_obs <- tibble(
   Causa = c(
     "Doenças do aparelho circulatório",
     "Causas externas de morbidade e mortalidade"
   ),
-  Feminino = c(19128, 3262),
-  Masculino = c(19397, 9362)
-) |>
-  mutate(Ano = 2022)
+  Ano = rep(2022, 2),
+  Mulheres = c(19128, 3262),
+  Homens = c(19397, 9362),
+  `TMC - Homens` = Homens / 7577675 * 1000,
+  `TMC - Mulheres` = Mulheres / 8477499 * 1000
+)
 
 causas_obs_2010 <- tibble(
   Causa = c(
     "Doenças do aparelho circulatório",
     "Causas externas de morbidade e mortalidade"
   ),
-  Feminino = c(18128, 2925),
-  Masculino = c(19397, 9362)
-) |>
-  mutate(Ano = 2010)
+  Ano = rep(2010, 2),
+  Mulheres = c(18128, 2925),
+  Homens = c(19397, 9362),
+  `TMC - Homens` = Homens / 7625679 * 1000,
+  `TMC - Mulheres` = Mulheres / 8364250 * 1000
+)
+
+causas_obs <- rbind(causas_obs, causas_obs_2010)
 
 causas_obs |> knitr::kable()
-```
-
-```{r}
-tibble(
-  Sexo = c(
-    "Mulheres", "Homens"
-  ),
-  `2010` = c(10062 / 8364250, 17991 / 7625679) * 1000,
-  `2022` = c(12056 / 8477499, 17387 / 7577675) * 1000
-) |>
-  knitr::kable()
 ```
 
 ## Taxa bruta de natalidade
@@ -936,7 +935,9 @@ A partir da tabela, é possível ver claramente que a taxa de fecundidade espec�
 
 ## Taxa de fecundidade total
 
-A tabela apresenta a taxa de fecundidade total (TFT) no estado do Rio de Janeiro nos anos de 2010 e 2022, considerando o sexo da criança. Em 2010, a taxa de fecundidade para nascimentos masculinos foi de 0.8285, enquanto para nascimentos femininos foi de 0.7880. Já em 2022, esses valores caíram para 0.0874 para meninos e 0.0839 para meninas. Isso indica uma queda acentuada nas taxas de fecundidade total ao longo do período, sugerindo uma diminuição significativa no número de nascimentos. Essa redução pode estar relacionada a fatores como mudanças no comportamento reprodutivo, maior acesso a métodos contraceptivos, ou transformações socioeconômicas e demográficas no estado.
+A taxa de fecundidade total (TFT) no estado do Rio de Janeiro nos anos de 2010 e 2022 foi calculado para o total de nascidos vivos, sem a separação por sexo. Para o seu cálculo, foi utilizada a tabela abaixo, em que n representa o intervalo das idades para o cálculo da taxa de fecundidade total:
+
+<!-- A tabela apresenta a taxa de fecundidade total (TFT) no estado do Rio de Janeiro nos anos de 2010 e 2022, considerando o sexo da criança. Em 2010, a taxa de fecundidade para nascimentos masculinos foi de 0.8285, enquanto para nascimentos femininos foi de 0.7880. Já em 2022, esses valores caíram para 0.0874 para meninos e 0.0839 para meninas. Isso indica uma queda acentuada nas taxas de fecundidade total ao longo do período, sugerindo uma diminuição significativa no número de nascimentos. Essa redução pode estar relacionada a fatores como mudanças no comportamento reprodutivo, maior acesso a métodos contraceptivos, ou transformações socioeconômicas e demográficas no estado. -->
 
 ```{r}
 tefs2 <- tefs |>
@@ -948,75 +949,82 @@ tefs2 <- tefs |>
     `2022 mulheres` = sum(`2022 mulheres`),
   ) |>
   mutate(
-    `TEF 2010` = `2010 mães` / `2010 mulheres` * 1000,
-    `TEF 2022` = `2022 mães` / `2022 mulheres` * 1000,
+    `TEF 2010` = `2010 mães` / `2010 mulheres`,
+    `TEF 2022` = `2022 mães` / `2022 mulheres`,
     n = case_when(
       Idade == "15 a 19 anos" ~ 5,
       TRUE ~ 10
     ),
-  ) #|>
-  # summarise(
-  #   `TFT 2010` = sum(n * `TEF 2010`),
-  #   `TFT 2022` = sum(n * `TEF 2022`),
-  # )
+  )
 
-tefs2
+tefs2 |> knitr::kable()
+```
+
+Houve uma leve diminuição na fecundidade entre 2010 e 2022 no estado do Rio de Janeiro. Essa queda pode refletir mudanças sociais e econômicas, como maior participação das mulheres no mercado de trabalho, adiamento da maternidade, aumento do uso de métodos contraceptivos, entre outros fatores que influenciam as taxas de fecundidade. Em 2010, a TFT era de 0,81 filhos por mulher, indicando que, em média, cada mulher tinha menos de um filho. Em 2022, a TFT caiu para 0,76 filhos por mulher, o que representa uma ligeira redução em relação a 2010.
+
+```{r}
+tefs2 |>
+  summarise(
+    `TFT 2010` = sum(n * `TEF 2010`),
+    `TFT 2022` = sum(n * `TEF 2022`),
+  ) |>
+  knitr::kable()
 ```
 
 ```{r}
-tft <- tibble(
-  Sexo = c("Homens", "Mulheres"),
-  `TFT 2010` = c(
-    tefs |>
-    mutate(
-      n = case_when(
-        Idade == "15 a 19 anos" ~ 5,
-        TRUE ~ 10
-      ),
-      `TEF 2010` = n * `TEF 2010`
-    ) |>
-    filter(Sexo == "Homens") |>
-    pull(`TEF 2010`) |> sum(),
-    tefs |>
-    mutate(
-      n = case_when(
-        Idade == "15 a 19 anos" ~ 5,
-        TRUE ~ 10
-      ),
-      `TEF 2010` = n * `TEF 2010`
-    ) |>
-    filter(Sexo == "Mulheres") |>
-    pull(`TEF 2010`) |> sum()
-  ),
-  `TFT 2022` = c(
-    tefs |>
-    mutate(
-      n = case_when(
-        Idade == "15 a 19 anos" ~ 5,
-        TRUE ~ 10
-      ),
-      `TEF 2010` = n * `TEF 2010`
-    ) |>
-    filter(Sexo == "Homens") |>
-    pull(`TEF 2022`) |> sum(),
-    tefs |>
-    mutate(
-      n = case_when(
-        Idade == "15 a 19 anos" ~ 5,
-        TRUE ~ 10
-      ),
-      `TEF 2010` = n * `TEF 2010`
-    ) |>
-    filter(Sexo == "Mulheres") |>
-    pull(`TEF 2022`) |> sum()
-  )
-) |>
-  mutate(
-    `TFT 2010` = `TFT 2010` / 1000,
-    `TFT 2022` = `TFT 2022` / 1000
-  )
+# tft <- tibble(
+#   Sexo = c("Homens", "Mulheres"),
+#   `TFT 2010` = c(
+#     tefs |>
+#     mutate(
+#       n = case_when(
+#         Idade == "15 a 19 anos" ~ 5,
+#         TRUE ~ 10
+#       ),
+#       `TEF 2010` = n * `TEF 2010`
+#     ) |>
+#     filter(Sexo == "Homens") |>
+#     pull(`TEF 2010`) |> sum(),
+#     tefs |>
+#     mutate(
+#       n = case_when(
+#         Idade == "15 a 19 anos" ~ 5,
+#         TRUE ~ 10
+#       ),
+#       `TEF 2010` = n * `TEF 2010`
+#     ) |>
+#     filter(Sexo == "Mulheres") |>
+#     pull(`TEF 2010`) |> sum()
+#   ),
+#   `TFT 2022` = c(
+#     tefs |>
+#     mutate(
+#       n = case_when(
+#         Idade == "15 a 19 anos" ~ 5,
+#         TRUE ~ 10
+#       ),
+#       `TEF 2010` = n * `TEF 2010`
+#     ) |>
+#     filter(Sexo == "Homens") |>
+#     pull(`TEF 2022`) |> sum(),
+#     tefs |>
+#     mutate(
+#       n = case_when(
+#         Idade == "15 a 19 anos" ~ 5,
+#         TRUE ~ 10
+#       ),
+#       `TEF 2010` = n * `TEF 2010`
+#     ) |>
+#     filter(Sexo == "Mulheres") |>
+#     pull(`TEF 2022`) |> sum()
+#   )
+# ) |>
+#   mutate(
+#     `TFT 2010` = `TFT 2010` / 1000,
+#     `TFT 2022` = `TFT 2022` / 1000
+#   )
 
-tft |> knitr::kable()
+# tft |> knitr::kable()
 ```
 
 
