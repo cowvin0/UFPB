@@ -1,4 +1,69 @@
 ---
-title: alskdjflaksjdf
+title: Terceira avaliação da disciplina de Pesquisa Operacional
 author: Gabriel de Jesus Pereira
+format: pdf
 ---
+
+## Sobre o problema e a característica geral da fila utilizada
+
+O artigo tem como objetivo melhorar o atendimento aos pacientes da clínica médica do Hospital Universitário Maria Aparecida Pedrossian, em Campo Grande, Mato Grosso do Sul. Para tanto, foi utilizada a teoria das filas, que permitiu reduzir os custos operacionais e aprimorar a qualidade percebida pelos pacientes em relação aos serviços prestados pelo hospital.
+
+O artigo inicia com uma fundamentação teórica sobre filas, abordando suas características. Na parte final, descreve as características específicas da fila aplicada no hospital em estudo. A fila utilizada no hospital é representada pela notação $\left(M/M/8/\infty/\infty/\text{FIFO}\right)$, onde cada parte da notação tem um significado: a primeira refere-se ao processo de chegada, a segunda ao processo de atendimento, a terceira ao número de servidores, a quarta à capacidade do sistema, a quinta ao tamanho da população e, por fim, a última refere-se à disciplina da fila.
+
+- M/M: O primeiro "M" indica que o tempo entre chegadas segue uma distribuição exponencial, o que caracteriza um processo de Poisson para o número de chegadas por unidade de tempo. O segundo "M" refere-se ao tempo de atendimento, que também segue uma distribuição exponencial, com tempos de atendimento variáveis de paciente para paciente, caracterizando um processo Markoviano.
+
+- 8: Refere-se ao número de servidores disponíveis no sistema, ou seja, o hospital conta com 8 atendentes operando simultaneamente para realizar os atendimentos.
+
+- $\infty$ (Capacidade do Sistema): Indica que a capacidade do sistema é infinita, ou seja, o número de pacientes que podem esperar na fila não tem limite. Todos os pacientes que chegam ao hospital podem aguardar atendimento, independentemente da quantidade.
+
+- $\infty$ (Tamanho da População): Refere-se a uma população infinita de clientes potenciais, o que significa que há um número muito grande de pessoas que podem potencialmente buscar o atendimento médico, sem que o tamanho da população afete significativamente o comportamento do sistema de filas.
+
+- *FIFO (First In, First Out)*: A disciplina da fila é FIFO, o que significa que os pacientes são atendidos na ordem de chegada. O primeiro a chegar é o primeiro a ser atendido, garantindo um processo de atendimento justo e organizado.
+
+No caso do hospital, o processo de chegada é estocástico, ou seja, os pacientes chegam de forma aleatória, seguindo uma distribuição de Poisson, já que cada paciente busca atendimento conforme sua própria necessidade. O processo de atendimento segue uma distribuição exponencial, refletindo a variabilidade nos tempos de atendimento, pois cada caso é único. Assim, tanto o processo de chegada quanto o de atendimento seguem as premissas da teoria das filas, onde os tempos entre eventos são distribuídos de forma exponencial, e o número de chegadas por unidade de tempo segue uma distribuição de Poisson.
+
+A pesquisa foi realizada durante quatro dias do mês de janeiro, no período da manhã, das 6h30 às 11h, com base na observação de um dos setores do Ambulatório Geral, especificamente a Clínica Médica. Este setor é um dos que apresentam maior volume de filas no hospital, pois oferece uma ampla gama de especialidades médicas. Além disso, é um dos principais locais onde médicos residentes e estudantes de medicina atuam, tanto para auxiliar a população quanto para adquirir conhecimento prático na área de saúde.
+
+Para a coleta de dados, foram utilizadas planilhas do Excel para registrar as informações, e a simulação foi realizada com a planilha Steady State Queuing Models. Com base nos dados obtidos e nas ferramentas utilizadas, foram calculados os seguintes parâmetros relacionados ao sistema de filas:
+
+a) Taxa de chegada $\lambda$: o número médio de pacientes que chegam por unidade de tempo;
+
+b) Taxa de serviço $\mu$: o número médio de pacientes que cada servidor atende por unidade de tempo;
+
+c) Tempo médio de serviço $\frac{1}{\mu}$: o tempo médio gasto no atendimento de cada paciente;
+
+d) Número médio de pacientes no sistema $L_s$​: a quantidade média de pacientes tanto na fila quanto sendo atendidos;
+
+e) Tempo médio de espera na fila $W_q$​: o tempo médio que um paciente aguarda na fila antes de ser atendido;
+
+f) Tempo médio de espera no sistema $W_s$​: o tempo total médio que um paciente passa no sistema, incluindo o tempo de espera na fila e o tempo de atendimento;
+
+g) Taxa de ocupação do serviço $\rho$: a proporção de tempo em que os servidores estão ocupados atendendo pacientes;
+
+h) Número de servidores $S$: a quantidade de atendentes disponíveis para realizar o atendimento;
+
+i) Probabilidade de o tempo de espera na fila exceder T: a chance de um paciente esperar mais que um determinado tempo $T$ na fila;
+
+j) Probabilidade de existirem k ou mais pacientes no sistema: a probabilidade de o número de pacientes no sistema ser maior ou igual a $k$.
+
+Esses cálculos permitiram uma análise detalhada do comportamento do sistema de filas na Clínica Médica, possibilitando a identificação de áreas para melhorias no atendimento e na gestão das filas.
+
+## Interpretação dos resultados
+
+A partir dos dados e das informações calculadas, forma dispostos os resultados a partir de uma tabela. Essa tabela mostrou que o sistema está funcionando de forma relativamente eficiente, com uma taxa de utilização dos servidores próxima de 89%, o que é um bom indicador de aproveitamento dos recursos. No entanto, como a utilização está alta, qualquer aumento na demanda pode causar um crescimento significativo nos tempos de espera.
+
+Os pacientes passam, em média, cerca de 31 minutos esperando na fila e um total de 1h13min no sistema (incluindo o atendimento). O tamanho médio da fila é de aproximadamente 5,43 pacientes, o que sugere que, apesar de haver fila, o tempo de espera ainda está dentro de limites aceitáveis.
+
+Uma possível recomendação seria monitorar a utilização dos servidores, pois uma taxa de utilização acima de 90% pode levar o sistema a se aproximar de um ponto de saturação, onde os tempos de espera aumentariam drasticamente.
+
+No trabalho também foi realizada uma simulação com apenas 7 atendentes. A partir dessa simulação, foi possível ver que a redução do número de servidores de 8 para 7 fez com que o sistema colapsasse. A taxa de chegada de pacientes excede a capacidade de atendimento dos servidores, resultando em um modelo inválido e números incoerentes. Na prática, isso sugere que o hospital, com apenas 7 servidores, não seria capaz de lidar com o fluxo de pacientes de maneira eficiente. O tempo de espera seria excessivamente longo, a fila cresceria indefinidamente, e os servidores estariam operando constantemente acima de sua capacidade. Uma possível solução seria aumentar o número de servidores ou reduzir a taxa de chegada (talvez reestruturando o agendamento ou diminuindo o fluxo de pacientes).
+
+Por último, foi considerado agora o atendimento com mais dois atendentes, ou seja, 10 atendentes. A partir dessas imulação, foi possível perceber que o modelo com 10 servidores é adequado para a demanda de pacientes, com uma taxa de chegada de 10,32 pacientes por unidade de tempo e cada servidor atendendo a 1,45 pacientes por unidade de tempo. O tempo de espera na fila é muito curto (cerca de 3,45 minutos), e a fila média tem menos de 1 pessoa. Os servidores estão ocupados 71,17% do tempo, o que é uma utilização eficiente e deixa alguma capacidade ociosa para lidar com picos de demanda.
+
+Em termos práticos, o hospital está funcionando de forma eficaz com 10 servidores. A fila é curta e raramente há uma espera significativa para os pacientes. Além disso, os servidores não estão sobrecarregados, e a capacidade de atendimento do sistema como um todo é suficiente para lidar com a taxa de chegada dos pacientes.
+
+## Conclusão
+
+A simulação de filas é uma ferramenta crucial para garantir que os recursos de atendimento sejam utilizados da maneira mais eficiente possível, garantindo o melhor equilíbrio entre qualidade de serviço e utilização de recursos. Através da modelagem, é possível identificar o número ideal de servidores, prever tempos de espera e detectar gargalos antes que eles se tornem problemas reais. Assim, o uso da simulação não apenas melhora o desempenho do sistema de atendimento, mas também contribui para tomadas de decisão informadas e planejamento estratégico a longo prazo.
+
+A análise dos resultados sugere que o número ideal de atendentes para o setor de Clínica Médica é de 10 servidores. Esse número garante uma utilização eficiente dos servidores (71,17%), com um tempo de espera médio na fila de apenas 3,45 minutos. Esse cenário oferece uma margem de segurança suficiente para lidar com variações na demanda, sem sobrecarregar os servidores e garantindo um atendimento rápido e eficaz aos pacientes. Reduzir o número de servidores para 8 começa a sobrecarregar o sistema, enquanto 7 servidores torna o sistema inviável, resultando em um colapso no atendimento. Portanto, recomenda-se a alocação de 10 atendentes para otimizar o funcionamento do setor e reduzir os tempos de espera.
