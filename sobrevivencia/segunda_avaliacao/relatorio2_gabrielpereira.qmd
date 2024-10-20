@@ -73,22 +73,23 @@ se pede a seguir.
 
 ## (a) Ajuste o modelo de Cox aos dados. Interprete os coeficientes do modelo escolhido. Quais critérios você considerou para obter os modelos?
 
-O modelo foi construído considerando os diferentes grupos de doença de base dos pacientes em diálise e também a idade dos pacientes ao iniciar a diálise. A partir dos dados da tabela a seguir, é possível ver que há indícios de que, ao nível de 5% de significância, apenas a variável idade é significativa, mas os grupos de doenças não são significativos.
+
+A base de dados utilizada para o relatório possuí poucas variáveis, o que torna difícil a tarefa de melhorar o modelo ou até mesmo fazer uma análise mais elaborada. Por esse motivo, uma das variáveis que não apresentou significância estatística para o modelo (doenca), foi mantida para que pudesse analisar o seu impacto nos pacientes. Assim, foram mantidas duas variáveis, a variável de idade que o paciente iniciou a diálise e de pacientes que tinham doenças específicas. O critério para seleção das variáveis foi pelo teste t, que permitiu verificar que apenas a variável de idade era significante. O teste considerou um nível de significância de 5%.
+
 
 ```{r}
 fit_cox <- coxph(
-    Surv(tempo, status) ~  doenca + idade,
+    Surv(tempo, status) ~ idade + doenca,
     data = df,
     method = "breslow")
 summary(fit_cox)
 ```
 
-Ao analisar primeiro os pacientes com diabetes, observa-se que a razão de risco é aproximadamente 1,41, indicando que eles têm um risco 41% maior de sofrer o evento (óbito, transplante, etc.) em comparação com o grupo de referência. No entanto, o valor-p sugere que esse resultado não é estatisticamente significativo ao nível de 5%. Para os pacientes com hipertensão, a razão de risco é aproximadamente 0,85, indicando uma leve redução no risco de ocorrência do evento. Além disso, a idade contribui para o aumento do risco, pois o seu coeficiente estimado é positivo. O nível de concordância do modelo foi de 58,2%, indicando que o modelo não possui um poder preditivo tão bom assim.
-
+Ao analisar primeiro os pacientes com diabetes, observa-se que a razão de risco é aproximadamente 1,41, indicando que eles têm um risco 41% maior de sofrer o evento (óbito, transplante, etc.) em comparação com o grupo de referência. No entanto, o valor-p sugere que esse resultado não é estatisticamente significativo ao nível de 5%. Para os pacientes com hipertensão, a razão de risco é aproximadamente 85% em relação aos outros grupos de doenças. Além disso, para cada ano de idade ao iniciar a diálise do paciente, contribui para o aumento do risco de morte em 1,13%.
 
 \vspace{12pt}
 
-Para a doença renal, indica uma redução de 26% no risco de ocorrência do evento para pacientes com doença renal. Para o grupo de outras doenças, o risco é cerca de 20% menor para aqueles com outras doenças.
+Para a doença renal, o risco é apenas de 74,30% em relação aos pacientes pertencentes aos demais grupos de doença. Para os que estão no grupo de outras doenças, o risco é de 80,03% em relação aos demais.
 
 ## (b) Verifique a proporcionalidade dos riscos de acordo com o método que você desejar
 
