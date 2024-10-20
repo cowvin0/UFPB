@@ -302,7 +302,7 @@ fit_wei <- flexsurvreg(
 fit_wei
 ```
 
-Analisando o ajuste do modelo Weibull, ele apresenta um ajuste muito semelhante com o modelo exponencial.
+Analisando o ajuste do modelo Weibull, ele apresenta um ajuste muito semelhante com o modelo exponencial. Os resíduos de cox snell desviam bastante no final da sobrevivência ajustada, mostrando que o modelo pode não ter se ajustado bem aos dados.
 
 ```{r}
 res_wei <- resid(fit_wei, type = "coxsnell")
