@@ -226,15 +226,15 @@ legend(2.7, -3.0, pch=1:5,
      bty="n", cex=.8)
 ```
 
-O coeficiente estimado para a idade é 0,01203, com um intervalo de confiança de 95% entre 0,00645 e 0,01761. Isso indica que a idade ao iniciar a diálise apresenta um aumento no risco do evento.
+O coeficiente estimado para a idade é 0,01203, com um intervalo de confiança de 95% entre 0,00645 e 0,01761. Isso indica que a idade ao iniciar a diálise apresenta uma diminuição no tempo de sobrevivência em 1,012 média vezes para cada ano.
 
 \vspace{12pt}
 
-O coeficiente estimado para a categoria de diabetes é 0,36694, com um intervalo de confiança de 95% entre -0,12249 e 0,85637. A razão de tempo mediano correspondente é 1,44331, indicando que os pacientes com diabetes tem um tempo mediano até a ocorrência do evento 1,44 vezes maior que os que não pertencem ao grupo de diabetes.
+O coeficiente estimado para a categoria de diabetes é 0,36694, com um intervalo de confiança de 95% entre -0,12249 e 0,85637. A razão de tempo mediano correspondente é 1,44331, indicando que os pacientes com diabetes tem sobrevivência 1,44 vezes maior.
 
 \vspace{12pt}
 
-No caso de hipertensão (doencahiper), o coeficiente estimado é 0,44802, com uma razão de tempo mediano de 1,53266. O tempo mediano de vida até a ocorrência do evento é 1,53 maior para os pacientes que pertencem ao grupo de hipertensão do que aqueles que não pertencem a esse grupo.
+No caso de hipertensão (doencahiper), o coeficiente estimado é 0,44802, com uma razão de tempo mediano de 0,8477. A sobrevivência é em média 1,53 vezes menor para os pacientes que pertencem ao grupo de hipertensão em relação aqueles que não pertencem a esse grupo.
 
 \vspace{12pt}
 
@@ -242,7 +242,7 @@ Para outras doenças (doencaoutr), o coeficiente estimado é 0,13290, com uma ra
 
 \vspace{12pt}
 
-Em relação à doença renal (doencarim), o coeficiente estimado é 0,28170, com uma razão de tempo mediano de 0,73191. Os pacientes pertencentes às doenças de rim apresentam uma redução no risco dos eventos. No entanto, é importante dizer que apenas a variável de idade possuí significância, pois é o único que não contém o valor 0 em seu intervalo de confiança.
+Em relação à doença renal (doencarim), o coeficiente estimado é 0,28170, com uma razão de tempo mediano de 0,73191. Os pacientes pertencentes às doenças de rim apresentam uma sobrevivência em média 1,367 vezes menor.
 
 ```{r}
 fit_exp <- flexsurvreg(
@@ -277,23 +277,11 @@ legend(1.3, 0.9, lty=c(1,2), c("Kaplan-Meier","Exponencial padrão"),
        lwd=1, bty="n", cex=0.8)
 ```
 
-Agora analisando os resultados do modelo de Weibull. O coeficiente estimado para a idade é -0,01226, com um intervalo de confiança de 95% entre -0,01806 e -0,00646. Isso indica que a idade tem um efeito negativo sobre o tempo de sobrevivência, ou seja, à medida que a idade aumenta, o tempo de sobrevivência diminui em média por 0.9878.
+Agora analisando os resultados do modelo de Weibull. O coeficiente estimado para a idade é -0,01226, com um intervalo de confiança de 95% entre -0,01806 e -0,00646. Isso indica que a idade tem um efeito negativo sobre o tempo de sobrevivência, ou seja, para cada ano, o tempo de sobrevivência diminui em média por 0.9878.
 
 \vspace{12pt}
 
-O coeficiente estimado para diabetes é -0,37534, com um intervalo de confiança de 95% entre -0,88369 e 0,13300, indicando que a diabetes pode estar associada a um risco menor de falha. A razão de tempo mediano é 0,68705, mas, como o intervalo de confiança inclui 0, o efeito não é estatisticamente significativo ao nível de 5%. Além disso, o tempo mediano até a ocorrência do evento de pacientes sem diabetes é 1,455 vezes menor do que aqueles pacientes que tiveram diabetes.
-
-\vspace{12pt}
-
-O coeficiente estimado para hipertensão é 0,17018 A razão estimada é 1,18552, sugerindo um risco de tempo mediano levemente maior para pacientes com hipertensão. No entanto, o efeito também não é estatisticamente significativo, pois o intervalo de confiança de 95% inclui 0. O tempo mediano até a ocorrência do evento para os pacientes com hipertensão é quase 1,2 vezes maior que dos pacientes que não tem hipertensão.
-
-\vspace{12pt}
-
-Para outras doenças (doencaoutr), o coeficiente estimado é 0,22870 (razão de tempo mediano = 1,25697). Para o grupo de pacientes que pertence a outros doenças, o tempo mediano até a ocorrência do evento é 1,25 vezes maior do que os pacientes que não pertecem a esse grupo.
-
-\vspace{12pt}
-
-No caso de doença renal (doencarim), o coeficiente estimado é 0,31916 (razão de tempo mediano = 1,37598). O tempo mediano até a ocorrência do evento para os pacientes pertencentes ao grupo de doença renal é 1,37 vezes maior do que os pacientes que não pertencem.
+O coeficiente estimado para diabetes é -0,37534. A sobrevivência para grupo de diabetes é em média 1,455 vezes menor. Já os pacientes com hipertensão apresentam uma sobrevivência em média 1,185 vezes maior. Para o grupo de doença renal, o tempo de sobrevivência é em média 1,375 vezes maior. Por último, para os pacientes que pertencem ao grupo de outras doenças, o tempo de sobrevivência é em média 1,256 vezes maior.
 
 ```{r}
 fit_wei <- flexsurvreg(
@@ -327,3 +315,5 @@ lines(res_wei, exp2, lty=2)
 legend(1.3, 0.9, lty=c(1,2), c("Kaplan-Meier", "Weibull Padrão"),
        lwd=1, bty="n", cex=0.8)
 ```
+
+A estatística utilizada para a seleção do modelo foi o AIC. Dessa forma, o modelo selecionado foi o exponencial, pois foi aquele que apresentou o menor AIC de todos, incluindo o modelo de Cox.
