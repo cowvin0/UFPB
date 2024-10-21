@@ -32,6 +32,10 @@ library(lifecontingencies)
 library(tidyverse)
 ```
 
+# Introdução
+
+Este relatório apresenta uma análise demográfica para o estado do Rio de Janeiro, contemplando os anos de 2010 e 2022. A análise utiliza indicadores fundamentais para três características qualquer população: mortalidade, fecundidade e tábua de vida. Esses indicadores permitem traçar um panorama detalhado das dinâmicas populacionais no estado, identificando tendências e padrões que impactam diretamente o crescimento e a estrutura etária da população. Ao comparar os dois períodos, são destacadas as principais mudanças.
+
 # Metodologia
 
 ## Obtenção dos dados
@@ -70,17 +74,15 @@ TBM^P_j = \frac{O^{esp_j}}{P^P}
 $$
 em que $P^P$ é a população total padrão.
 
-
-
 ## Taxa específica de mortalidade
 
-Existem diversas taxas específicas de mortalidade. No entanto, nesse trabalho foi utilizado a taxa especifica de mortalidade por faixa etária, que é expressa da seguinte forma:
+Existem diversas taxas específicas de mortalidade. No entanto, nesse trabalho foi utilizado a taxa especifica de mortalidade por faixa etária e por algumas causas específicas de óbito, que é expressa da seguinte forma:
 
 $$
 TME = \frac{\text{Número de óbitos em uma faixa etária}}{\text{População dessa faixa etária}} \cdot 1000
 $$
 
-O TME faixa etária mede o número de óbitos em uma faixa específica por mil habitantes dessa mesma faixa etári em um determinado período.
+O TME pela faixa etária mede o número de óbitos em uma faixa específica por mil habitantes dessa mesma faixa etária em um determinado período. Para o cálculo da taxa específica de mortalidade por causas, bastou considerar o número de óbitos da causa no numerador. As causas consideradas foram por doenças do aparelho circulatório e causas externas de morbidade e mortalidade.
 
 ## Taxa de mortalidade infantil
 
@@ -1032,6 +1034,12 @@ tefs2 |>
 
 ## Tábua de vida sem decremento
 
+A tabela de vida sem decremento apresentada mostra os principais indicadores de mortalidade para homens e mulheres no estado do Rio de Janeiro em 2022, com ênfase na expectativa de vida (ex) para diferentes faixas etárias. Para os homens, a expectativa de vida ao nascer (menor de 1 ano) é de 69,731 anos. Para as mulheres, essa expectativa é maior, 75,202 anos, refletindo a tendência global de maior longevidade feminina.
+
+\vspace{12pt}
+
+A tabela reflete uma longevidade maior para as mulheres ao longo de todas as idades, uma característica comum devido a fatores biológicos e comportamentais. Além disso, a diferença na expectativa de vida entre homens e mulheres tende a ser mais acentuada nas faixas etárias mais jovens e na idade adulta, reduzindo-se conforme a idade avança.
+
 ```{r}
 df_tabuanormal <- df_obito_total |>
   left_join(df_populacao) |>
@@ -1102,6 +1110,20 @@ df_tabuanormal |> mutate(across(is.numeric, \(x) round(x, 3))) |>
 \blandscape
 
 ## Tábua de vida com decremento
+
+A tábua de vida com decremento apresentada exclui as mortes por causas externas, o que permite uma análise mais focada nas causas naturais de mortalidade. Com isso, a expectativa de vida (ex) aumenta em relação à tábua sem decremento, refletindo a eliminação de mortes não naturais, como acidentes e violência.
+
+\vspace{12pt}
+
+A expectativa de vida ao nascer para os homens aumenta de 69,731 anos (sem decremento) para 72,459 anos, quando as mortes por causas externas são excluídas. Para as mulheres, a expectativa de vida ao nascer também aumenta, de 75,202 anos para 75,807 anos, indicando um ganho de pouco menos de um ano quando excluídas as mortes por causas externas.
+
+\vspace{12pt}
+
+A eliminação das causas externas parece ter um impacto mais pronunciado entre os homens, especialmente nas faixas etárias mais jovens e adultas, onde essas mortes tendem a ser mais frequentes. Para as mulheres, o impacto das causas externas também é sentido, mas em menor grau, uma vez que, historicamente, as taxas de mortalidade por causas externas são mais elevadas entre os homens.
+
+\vspace{12pt}
+
+A tábua de vida com decremento revela que as causas externas, como acidentes e violência, têm um impacto significativo sobre a mortalidade masculina, especialmente em faixas etárias jovens e adultas. Com a exclusão dessas causas, os homens ganham mais anos de vida do que as mulheres, embora ainda persista uma diferença na longevidade entre os dois sexos.
 
 ```{r}
 df <- df_obito_total |>
