@@ -44,7 +44,7 @@ Este relatório apresenta uma análise demográfica para o estado do Rio de Jane
 
 ## Recursos computacionais
 
-\ \ \ As análises apresentadas neste estudo foram realizadas utilizando a linguagem de programação R [@rlang], com o auxílio de todo ecossistema Tidyverse [@tidy] para manipulação de dados e do pacote ggplot [@ggplot] para visualização gráfica. Os documentos do relatório foram elaborados com o Quarto [@quarto], um sistema de escrita e publicação científica. Todo o código-fonte utilizado nas análises está disponível no GitHub [@github].
+\ \ \ As análises apresentadas neste estudo foram realizadas utilizando a linguagem de programação R [@rlang], com o auxílio de todo ecossistema Tidyverse [@tidy] para manipulação de dados e do pacote ggplot [@ggplot] para visualização gráfica. Os documentos do relatório foram elaborados com o Quarto [@quarto], um sistema de escrita e publicação científica. Todo o código-fonte utilizado nas análises está disponível no GitHub [@github_rel3].
 
 ## Taxa bruta de mortalidade
 
@@ -74,7 +74,7 @@ TBM^P_j = \frac{O^{esp_j}}{P^P}
 $$
 em que $P^P$ é a população total padrão.
 
-## Taxa específica de mortalidade
+## Taxa específica de mortalidade (por causa)
 
 Existem diversas taxas específicas de mortalidade. No entanto, nesse trabalho foi utilizado a taxa especifica de mortalidade por faixa etária e por algumas causas específicas de óbito, que é expressa da seguinte forma:
 
