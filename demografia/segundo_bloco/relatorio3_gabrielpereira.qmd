@@ -1125,6 +1125,8 @@ A eliminação das causas externas parece ter um impacto mais pronunciado entre 
 
 A tábua de vida com decremento revela que as causas externas, como acidentes e violência, têm um impacto significativo sobre a mortalidade masculina, especialmente em faixas etárias jovens e adultas. Com a exclusão dessas causas, os homens ganham mais anos de vida do que as mulheres, embora ainda persista uma diferença na longevidade entre os dois sexos.
 
+
+
 ```{r}
 df <- df_obito_total |>
   left_join(df_populacao) |>
@@ -1192,3 +1194,11 @@ df |> knitr::kable()
 ```
 
 \elandscape
+
+# Conclusão
+
+A partir dos resultados apresentados, foi possível constatar que as taxas de mortalidade são geralmente mais elevadas entre os homens, especialmente nas causas externas, o que reflete uma cultura de menor cuidado com a própria saúde entre eles.
+
+\vspace{12pt}
+
+Além disso, as estatísticas de fecundidade indicam uma contínua queda nas taxas de fecundidade no estado do Rio de Janeiro, seguindo a tendência observada no Brasil e em muitos países desenvolvidos. Por fim, o cálculo das tábuas de vida mostrou que a expectativa de vida no estado do Rio de Janeiro é consideravelmente alta, especialmente entre as mulheres.
