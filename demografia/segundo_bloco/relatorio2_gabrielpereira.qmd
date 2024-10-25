@@ -46,7 +46,7 @@ import matplotlib.pyplot as plt
 
 ## Obtenção dos dados
 
-\ \ \ Os dados demográficos utilizados neste estudo foram obtidos de duas fontes principais. As informações sobre a população por faixa etária foram extraídas do TABNET, uma ferramenta desenvolvida pelo DATASUS. O TABNET é um tabulador genérico de domínio público que facilita a organização e consulta rápida de dados conforme os critérios definidos, enquanto o DATASUS fornece informações essenciais para a análise da saúde pública e variáveis demográficas, contribuindo para a formulação de políticas e programas de saúde. Os dados populacionais detalhados por idade para o estado do Rio de Janeiro e para o Brasil foram obtidos por meio do Sidra. É importante destacar que os dados analisados correspondem aos censos de 2000 e 2010.
+\ \ \ Os dados demográficos utilizados neste estudo foram obtidos de duas fontes principais. As informações sobre a população por faixa etária foram extraídas do TABNET, uma ferramenta desenvolvida pelo DATASUS. O TABNET é um tabulador genérico de domínio público que facilita a organização e consulta rápida de dados conforme os critérios definidos, enquanto o DATASUS fornece informações essenciais para a análise da saúde pública e variáveis demográficas, contribuindo para a formulação de políticas e programas de saúde. Os dados populacionais detalhados por idade para o estado do Rio de Janeiro e para o Brasil foram obtidos por meio do Sidra. É importante destacar que os dados analisados correspondem aos censos de 2000, 2010 e 2022.
 
 ## Recursos computacionais
 
@@ -126,6 +126,32 @@ $$
 
 \ \ \ A razão de sexo foi inicialmente calculada para os dados do censo de 2000. Os resultados estão apresentados na tabela abaixo. Para calcular a razão de sexo, a população foi dividida entre as situações rural e urbana, e a razão foi obtida comparando a população masculina com a feminina em cada situação. Os cálculos foram realizados tanto para o Brasil como um todo quanto para o estado do Rio de Janeiro.
 
+
+```{python}
+pop_brasil_rj_2022 = pd\
+  .read_excel('pop_brasil_rj_2022.xlsx')\
+  .drop(
+    columns=[
+      '30 a 34 anos', '35 a 39 anos',
+      '40 a 44 anos', '45 a 49 anos',
+      '50 a 54 anos', '55 a 59 anos',
+      '20 a 24 anos', '25 a 29 anos',
+      '60 a 64 anos', '65 a 69 anos',
+      '70 a 74 anos', '75 a 79 anos',
+      '80 a 84 anos', '85 a 89 anos',
+      '90 a 94 anos', '95 a 99 anos',
+      '100 anos ou mais', '0 a 4 anos']
+  )\
+  .set_index(['UF', 'Sexo'])\
+  .stack()\
+  .reset_index()\
+  .rename(
+    columns={
+      'level_2': 'Intervalo de Idade',
+       0: 'Frequência',
+       'UF': 'Unidade da Federação'})
+```
+
 ```{python}
 homens_urbanos_rural_2000 = pd\
   .read_csv('2000_homens_urbana_rural.csv', delimiter=';')\
@@ -160,7 +186,7 @@ razao_sexo_2000 = juntos_urbano_rural_2000\
     'Razão_de_Sexo_Urbana': 'Razão de Sexo - Urbano',
     'Razão_de_Sexo_Rural': 'Razão de Sexo - Rural'})
 
-juntos_urbano_rural_2000.style.hide()
+juntos_urbano_rural_2000.astype(int).style.hide()
 ```
 
 \ \ \ Assim, com os dados de população de 2000, chegamos a seguinte razão de sexo:
@@ -209,7 +235,7 @@ razao_sexo_2010 = juntos_urbano_rural_2010\
     'Razão_de_Sexo_Urbana': 'Razão de Sexo - Urbano',
     'Razão_de_Sexo_Rural': 'Razão de Sexo - Rural'})
 
-juntos_urbano_rural_2010.style.hide()
+juntos_urbano_rural_2010.astype(int).style.hide()
 ```
 
 \ \ \ A razão de sexo de 2010, apresentada abaixo, revela que não houve uma mudança significativa em comparação com a de 2000. No entanto, observa-se uma leve redução na proporção de mulheres em áreas urbanas e no cenário geral. Na zona rural, também houve uma diminuição na proporção de mulheres, mas a diferença em relação ao ano de 2000 não é muito expressiva.
@@ -217,6 +243,27 @@ juntos_urbano_rural_2010.style.hide()
 ```{python}
 razao_sexo_2010.style.hide()
 ```
+
+A tabela abaixo apresenta a razão de sexo para o Brasil e o estado do Rio de Janeiro em 2022. A razão de sexo mostra a proporção de homens para cada 100 mulheres. No Brasil, a razão de sexo é de 94,25, indicando que há cerca de 94 homens para cada 100 mulheres. No Rio de Janeiro, essa razão é ainda menor, de 89,39, o que significa que há aproximadamente 89 homens para cada 100 mulheres no estado.
+
+```{python}
+pop_brasil_rj_2022\
+  .groupby(['Unidade da Federação', 'Sexo'])\
+  [['Frequência']]\
+  .sum()\
+  .unstack(1)\
+  .reset_index()\
+  .assign(
+    Razão_de_Sexo=lambda x: x[('Frequência', 'Homens')] / x[('Frequência', 'Mulheres')] * 100
+  )\
+  .rename(
+    columns={'Razão_de_Sexo': 'Razão de Sexo'}
+  )\
+  .style.hide()
+```
+
+Esses valores sugerem que, em ambas as regiões, o número de mulheres é maior que o de homens, com uma diferença mais acentuada no Rio de Janeiro. Essa disparidade pode ser explicada por diversos fatores, como maior mortalidade masculina, migração ou até diferenças na expectativa de vida, em que mulheres tendem a viver mais do que homens, especialmente em faixas etárias mais avançadas.
+
 
 ## Análise de Dependência
 
@@ -272,8 +319,10 @@ homem_etario_2010 = pd.read_csv('2010_faixa_etaria_homem.csv', delimiter=';')\
   )
 homem_etario_2010['Intervalo de Idade'] = pd.Categorical(homem_etario_2010['Intervalo de Idade'], categories=categorias)
 mulher_etario_2010['Intervalo de Idade'] = pd.Categorical(mulher_etario_2010['Intervalo de Idade'], categories=categorias)
+pop_brasil_rj_2022['Intervalo de Idade'] = pd.Categorical(pop_brasil_rj_2022['Intervalo de Idade'], categories=categorias)
+mulher_etario_2022 = pop_brasil_rj_2022.query('Sexo == "Mulheres"')
+homem_etario_2022 = pop_brasil_rj_2022.query('Sexo == "Homens"')
 ```
-
 
 ```{python}
 mulher_etario_2000 = pd.read_csv('2000_faixa_etaria_mulher.csv', delimiter=';')\
@@ -338,10 +387,36 @@ dep_total_2010 = pd.DataFrame({
           calcular_rdi(homem_etario_2010, 'Brasil')],
           })
 
-pd.concat([dep_total_2010, dep_total_2000], axis=0).style.hide()
+dep_total_2022 = pd.DataFrame({
+  'Ano': [2022] * 4,
+  'Unidade da Federação': ['Rio de Janeiro', 'Brasil'] * 2,
+  'Sexo': ['Feminino', 'Feminino', 'Masculino', 'Masculino'],
+  'RDT': [calcular_rdt(mulher_etario_2022, 'Rio de Janeiro'),
+          calcular_rdt(mulher_etario_2022, 'Brasil'),
+          calcular_rdt(homem_etario_2022, 'Rio de Janeiro'),
+          calcular_rdt(homem_etario_2022, 'Brasil')],
+  'RDJ': [calcular_rdj(mulher_etario_2022, 'Rio de Janeiro'),
+          calcular_rdj(mulher_etario_2022, 'Brasil'),
+          calcular_rdj(homem_etario_2022, 'Rio de Janeiro'),
+          calcular_rdj(homem_etario_2022, 'Brasil')],
+  'RDI': [calcular_rdi(mulher_etario_2022, 'Rio de Janeiro'),
+          calcular_rdi(mulher_etario_2022, 'Brasil'),
+          calcular_rdi(homem_etario_2022, 'Rio de Janeiro'),
+          calcular_rdi(homem_etario_2022, 'Brasil')],
+          })
+
+pd.concat([dep_total_2022, dep_total_2010, dep_total_2000], axis=0).style.hide()
 ```
 
 \ \ \ A razão de dependência de jovens (RDJ) era significativamente maior no censo de 2000, tanto para o sexo masculino quanto para o feminino. No Brasil, em 2000, havia 46 jovens dependentes para cada 100 pessoas em idade ativa, no caso dos homens. Esse valor caiu para 35,32 no censo de 2010. A única situação que apresentou um aumento na dependência foi a dos idosos em 2010. Para as mulheres, a redução na dependência total, especialmente entre os jovens, foi ainda mais acentuada, refletindo uma diminuição na dependência das mulheres em relação à população economicamente ativa.
+
+\vspace{12pt}
+
+\ \ \ Em 2022, tanto no Brasil quanto no Rio de Janeiro, a razão de dependência total (RDT) mostra que, para cada 100 pessoas em idade ativa (15 a 64 anos), há aproximadamente 35 a 37 pessoas dependentes, entre jovens e idosos. No caso das mulheres, a RDT no Brasil é de 36,44, com uma predominância da dependência jovem (RDJ de 25,66) e uma razão de dependência idosa (RDI) de 10,78. No Rio de Janeiro, essa razão total é um pouco menor, 35,62, mas com uma dependência jovem de 22,41 e uma RDI de 13,20. Isso indica que as mulheres no Rio de Janeiro possuem uma menor dependência de jovens, mas uma maior proporção de idosos dependentes em comparação com o Brasil.
+
+\vspace{12pt}
+
+\ \ \ Entre os homens, o cenário é semelhante, embora com números ligeiramente diferentes. No Brasil, a RDT masculina é de 36,78, com uma dependência jovem de 28,41 e uma RDI de 8,37. Já no Rio de Janeiro, a RDT dos homens é de 35,30, com uma dependência jovem de 25,98 e uma RDI de 9,32. Isso mostra que, também entre os homens, a dependência idosa no Rio de Janeiro é um pouco maior que no Brasil, mas a dependência jovem é menor.
 
 ## Análise do índice de envelhecimento por sexo
 
@@ -381,7 +456,17 @@ velhice_total_2010 = pd.DataFrame({
           calcular_ie(homem_etario_2010, 'Brasil')],
           })
 
-pd.concat([velhice_total_2010, velhice_total_2000], axis=0).style.hide()
+velhice_total_2022 = pd.DataFrame({
+  'Ano': [2022] * 4,
+  'Unidade da Federação': ['Rio de Janeiro', 'Brasil'] * 2,
+  'Sexo': ['Feminino', 'Feminino', 'Masculino', 'Masculino'],
+  'Índice de Envelhecimento': [calcular_ie(mulher_etario_2022, 'Rio de Janeiro'),
+          calcular_ie(mulher_etario_2022, 'Brasil'),
+          calcular_ie(homem_etario_2022, 'Rio de Janeiro'),
+          calcular_ie(homem_etario_2022, 'Brasil')],
+          })
+
+pd.concat([velhice_total_2022, velhice_total_2010, velhice_total_2000], axis=0).style.hide()
 ```
 
 \vspace{12pt}
@@ -395,6 +480,14 @@ pd.concat([velhice_total_2010, velhice_total_2000], axis=0).style.hide()
 \vspace{12pt}
 
 \ \ \ O IE masculino no Rio de Janeiro (34,78) também era superior ao do Brasil (25,62), embora a diferença seja menor em comparação com o sexo feminino. Em 2010, essa diferença persistiu, com o Rio de Janeiro alcançando um IE masculino de 49,90, em comparação com 39,18 no Brasil. Assim como no caso das mulheres, a população masculina do Rio de Janeiro também envelheceu mais rapidamente do que a média nacional.
+
+\vspace{12pt}
+
+\ \ \ Considerando o Brasil em 2022, o IE para mulheres é 90,97, o que indica que há aproximadamente 91 mulheres idosas para cada 100 jovens. Este valor é mais baixo que o do Rio de Janeiro, mas ainda mostra um envelhecimento crescente. Para os homens, o índice é 69,51, também menor que no Rio de Janeiro, mas com um padrão semelhante de crescimento.
+
+\vspace{12pt}
+
+\ \ \ Agora para o Rio de Janeiro em 2022, o IE para mulheres é 125,84, indicando que, para cada 100 jovens com menos de 15 anos, há aproximadamente 126 mulheres com 60 anos ou mais. Isso sugere um envelhecimento populacional significativo no estado. Para os homens, o índice é de 86,76, ou seja, há cerca de 87 homens idosos para cada 100 jovens, o que também indica um aumento considerável no envelhecimento masculino.
 
 ## Idade Mediana
 
@@ -460,6 +553,10 @@ mulher_etario_2010.style.hide()
 
 \ \ \ A construção da pirâmide etária foi realizada tanto para o estado do Rio de Janeiro quanto para o Brasil, considerando as populações masculina e feminina. O gráfico abaixo mostra a pirâmide etária do estado do Rio de Janeiro. Em 2010, observa-se um aumento na parte superior da pirâmide em relação ao ano de 2000, indicando um envelhecimento da estrutura populacional, especialmente entre as mulheres, destacadas pela cor laranja. A comparação entre os gráficos de 2000 e 2010 revela poucas diferenças para o estado do Rio de Janeiro, sugerindo que a dinâmica populacional do estado seguiu um padrão muito semelhante ao observado no Brasil como um todo durante esse período.
 
+\vspace{12pt}
+
+\ \ \ Os últimos dois gráficos são as pirâmides etárias para o Brasil e estado do Rio de Janeiro, respectivamente. A partir dos gráficos, é possível perceber claramente o envelhecimento da população, o que só ficou mais claro em relação à pirâmide etária do Rio de Janeiro no ano de 2010. Esse envelhecimento é mais acentuado ainda em relação ao Rio de Janeiro, principalmente em relação ao sexo feminino. O envelhecimento do sexo feminino também é o mais acentuado em relação a pirâmide etária brasileira.
+
 ```{python}
 piram_muie_2000 = mulher_etario_2000\
   .rename(columns={'Frequência': 'Feminino'})\
@@ -505,7 +602,7 @@ piram_homi_2000_brasil = homem_etario_2000\
   .drop(columns=['Acumulado'])\
   .query('`Unidade da Federação` == "Brasil"')
 
-piram_2000_brasil = pd.concat([piram_muie_2000, piram_homi_2000.drop(columns=['Intervalo de Idade'])], axis=1)\
+piram_2000_brasil = pd.concat([piram_muie_2000_brasil, piram_homi_2000_brasil.drop(columns=['Intervalo de Idade'])], axis=1)\
   .rename(columns={'Intervalo de Idade': 'Idade', 'Unidade da Federação': 'UF'})\
   .drop(columns=['UF'])\
   .sort_values('Idade', ascending=False)
@@ -522,7 +619,7 @@ piram_homi_2010_brasil = homem_etario_2010\
   .drop(columns=['Acumulado'])\
   .query('`Unidade da Federação` == "Brasil"')
 
-piram_2010_brasil = pd.concat([piram_muie_2010, piram_homi_2010.drop(columns=['Intervalo de Idade'])], axis=1)\
+piram_2010_brasil = pd.concat([piram_muie_2010_brasil, piram_homi_2010_brasil.drop(columns=['Intervalo de Idade'])], axis=1)\
   .rename(columns={'Intervalo de Idade': 'Idade', 'Unidade da Federação': 'UF'})\
   .drop(columns=['UF'])\
   .sort_values('Idade', ascending=False)
@@ -636,6 +733,103 @@ plt.show()
 Gráfico de pirâmide da população no Brasil. O gráfico na figura à esquerda é a pirâmide etária no Brasil em 2000. O da direita é no ano de 2010.
 :::
 
+```{python}
+piram_muie_2022_brasil = mulher_etario_2022\
+  .rename(columns={'Frequência': 'Feminino'})\
+  .query('`Unidade da Federação` == "Brasil"')\
+  .rename(columns={'Intervalo de Idade': 'Idade'})\
+  .sort_values('Idade', ascending=False)\
+  .drop(columns=['Sexo'])\
+  .reset_index(drop=True)
+
+piram_homi_2022_brasil = homem_etario_2022\
+  .rename(columns={'Frequência': 'Masculino'})\
+  .query('`Unidade da Federação` == "Brasil"')\
+  .rename(columns={'Intervalo de Idade': 'Idade'})\
+  .sort_values('Idade', ascending=False)\
+  .drop(columns=['Sexo'])\
+  .reset_index(drop=True)
+
+piram_2022_brasil = piram_muie_2022_brasil\
+  .merge(piram_homi_2022_brasil, on=['Unidade da Federação', 'Idade'])
+```
+
+```{python}
+piram_muie_2022 = mulher_etario_2022\
+  .rename(columns={'Frequência': 'Feminino'})\
+  .query('`Unidade da Federação` == "Rio de Janeiro"')\
+  .rename(columns={'Intervalo de Idade': 'Idade'})\
+  .sort_values('Idade', ascending=False)\
+  .drop(columns=['Sexo'])\
+  .reset_index(drop=True)
+
+piram_homi_2022 = homem_etario_2022\
+  .rename(columns={'Frequência': 'Masculino'})\
+  .query('`Unidade da Federação` == "Rio de Janeiro"')\
+  .rename(columns={'Intervalo de Idade': 'Idade'})\
+  .sort_values('Idade', ascending=False)\
+  .drop(columns=['Sexo'])\
+  .reset_index(drop=True)
+
+piram_2022 = piram_muie_2022\
+  .merge(piram_homi_2022, on=['Unidade da Federação', 'Idade'])
+```
+
+::: {#fig-py2 layout-ncol=2}
+
+```{python}
+#| label: fig-pir2022_brasil
+
+barplot = sns.barplot(
+  data=piram_2022_brasil.assign(Masculino=lambda x: -x.Masculino),
+  x="Masculino",
+  y="Idade",
+  order=piram_2022_brasil['Idade'],
+  color="#049899",
+  lw=0
+  )
+
+barplot = sns.barplot(
+  x="Feminino",
+  y="Idade",
+  data=piram_2022_brasil.sort_values('Idade'),
+  order=piram_2022_brasil.Idade.sort_values(ascending=False).cat.categories,
+  color="#ED9502",
+  lw=0
+)
+plt.xlabel('População')
+plt.show()
+```
+
+
+```{python}
+#| label: fig-pir2022_rj
+
+barplot = sns.barplot(
+  data=piram_2022.assign(Masculino=lambda x: -x.Masculino),
+  x="Masculino",
+  y="Idade",
+  order=piram_2022['Idade'],
+  color="#049899",
+  lw=0
+  )
+
+barplot = sns.barplot(
+  x="Feminino",
+  y="Idade",
+  data=piram_2022.sort_values('Idade'),
+  order=piram_2022.Idade.sort_values(ascending=False).cat.categories,
+  color="#ED9502",
+  lw=0
+)
+plt.xlabel('População')
+plt.show()
+```
+
+Gráfico de pirâmide da população no Brasil e Rio de Janeiro. O gráfico na figura à esquerda é a pirâmide etária no Brasil em 2022. O da direita é do Rio de Janeiro, ano de 2022.
+:::
+
+
 \newpage
 
 ## Índice de Myers
@@ -681,6 +875,8 @@ tibble(
 ) |>
   knitr::kable()
 ```
+
+O Índice de Myers não foi calculado para o ano de 2022, pois o censo desse ano ainda não disponibilizou os dados de população por idades detalhadas.
 
 # Conclusão
 
