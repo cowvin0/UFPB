@@ -1,7 +1,7 @@
 ---
 format: pdf
 title: |
-  Comparação indicadores demográficos entre Brasil e Rio de Janeiro (censo de 2000 e 2010)
+  Comparando indicadores demográficos entre Brasil e Rio de Janeiro (censo de 2000, 2010 e 2022)
 number-sections: false
 indent: true
 whitespace: small
@@ -31,7 +31,6 @@ library(reticulate)
 ```
 
 ```{python}
-
 import pandas as pd
 import numpy as np
 import seaborn as sns
@@ -40,7 +39,7 @@ import matplotlib.pyplot as plt
 
 # Introdução
 
-\ \ \ Este estudo tem como objetivo realizar uma análise comparativa abrangente entre o estado do Rio de Janeiro e o Brasil, utilizando dados dos censos de 2000 e 2010. Através dessa comparação temporal, busca-se entender as mudanças e tendências demográficas que ocorreram ao longo da década, focando em indicadores chave como o Índice de Envelhecimento, a Idade Mediana, as Pirâmides Etárias, a Razão de Dependência e o Índice de Myers. Esses indicadores oferecem uma visão detalhada da estrutura etária e das transformações populacionais em ambas as regiões. Além disso, todas as análises serão realizadas separadamente para homens e mulheres, permitindo avaliar as dinâmicas demográficas de forma desagregada por sexo, o que enriquece a compreensão das particularidades de cada grupo e das implicações dessas mudanças para o planejamento socioeconômico e de políticas públicas.
+\ \ \ Este estudo tem como objetivo realizar uma análise comparativa abrangente entre o estado do Rio de Janeiro e o Brasil, utilizando dados dos censos de 2000, 2010, 2022. Através dessa comparação temporal, busca-se entender as mudanças e tendências demográficas que ocorreram ao longo da década, focando em indicadores chave como o Índice de Envelhecimento, a Idade Mediana, as Pirâmides Etárias, a Razão de Dependência e o Índice de Myers. Esses indicadores oferecem uma visão detalhada da estrutura etária e das transformações populacionais em ambas as regiões. Além disso, todas as análises serão realizadas separadamente para homens e mulheres, permitindo avaliar as dinâmicas demográficas de forma desagregada por sexo, o que enriquece a compreensão das particularidades de cada grupo e das implicações dessas mudanças para o planejamento socioeconômico e de políticas públicas.
 
 # Metodologia
 
@@ -50,7 +49,7 @@ import matplotlib.pyplot as plt
 
 ## Recursos computacionais
 
-\ \ \ As análises apresentadas neste estudo foram realizadas utilizando a linguagem de programação Python [@van1995python], com o auxílio da biblioteca Pandas [@reback2020pandas] para manipulação de dados e da biblioteca Matplotlib para visualização gráfica [@Hunter:2007]. Os documentos do relatório foram elaborados com o Quarto [@quarto], um sistema de escrita e publicação científica. Todo o código-fonte utilizado nas análises está disponível no GitHub [@github].
+\ \ \ As análises apresentadas neste estudo foram realizadas utilizando a linguagem de programação Python [@van1995python], com o auxílio da biblioteca Pandas [@reback2020pandas] para manipulação de dados e da biblioteca Matplotlib para visualização gráfica [@Hunter:2007]. Os documentos do relatório foram elaborados com o Quarto [@quarto], um sistema de escrita e publicação científica. Todo o código-fonte utilizado nas análises está disponível no GitHub [@github_rel2].
 
 ## Razão de Sexo
 
@@ -498,17 +497,17 @@ M_d = 20 + \left(\frac{3.450.167,5 - 2.493.359}{1.208.174}\right) \times 9
 $$
 
 $$
-M_d = 20,7919
+M_d = 27,12751
 $$
 
 \ \ \ Portanto, a idade mediana para os homens no estado do Rio de Janeiro em 2000 é de 20,7919 anos. Considerando o Brasil como um todo no ano de 2000, a população masculina total era de 83.576.015. Dividindo por 2, a mediana da população é 41.788.007,5, o que também coloca a mediana no intervalo de 20 a 29 anos, assim como no Rio de Janeiro. Calculando a mediana para a população masculina de 2000, temos:
 
 $$
-M_d = 20 + \left(\frac{41.788.007,5 -  34.526.048}{14.862.546}\right)
+M_d = 20 + \left(\frac{41.788.007,5 -  34.526.048}{14.862.546}\right) \times 9
 $$
 
 $$
-M_d = 20,4886
+M_d = 24,39747
 $$
 
 \ \ \ Portanto, a idade mediana da população masculina do estado do Rio de Janeiro é bastante semelhante à da população masculina geral no censo de 2000.
@@ -524,13 +523,13 @@ homem_etario_2000.style.hide()
 \ \ \ Na tabela, vemos que o total de mulheres no estado do Rio de Janeiro em 2000 era de 7.490.947. Dividindo esse total por 2, obtemos 3.745.473,5, o que indica que a idade mediana está no intervalo de 30 a 39 anos. Assim, o cálculo da idade mediana para as mulheres no estado do Rio de Janeiro é:
 
 $$
-M_d = 30 + \left(\frac{3.745.473,5 - 3.700.536}{1.257.964}\right) = 30.0357
+M_d = 30 + \left(\frac{3.745.473,5 - 3.700.536}{1.182.198}\right) \times 9 = 30.34211
 $$
 
 Seguindo de forma semelhante para o Brasil, temos que a idade mediana do Brasil para as mulheres com os dados de censo de 2000 é:
 
 $$
-M_d = 20 + \left(\frac{43.111.577,5 - 33.679.889}{8.920.685}\right) = 21,0572
+M_d = 20 + \left(\frac{43.111.577,5 - 33.679.889}{8.920.685}\right) \times 9 = 29,51555
 $$
 
 ```{python}
@@ -547,7 +546,32 @@ homem_etario_2010.style.hide()
 mulher_etario_2010.style.hide()
 ```
 
-\ \ \ A partir das tabelas, a idade mediana para os homens no estado do Rio de Janeiro em 2010 é de 30,1195 anos, enquanto para o Brasil é de 20,8646 anos. Para as mulheres no Rio de Janeiro, a idade mediana em 2010 é de 30,4032 anos, comparada a 30,027 anos para o Brasil. A população masculina do Rio de Janeiro apresentou um aumento na idade mediana, embora não tenha ocorrido uma mudança significativa em relação à média nacional. Por outro lado, para as mulheres, houve um aumento mais claro na idade mediana no Brasil.
+\ \ \ A partir das tabelas, a idade mediana para os homens no estado do Rio de Janeiro em 2010 é de 31,07598 anos, enquanto para o Brasil é de 27,78193 anos. Para as mulheres no Rio de Janeiro, a idade mediana em 2010 é de 33,62949 anos, comparada a 30,2485 anos para o Brasil. A população masculina do Rio de Janeiro apresentou um aumento na idade mediana bastante significativa. Para as mulheres, houve um aumento ainda maior na idade mediana no Brasil.
+
+\vspace{12pt}
+
+\ \ \ Agora seguinda da mesma forma para o cálcula da idade mediana por sexo para o estado do Rio de Janeiro e o Brasil como um todo no ano de 2022, temos as tabelas abaixo que representam o sexo masculino e feminino, respectivamente:
+
+
+```{python}
+homem_etario_2022\
+  .sort_values(['Unidade da Federação', 'Intervalo de Idade'])\
+  .assign(
+    Acumulado=lambda x: x.groupby('Unidade da Federação').Frequência.transform('cumsum')
+  )\
+  .style.hide()
+```
+
+```{python}
+mulher_etario_2022\
+  .sort_values(['Unidade da Federação', 'Intervalo de Idade'])\
+  .assign(
+    Acumulado=lambda x: x.groupby('Unidade da Federação').Frequência.transform('cumsum')
+  )\
+  .style.hide()
+```
+
+Em 2022, tanto para a população brasileira quanto para a do estado do Rio de Janeiro, foi possível observar um envelhecimento populacional ainda mais acentuado, especialmente entre as mulheres do Rio de Janeiro. A idade mediana dos homens no estado foi de 35,50 anos, enquanto para o Brasil foi de 33,57 anos. No caso das mulheres, o aumento da idade mediana foi ainda mais expressivo, chegando a 38,36 anos no Rio de Janeiro, em comparação a 35,53 anos para o Brasil.
 
 ## Pirâmide etária
 
@@ -880,7 +904,7 @@ O Índice de Myers não foi calculado para o ano de 2022, pois o censo desse ano
 
 # Conclusão
 
-\ \ \ A partir das comparações entre o estado do Rio de Janeiro e o Brasil, observou-se que o Rio de Janeiro segue um padrão muito similar ao do país em todos os indicadores utilizados. No que diz respeito às pirâmides etárias, as análises revelaram que, entre 2000 e 2010, as diferenças entre as duas regiões são praticamente inexistentes para ambos os sexos. O mesmo padrão foi observado em relação à idade mediana, com um aumento no envelhecimento da população em 2010, especialmente entre as mulheres. No entanto, o envelhecimento masculino foi evidente apenas no Rio de Janeiro, enquanto, no Brasil, esse índice permaneceu estável.
+ \ \ \ A partir das comparações entre o estado do Rio de Janeiro e o Brasil, observou-se que, de 2010 a 2022, o Rio de Janeiro seguiu um padrão muito similar ao do país em todos os indicadores analisados. No entanto, no censo de 2022, começa a se destacar com diferenças mais pronunciadas. Em relação às pirâmides etárias, as análises mostram que, entre 2000 e 2010, as diferenças entre as duas regiões não eram muito marcantes. Contudo, em 2022, a pirâmide etária do Rio de Janeiro apresenta um afunilamento mais visível, indicando um envelhecimento mais expressivo da população. O mesmo padrão se reflete na idade mediana, que já mostrava sinais de envelhecimento em 2010, especialmente entre as mulheres. Em 2022, esse envelhecimento se acentuou significativamente no Rio de Janeiro, especialmente entre as mulheres, com a idade mediana se aproximando de 39 anos.
 
 \vspace{12pt}
 
