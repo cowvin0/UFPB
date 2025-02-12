@@ -1,0 +1,75 @@
+---
+title: alsdkfjalskjdf
+---
+
+```{r}
+modeldata::pd_speech
+```
+
+
+```{r}
+library(modeldata)
+library(tidyverse)
+library(tidymodels)
+library(randomForest)
+
+data(pd_speech, package = "modeldata")
+
+pd_speech$class <- as.factor(pd_speech$class)
+
+set.seed(123)
+data_split <- initial_split(pd_speech, prop = 0.8, strata = class)
+train_data <- training(data_split)
+test_data <- testing(data_split)
+
+rf_model <- rand_forest(
+  mode = "classification",
+  trees = 500,
+  mtry = tune(),
+  min_n = tune()
+) %>%
+  set_engine("randomForest")
+
+cv_folds <- vfold_cv(train_data, v = 5, strata = class)
+
+rf_grid <- grid_regular(
+  mtry(range = c(5, 20)),
+  min_n(range = c(2, 10)),
+  levels = 5
+)
+
+rf_workflow <- workflow() %>%
+  add_model(rf_model) %>%
+  add_formula(class ~ .)
+
+set.seed(123)
+rf_tune_results <- tune_grid(
+  rf_workflow,
+  resamples = cv_folds,
+  grid = rf_grid,
+  metrics = metric_set(accuracy, roc_auc)
+)
+
+best_params <- rf_tune_results %>%
+  select_best(metric = "roc_auc")
+
+final_rf_model <- finalize_model(rf_model, best_params)
+
+final_rf_fit <- final_rf_model %>%
+  fit(class ~ ., data = train_data)
+
+predictions <- predict(final_rf_fit, test_data, type = "prob") %>%
+  bind_cols(predict(final_rf_fit, test_data)) %>%
+  bind_cols(test_data)
+
+accuracy_value <- predictions %>%
+  accuracy(truth = class, estimate = .pred_class)
+
+auc_value <- predictions %>%
+  roc_auc(truth = class, .pred_PD)
+
+print(best_params)
+print(accuracy_value)
+print(auc_value)
+print(brier_score)
+```
