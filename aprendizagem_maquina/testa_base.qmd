@@ -31,27 +31,27 @@ lang: pt-b
 
 - Essa base foi criada com base nos Pima, um grupo de nativos americanos que vivem em uma área que atualmente abrange o centro e o sul do estado do Arizona.
 
-- O objetivo é prever se um paciente tem diabetes com base em algumas características do paciente.
+- A base possui 768 observações e 9 colunas. O objetivo é classificar se um paciente tem diabetes com base em algumas características do paciente.
 
 ## Descrição das colunas
 
-- Pregnancies: Número de gestações da paciente.
+- `Pregnancies`: Número de gestações da paciente.
 
-- Glucose: Concentração de glicose plasmática em teste oral de tolerância à glicose.
+- `Glucose`: Concentração de glicose plasmática em teste oral de tolerância à glicose.
 
-- BloodPressure: Pressão arterial diastólica (mm Hg).
+- `BloodPressure`: Pressão arterial diastólica (mm Hg).
 
-- SkinThickness: Espessura da dobra cutânea do tríceps (mm).
+- `SkinThickness`: Espessura da dobra cutânea do tríceps (mm).
 
-- Insulin: Nível sérico de insulina (mu U/ml).
+- `Insulin`: Nível sérico de insulina (mu U/ml).
 
-- BMI: Índice de Massa Corporal (peso em kg / altura em m², IMC).
+- `BMI`: Índice de Massa Corporal (peso em kg / altura em m², IMC).
 
-- DiabetesPedigreeFunction: Histórico familiar de diabetes (mede a predisposição genética).
+- `DiabetesPedigreeFunction`: Histórico familiar de diabetes (mede a predisposição genética).
 
-- Age: Idade do paciente.
+- `Age`: Idade do paciente.
 
-- Outcome: 0 é não diabético e 1 é diabético.
+- `Outcome`: 0 é não diabético e 1 é diabético.
 
 # Análise exploratória de dados
 
@@ -62,10 +62,14 @@ lang: pt-b
 ### Código
 
 ```{r}
+library(dplyr)
+library(ggplot2)
 library(kknn)
 library(naivebayes)
+library(glmnet)
 library(discrim)
 library(tidyverse)
+library(purrr)
 library(tidymodels)
 library(visdat)
 library(corrplot)
@@ -262,6 +266,16 @@ data_cor |>
 
 A maioria das variáveis independentes não apresentam uma alta correlação. No entanto, os níveis de insulina tem uma alta correlação com a glicose, o IMC tem uma alta correlação com a espessura da dobra cutânea do tríceps e a idade tem uma alta correlação com a quantidade de gravidez.
 
+# Métricas utilizadas para avalização dos modelos
+
+## Métricas utilizadas para avalização dos modelos
+
+- ROC AUC
+
+- Acurácia
+
+- Brier Score: $BS = \frac{1}{N}\sum_{t=1}^N\left(f_t - o_t\right)^2$. $N$ é o tamanho da amostra classificada, $f_t$ é a probabilidade predita e $o_t$ é o valor observado.
+
 # Preparação dos dados
 
 ## Preparação dos dados
@@ -291,7 +305,7 @@ rec <- recipe(Outcome ~ ., data = train_data) |>
 
 - Foram criadas novas variáveis, idade por nível de insulina, glicose por predisposição de ter diabetes e o produto entre IMC e a espessura da dobra cutânea do tríceps.
 
-- Todas as variáveis foram transformadas com $\log \left(1 + x\right)$ e normalizadas.
+- Todas as variáveis foram transformadas com $\log \left(1 + x\right)$ e normalizadas. Além disso, foi utilizado o utilizado o `step_nzv`, que serve para remover variáveis com variância próximo de zero.
 
 ## Algoritmos e validação cruzada
 
@@ -321,9 +335,14 @@ qda_spec <- discrim_quad() |>
   set_engine("MASS") |>
   set_mode("classification")
 
-logistic_spec <- logistic_reg() |>
-  set_engine(engine = "glm") |>
-  set_mode("classification")
+logistic_spec <- logistic_reg(
+  engine = "glmnet",
+  penalty = tune(),
+  mixture = tune()
+)
+# logistic_spec <- logistic_reg() |>
+#   set_engine(engine = "glm", penalty = tune(), mixture = tune()) |>
+#   set_mode("classification")
 
 wf = workflow_set(
   preproc = list(rec),
@@ -350,7 +369,6 @@ grid_results = wf  |>
     grid = 50,
     control = grid_ctrl
   )
-
 ```
 
 ```{r eval=FALSE}
@@ -378,7 +396,7 @@ autoplot(grid_results, select_best = TRUE) +
 
 ## Algoritmos e validação cruzada
 
-- A validação cruzada foi realizada com 10 folds, estratificado pela variável dependente. Assim, foram otimizados os algoritmos a quantidade de vizinhos e a métrica de distância do algoritmo de k-vizinhos mais próximos. Foram otimizados, para o naive bayes, o parâmetro de suavidade para o limite da classe e a correção da suavidade chamado de Laplace.
+- A validação cruzada foi realizada com 10 folds, estratificado pela variável dependente e foi criado um grid de 50 combinações entre os hiperparâmetros. Assim, foram otimizados os algoritmos a quantidade de vizinhos e o tipo de distância utilizada. Foram otimizados, para o naive bayes, o parâmetro de suavidade para o limite da classe e a correção da suavidade chamado de Laplace. Foram também otimizados os hiperparâmetros de regularização da regressão logística.
 
 
 ## Resultado geral da otimização
@@ -395,68 +413,52 @@ autoplot(grid_results, metric = "roc_auc") +
 ### Código
 
 ```{r}
-results_acc = workflowsets::rank_results(grid_results,
-                                         select_best = TRUE,
-                                         rank_metric = "roc_auc") |>
+results_acc = workflowsets::rank_results(
+  grid_results,
+  select_best = TRUE,
+  rank_metric = "roc_auc"
+  ) |>
   filter(.metric == "roc_auc") |>
   dplyr::select(wflow_id, mean, std_err, model, rank)
 
-best_set_linear = grid_results %>%
-  extract_workflow_set_result("linear_fit") %>%
-  select_best(metric = "roc_auc")
+model_ids <- c("linear_fit", "knn_fit", "nbayes_fit", "lda_fit", "qda_fit")
 
-best_set_knn = grid_results %>%
-  extract_workflow_set_result("knn_fit") %>%
-  select_best(metric = "roc_auc")
+best_sets <- map(model_ids, ~ grid_results %>%
+                   extract_workflow_set_result(.x) %>%
+                   select_best(metric = "roc_auc"))
 
-best_set_nbayes = grid_results %>%
-  extract_workflow_set_result("nbayes_fit") %>%
-  select_best(metric = "roc_auc")
-
-best_set_lda = grid_results %>%
-  extract_workflow_set_result("lda_fit") %>%
-  select_best(metric = "roc_auc")
-
-best_set_qda = grid_results %>%
-  extract_workflow_set_result("qda_fit") %>%
-  select_best(metric = "roc_auc")
+names(best_sets) <- model_ids
 
 test_results <- function(rc_rslts, fit_obj, par_set, split_obj) {
-  res <- rc_rslts %>%
+  rc_rslts %>%
     extract_workflow(fit_obj) %>%
     finalize_workflow(par_set) %>%
-    last_fit(split = data_split,
-             metrics = metric_set(
-              accuracy,roc_auc,
-              brier_class))
-  res
+    last_fit(
+      split = split_obj,
+      metrics = metric_set(accuracy, roc_auc, brier_class
+      )
+    )
 }
 
-test_results_linear = test_results(grid_results, "linear_fit", best_set_linear,df_split)
-test_results_knn = test_results(grid_results, "knn_fit", best_set_knn,df_split)
-test_results_nbayes = test_results(grid_results, "nbayes_fit", best_set_nbayes,df_split)
-test_results_lda = test_results(grid_results, "lda_fit", best_set_lda,df_split)
-test_results_qda = test_results(grid_results, "qda_fit", best_set_qda,df_split)
+test_results_list <- map2(model_ids, best_sets,
+                          ~ test_results(grid_results, .x, .y, data_split))
 
-metrics_table = rbind(
-  collect_metrics(test_results_linear)$.estimate,
-  collect_metrics(test_results_knn)$.estimate,
-  collect_metrics(test_results_nbayes)$.estimate,
-  collect_metrics(test_results_lda)$.estimate,
-  collect_metrics(test_results_qda)$.estimate
-)
-metrics_table <- round(metrics_table, 4)
-rnms = c("logistic","k_nn","naive_bayes", "lin_discr", "quad_discr")
-metrics_table <- cbind(rnms, metrics_table)
-metrics_table <- metrics_table %>% as_tibble()
+metrics_table <- map_dfr(test_results_list, collect_metrics, .id = "model_id") |>
+  dplyr::select(model_id, .metric, .estimate) |>
+  pivot_wider(names_from = .metric, values_from = .estimate) |>
+  mutate(across(where(is.numeric), round, 4)) |>
+  mutate(Modelo = c("Logistic", "K-NN", "Naive Bayes", "LDA", "QDA")) |>
+  relocate(Modelo) |>
+  dplyr::select(-model_id)
 
-colnames(metrics_table) = c(
-  "Modelo", "accuracy", "roc_auc", "brier")
+colnames(metrics_table) <- c("Modelo", "Accuracy", "ROC AUC", "Brier Score")
+
+metrics_table <- as_tibble(metrics_table)
 ```
 
 ```{r eval=FALSE}
 metrics_table |>
-  arrange(desc(roc_auc)) |>
+  arrange(desc(`ROC AUC`)) |>
   knitr::kable()
 ```
 
@@ -464,7 +466,7 @@ metrics_table |>
 
 ```{r echo=FALSE}
 metrics_table |>
-  arrange(desc(roc_auc)) |>
+  arrange(desc(`ROC AUC`)) |>
   knitr::kable()
 ```
 
@@ -472,4 +474,33 @@ metrics_table |>
 
 ## Resultado na base de teste
 
-O modelo que obteve o melhor resultado foi o discriminante linear, com base na curva ROC e o brier. Na base de teste, ele obteve a curva ROC foi de 0,8652, o brier 0,1443 e obteve uma acurácia de 78,57%. O que pior perfomou foi o naive bayes, obtendo as piores estatísticas para todas as métricas consideradas.
+O modelo que obteve o melhor resultado foi o discriminante linear, com base na curva ROC e o brier. Na base de teste, ele obteve um ROC AUC de 0,8652, a métrica de brier 0,1443 e obteve uma acurácia de 78,57%. O que pior perfomou foi o Naive Bayes, obtendo as piores estatísticas para todas as métricas consideradas.
+
+## Hiperparâmetros selecionados dos modelos tunados
+
+```{r eval=TRUE}
+# Hiperparâmetros para o K-NN
+
+grid_results |>
+  extract_workflow_set_result("knn_fit") |>
+  select_by_one_std_err(desc(neighbors), metric = "roc_auc") |>
+  knitr::kable()
+
+# Hiperparâmetros do naive bayes
+
+grid_results |>
+  extract_workflow_set_result("nbayes_fit") |>
+  select_by_one_std_err(desc(Laplace), metric = "roc_auc") |>
+  knitr::kable()
+
+# Hiperparâmetros da regressão logística com penalização
+
+grid_results |>
+  extract_workflow_set_result("linear_fit") |>
+  select_by_one_std_err(desc(mixture), metric = "roc_auc") |>
+  knitr::kable()
+```
+
+# Referência
+
+Pima Indians Diabetes. Baixado através do Kaggle em: <https://www.kaggle.com/datasets/uciml/pima-indians-diabetes-database>.
