@@ -1,14 +1,16 @@
+dplyr
+ggplot2
 kknn
 naivebayes
+Matrix
+glmnet
 parsnip
 discrim
 tidyverse
-ggplot2
 tibble
 tidyr
 readr
 purrr
-dplyr
 stringr
 forcats
 lubridate
@@ -27,5 +29,3 @@ yardstick
 visdat
 corrplot
 MASS
-Matrix
-glmnet

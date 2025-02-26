@@ -340,9 +340,6 @@ logistic_spec <- logistic_reg(
   penalty = tune(),
   mixture = tune()
 )
-# logistic_spec <- logistic_reg() |>
-#   set_engine(engine = "glm", penalty = tune(), mixture = tune()) |>
-#   set_mode("classification")
 
 wf = workflow_set(
   preproc = list(rec),
