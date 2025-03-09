@@ -1,0 +1,100 @@
+---
+block-headings: false
+# cache: true
+template-partials:
+  - includes/before-body.tex
+toc-title: \centering Sumário \thispagestyle{empty}
+format:
+  pdf:
+    pdf-engine: lualatex
+    papersize: A4
+    keep-tex: true
+    geometry:
+      - left=3cm,
+      - right=2cm,
+      - top=3cm,
+      - bottom=2cm
+    # include-before-body:
+    #   text: |
+    #     \numberwithin{algorithm}{chapter}
+    #     \algrenewcommand{\algorithmiccomment}[1]{\hskip3em$\rightarrow$ #1}
+    code-block-bg: "#F0F2F4"
+    code-block-background: true
+# crossref:
+#   custom:
+#     - kind: float
+#       key: algo
+#       reference-prefix: "Algoritmo"
+#       caption-prefix: "Algoritmo"
+#       latex-env: algo
+#       latex-list-of-description: Algoritmo
+# filters:
+#   - pseudocode
+# pseudocode:
+#   caption-prefix: "Algoritmo"
+#   reference-prefix: "Algoritmo"
+#   caption-number: true
+number-sections: true
+indent: true
+documentclass: scrreprt
+whitespace: small
+lang: pt-br
+bibliography: includes/bib.bib
+csl: includes/ufpe-abnt.csl
+toc: true
+title: Primeiro relatório da disciplina de demografia II - Roraima
+author: Gabriel de Jesus Pereira
+date: today
+date-format: "MMMM, YYYY"
+highlight-style: github
+fontsize: 12pt
+interlinespace: 1.5pt
+fig-cap-location: bottom
+warning: false
+echo: false
+include-in-header:
+  - includes/pdf_config.sty
+---
+
+
+```{python}
+import pandas  as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+```
+
+
+```{python}
+df_nasc = pd.DataFrame(
+    {
+        "Ano": [2010, 2020],
+        "Masculino": [4990, 7075],
+        "Feminino": [4748, 6684]
+    }
+)
+
+df_obito = pd.DataFrame(
+    {
+        "Ano": [2020, 2010],
+        "Óbito": [3580, 1640]
+    }
+)
+
+df_pop = pd.DataFrame(
+    {
+        "Ano": [2020, 2010],
+        "População": [563_000, 450479]
+    }
+)
+```
+
+
+## Introdução
+
+
+## Metodologia
+
+## Resultados
+
+## Conclusão

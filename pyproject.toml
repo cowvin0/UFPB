@@ -10,9 +10,16 @@ requires-python = ">=3.10"
 dependencies = [
     "networkx (>=3.4.2,<4.0.0)",
     "matplotlib (>=3.10.0,<4.0.0)",
-    "scipy (>=1.15.1,<2.0.0)"
+    "scipy (>=1.15.1,<2.0.0)",
+    "pandas (>=2.2.3,<3.0.0)",
+    "seaborn (>=0.13.2,<0.14.0)",
+    "pyyaml (>=6.0.2,<7.0.0)",
+    "nbformat (>=5.10.4,<6.0.0)",
+    "nbclient (>=0.10.2,<0.11.0)"
 ]
 
+[tool.poetry]
+package-mode = false
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
@@ -20,4 +27,3 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.29.5"
-
