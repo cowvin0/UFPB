@@ -146,7 +146,7 @@
 \@ifundefined{codebgcolor}{\definecolor{codebgcolor}{HTML}{F0F2F4}}{}
 \makeatother
 \makeatletter
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[enhanced, sharp corners, boxrule=0pt, breakable, colback={codebgcolor}, frame hidden]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, enhanced, colback={codebgcolor}, boxrule=0pt, breakable, sharp corners]}{\end{tcolorbox}}\fi
 \makeatother
 
 \ifLuaTeX
@@ -214,7 +214,72 @@ Roraima \par}
 \tableofcontents
 }
 
+\section{Introdução}\label{introduuxe7uxe3o}
 
+\section{Metodologia}\label{metodologia}
+
+\section{Resultados}\label{resultados}
+
+\subsection{Razão de Sexo dos Nascimentos
+(RSN)}\label{razuxe3o-de-sexo-dos-nascimentos-rsn}
+
+\begin{longtable}[]{@{}llllllllll@{}}
+\toprule\noalign{}
+& Ano & Masculino & Feminino & RSN & total & intervalo\_inferior &
+intervalo\_superior & a & b \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 2010 & 4990 & 4748 & 105.096883 & 9738 & 0.507360 & 0.517491 &
+102.988106 & 107.249934 \\
+1 & 2020 & 7075 & 6684 & 105.849791 & 13759 & 0.509948 & 0.518470 &
+104.059970 & 107.671286 \\
+\end{longtable}
+
+\subsection{Método que utiliza a equação básica do crescimento
+populacional}\label{muxe9todo-que-utiliza-a-equauxe7uxe3o-buxe1sica-do-crescimento-populacional}
+
+\begin{longtable}[]{@{}lllllll@{}}
+\toprule\noalign{}
+& Ano & Óbito & População & nasc\_total & nascimento\_esperado &
+cobertura\_estimada \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 2020 & 3580 & 563000 & 13759 & 114461 & 3.512987 \\
+1 & 2010 & 1640 & 450479 & 9738 & 114461 & 3.512987 \\
+\end{longtable}
+
+\subsection{Método que faz uso das taxas de
+fecundidade}\label{muxe9todo-que-faz-uso-das-taxas-de-fecundidade}
+
+\begin{longtable}[]{@{}llllllllll@{}}
+\toprule\noalign{}
+& Idade & Mulheres\_2000 & Mulheres\_2010 & TFE\_2000 & TFE\_2010 &
+estimado\_2000 & estimado\_2010 & cobertura\_2000 & cobertura\_2010 \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 15 a 19 anos & 20760 & 25260 & 0.15877 & 0.11063 & 10897.40973 &
+11088.0132 & 0.894157 & 0.878246 \\
+1 & 20 a 24 anos & 16294 & 21788 & 0.21383 & 0.15045 & 10897.40973 &
+11088.0132 & 0.894157 & 0.878246 \\
+2 & 25 a 29 anos & 13430 & 21792 & 0.16728 & 0.12102 & 10897.40973 &
+11088.0132 & 0.894157 & 0.878246 \\
+3 & 30 a 34 anos & 11606 & 18669 & 0.09991 & 0.08127 & 10897.40973 &
+11088.0132 & 0.894157 & 0.878246 \\
+4 & 35 a 39 anos & 10175 & 14839 & 0.05469 & 0.04471 & 10897.40973 &
+11088.0132 & 0.894157 & 0.878246 \\
+5 & 40 a 44 anos & 7926 & 12269 & 0.01800 & 0.01468 & 10897.40973 &
+11088.0132 & 0.894157 & 0.878246 \\
+6 & 45 a 49 anos & 5710 & 10379 & 0.00209 & 0.00168 & 10897.40973 &
+11088.0132 & 0.894157 & 0.878246 \\
+\end{longtable}
+
+\section{Conclusão}\label{conclusuxe3o}
 
 
 

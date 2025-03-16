@@ -14,26 +14,8 @@ format:
       - right=2cm,
       - top=3cm,
       - bottom=2cm
-    # include-before-body:
-    #   text: |
-    #     \numberwithin{algorithm}{chapter}
-    #     \algrenewcommand{\algorithmiccomment}[1]{\hskip3em$\rightarrow$ #1}
     code-block-bg: "#F0F2F4"
     code-block-background: true
-# crossref:
-#   custom:
-#     - kind: float
-#       key: algo
-#       reference-prefix: "Algoritmo"
-#       caption-prefix: "Algoritmo"
-#       latex-env: algo
-#       latex-list-of-description: Algoritmo
-# filters:
-#   - pseudocode
-# pseudocode:
-#   caption-prefix: "Algoritmo"
-#   reference-prefix: "Algoritmo"
-#   caption-number: true
 number-sections: true
 indent: true
 documentclass: scrreprt
@@ -58,6 +40,7 @@ include-in-header:
 
 
 ```{python}
+from scipy import stats
 import pandas  as pd
 import numpy as np
 import seaborn as sns
@@ -66,6 +49,48 @@ import matplotlib.pyplot as plt
 
 
 ```{python}
+df_mulher = pd.read_csv(
+	"data/mulher_idade_2000_2010.csv",
+  	delimiter="\t"
+  	)\
+  	.rename(
+  	  	columns={
+  	    	"2000": "Mulheres_2000",
+			"2010": "Mulheres_2010"
+		}
+  	)
+
+df_tfe = pd.read_csv(
+	"data/tfe_roraima_2000_2010.csv",
+	delimiter="\t"
+	)\
+  	.set_index("Ano")\
+  	.stack()\
+  	.reset_index(name="TFE")\
+  	.set_index(["Ano", "level_1"])\
+  	.unstack(0)\
+  	.reset_index()\
+  	.droplevel(0, axis=1)\
+  	.rename(
+		columns={
+			"": "Idade",
+			2000: "TFE_2000",
+			2010: "TFE_2010"
+  	    }
+  	)
+
+df_mulher_tfe = df_mulher\
+  	.merge(df_tfe, on="Idade")\
+  	.assign(
+  	  	estimado_2000=lambda x: (x.Mulheres_2000 * x.TFE_2000).sum(),
+  	  	estimado_2010=lambda x: (x.Mulheres_2010 * x.TFE_2010).sum(),
+  	  	cobertura_2000=lambda x: 9744 / x.estimado_2000,
+  	  	cobertura_2010=lambda x: 9738 / x.estimado_2010
+  	)
+
+df_tfe.columns.name = None
+
+
 df_nasc = pd.DataFrame(
     {
         "Ano": [2010, 2020],
@@ -87,6 +112,19 @@ df_pop = pd.DataFrame(
         "População": [563_000, 450479]
     }
 )
+
+df_obito_pop = df_obito\
+  	.merge(
+		df_pop,
+  	  	on="Ano",
+  	  	how="left"
+  	)\
+  	.merge(
+  	  	df_nasc\
+			.assign(nasc_total=lambda x: x.Masculino + x.Feminino)\
+  	  	  	.drop(columns=["Masculino", "Feminino"]),
+  	  	on="Ano"
+  	)
 ```
 
 
@@ -95,6 +133,202 @@ df_pop = pd.DataFrame(
 
 ## Metodologia
 
-## Resultados
+## Resultado da estimação de cobertura de nascimentos
 
-## Conclusão
+### Razão de Sexo dos Nascimentos (RSN)
+
+```{python}
+df_nasc\
+	.assign(
+		RSN=lambda x: x.Masculino / x.Feminino * 100,
+  	  	total=lambda x: x.Masculino + x.Feminino,
+  	  	intervalo_inferior=lambda x: x.Masculino / x.total - np.sqrt((x.Masculino / x.total * x.Feminino / x.total) / x.total),
+  	  	intervalo_superior=lambda x: x.Masculino / x.total + np.sqrt((x.Masculino / x.total * x.Feminino / x.total) / x.total),
+  	  	a=lambda x: x.intervalo_inferior / (1 - x.intervalo_inferior) * 100,
+  	  	b=lambda x: x.intervalo_superior / (1 - x.intervalo_superior) * 100,
+  	)
+```
+
+### Método que utiliza a equação básica do crescimento populacional
+
+```{python}
+df_obito_pop\
+	.assign(
+		nascimento_esperado=lambda x: x["População"].iloc[0] - x["População"].iloc[1] + x["Óbito"].iloc[0] + x["Óbito"].iloc[1],
+    	cobertura_estimada=lambda x: (x.nasc_total.iloc[0] + x.nasc_total.iloc[1]) / x.nascimento_esperado * 100
+  	)
+```
+
+### Método que faz uso das taxas de fecundidade
+
+```{python}
+df_mulher_tfe
+```
+
+### Método que faz uso dos dados do IBGE e SINASC
+
+```{python}
+pd.DataFrame(
+	{
+		"Ano": [2020, 2010],
+    	"IBGE": [13991, 10686],
+    	"SINASC": [13760, 9738],
+  	}
+).assign(Cobertura=lambda x: x.SINASC / x.IBGE)
+```
+
+## Resultados da estimação de cobertura de óbitos
+
+
+### Método que utiliza a equação básica do cresimento populacional
+
+```{python}
+df_cobert_obito = pd.DataFrame(
+	{
+		"Ano": [2010, 2000],
+		"População": [450_479, 324_397],
+		"Nascidos": [9738, 9744],
+	}
+).assign(obito_estimado=lambda x: (x.Nascidos.loc[0] + x.Nascidos.loc[1]) - x.População.loc[0] + x.População.loc[1])
+```
+
+## Método da equação do balanço de crescimento de Brass
+
+
+```{python}
+df_brass = pd.read_csv("data/brass_2010.csv")\
+	.assign(
+		N_a_homens=lambda x: np.cumsum(list(reversed(x.Homens)))[::-1],
+		N_a_mulheres=lambda x: np.cumsum(list(reversed(x.Mulheres)))[::-1],
+	)
+df_brass_2022 = pd.read_csv("data/brass_2022.csv")\
+	.assign(
+		N_a_homens=lambda x: np.cumsum(list(reversed(x.Homens)))[::-1],
+		N_a_mulheres=lambda x: np.cumsum(list(reversed(x.Mulheres)))[::-1],
+	)
+df_brass = pd.concat([df_brass, df_brass_2022])
+
+df_brass_obt = pd.read_csv("data/obitos_2010.csv").assign(
+	Ano=2010,
+	D_a_homens=lambda x: np.cumsum(list(reversed(x.Homens)))[::-1],
+	D_a_mulheres=lambda x: np.cumsum(list(reversed(x.Mulheres)))[::-1],
+	)
+df_brass_obt_2022 = pd.read_csv("data/obitos_2022.csv")\
+	.assign(
+		Ano=2022,
+		D_a_homens=lambda x: np.cumsum(list(reversed(x.Homens)))[::-1],
+		D_a_mulheres=lambda x: np.cumsum(list(reversed(x.Mulheres)))[::-1],
+	)
+df_brass_obt = pd.concat([df_brass_obt, df_brass_obt_2022])\
+	.rename(columns={"Homens": "Homens_obitos", "Mulheres": "Mulheres_obitos"})
+
+df_brass = df_brass\
+	.merge(df_brass_obt, on=["Faixa etária", "Ano"])\
+	.assign(
+		y_homens=lambda x: x.Homens_a / x.N_a_homens,
+		y_mulheres=lambda x: x.Mulheres_a / x.N_a_mulheres,
+		x_homens=lambda x: x.D_a_homens / x.N_a_homens,
+		x_mulheres=lambda x: x.D_a_mulheres / x.N_a_mulheres,
+	)
+```
+
+
+```{python}
+def fit_regression(df, year, gender):
+    df_filtered = df[df["Ano"] == year].dropna(subset=[f"x_{gender}", f"y_{gender}"])
+    x = df_filtered[f"x_{gender}"].values
+    y = df_filtered[f"y_{gender}"].values
+
+    slope, intercept, r_value, p_value, std_err = stats.linregress(x, y)
+    return slope, intercept, r_value**2
+
+for year in [2010, 2022]:
+    for gender in ["homens", "mulheres"]:
+        try:
+            slope, intercept, r2 = fit_regression(df_brass, year, gender)
+            print(f"Year: {year}, Gender: {gender}, Slope: {slope:.4f}, Intercept: {intercept:.4f}, R²: {r2:.4f}")
+        except Exception as e:
+            print(f"Error for {year} - {gender}: {e}")
+
+```
+
+### Método de Leadermann
+
+
+```{python}
+df_leadermann_homens = pd.read_csv("data/leadermann_homens.csv", delimiter=";")\
+	.rename(columns={"Capítulo CID-10": "Causas"})\
+	.astype(
+		{
+			"14001 BOA VISTA": float,
+			"14002 NORDESTE DE RORAIMA": float,
+			"14003 CARACARAI": float,
+			"14004 SUDESTE DE RORAIMA": float
+		}
+	)
+```
+
+
+```{python}
+X_values = df_leadermann_homens.query("Causas == 'Mal definidas'").values.flatten()[1:].astype(float)
+regions = df_leadermann_homens.columns[1:].tolist()
+
+results = []
+
+for cause in df_leadermann_homens.query("Causas != 'Mal definidas'").Causas.unique().tolist():
+    Y = df_leadermann_homens.query("Causas == @cause").values.flatten()[1:].astype(float)
+
+    slope, intercept, r_value, p_value, std_err = linregress(X_values, Y)
+    predicted_Y = slope * X_values + intercept
+
+    results.append(pd.DataFrame({
+        'Causas': [cause] * len(regions),
+        'Region': regions,
+        'Observed': Y,
+        'Predicted': predicted_Y,
+        'Slope': [slope] * len(regions),
+        'Intercept': [intercept] * len(regions)
+    }))
+
+df_results = pd.concat(results, ignore_index=True)
+```
+
+
+
+```{python}
+df_leadermann_mulheres = pd.read_csv("data/leadermann_mulheres.csv", delimiter=";")\
+	.replace("-", "0")\
+	.astype(
+		{
+			"14001 BOA VISTA": float,
+			"14002 NORDESTE DE RORAIMA": float,
+			"14003 CARACARAI": float,
+			"14004 SUDESTE DE RORAIMA": float
+		}
+	)
+```
+
+
+```{python}
+X_values = df_leadermann_mulheres.query("Causas == 'Mal definidas'").values.flatten()[1:].astype(float)
+regions = df_leadermann_mulheres.columns[1:].tolist()
+
+results = []
+
+for cause in df_leadermann_mulheres.query("Causas != 'Mal definidas'").Causas.unique().tolist():
+    Y = df_leadermann_mulheres.query("Causas == @cause").values.flatten()[1:].astype(float)
+
+    slope, intercept, r_value, p_value, std_err = linregress(X_values, Y)
+    predicted_Y = slope * X_values + intercept
+
+    results.append(pd.DataFrame({
+        'Causas': [cause] * len(regions),
+        'Region': regions,
+        'Observed': Y,
+        'Predicted': predicted_Y,
+        'Slope': [slope] * len(regions),
+        'Intercept': [intercept] * len(regions)
+    }))
+
+df_results_mulheres = pd.concat(results, ignore_index=True)
+```
