@@ -39,6 +39,24 @@ include-in-header:
 ---
 
 
+\pagenumbering{arabic}
+\pagestyle{fancy}
+
+\fancyhf{}
+\fancyhead[RO, LE]{\thepage}
+\fancyhead[LO]{\leftmark}
+\fancyhead[RE]{\thepage}
+
+\fancypagestyle{plain}{
+  \pagestyle{fancy}
+  \fancyhf{}
+  \fancyhead[RO, LE]{\thepage}
+  \fancyhead[RE]{\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+}
+
+
+
 ```{python}
 from scipy import stats
 import pandas  as pd
@@ -128,26 +146,188 @@ df_obito_pop = df_obito\
 ```
 
 
-## Introdução
+# Introdução
 
 
-## Metodologia
+# Metodologia
+
+## Métodos para estimação da cobertura de nascidos vivos
+
+\ \ \ A estimação do número de nascidos vivos é essencial para a análise demográfica e epidemiológica, especialmente em contextos onde há subnotificação ou inconsistências nos registros civis. Diversos métodos podem ser utilizados para avaliar a cobertura dos nascimentos, como comparações entre fontes de dados, modelagem estatística e ajustes baseados em fatores demográficos. Nesta seção, serão apresentadas as principais técnicas utilizadas para essa estimação.
+
+### Razão de sexo dos nascimentos (RSN)
+
+\ \ \ A Razão de Sexo dos Nascimentos (RSN) é um indicador que expressa a relação entre o número de nascidos vivos do sexo masculino e feminino em uma população. Geralmente, espera-se que essa razão esteja em torno de 105, indicando um leve predomínio de nascimentos masculinos sobre os femininos.
+
+\vspace{12pt}
+
+O cálculo da RSN é feito pela seguinte fórmula:
+
+$$
+RSN = \frac{N_M}{N_F} \times 100 \text{,}
+$$
+em que $N_M$ representa o número de nascidos vivos do sexo masculino e $N_F$ do sexo feminino.
+
+\vspace{12pt}
+
+Valores significativamente diferentes do esperado podem indicar problemas na qualidade dos dados, como erros de registro ou subnotificação diferenciada por sexo.
+
+\vspace{12pt}
+
+Os limites do intervalo de confiança a $95\%$ podem ser calculados a partir da seguinte expressão:
+
+$$
+\left[x, y\right] = p_{M} \pm 1,96 \sqrt{\frac{p_{M}p_{F}}{n}} \text{,}
+$$
+em que $n$ é o número total de nascimentos, $p_{M}$ é a proporção de nascidos vivos do sexo masculino e $p_{F}$ do sexo feminino.
+
+\vspace{12pt}
+
+Por fim, para verificar se a qualidade de registro de nascimentos é boa, basta verificar se o resultado das relações de sexo está incluso no intervalo $\left[a, b\right]$:
+
+$$
+a = \frac{x}{1 - x} \times 100 \text{ e } b = \frac{y}{1-y}\times 100\text{.}
+$$
+
+### Método que utiliza a equação básica do crescimento populacional
+
+O método que utiliza a equação básica do crescimento populacional é bastante simples, principalmente por assumir que a popuação é fechada. Dessa forma, a estimativa de nascidos vivos será expresso pela equação:
+
+$$
+N_t = P_n - P_{0} + O_t
+$$
+em que $P_n$ são os nascidos vivos no instante $n$, P_{0} no instante inicial  e $O_t$ os óbitos no período de estudo.
+
+\vspace{12pt}
+
+A partir dessa expressão, estima-se a cobertura dos nascimentos da seguinte forma:
+
+$$
+\text{Cobertura dos nascimentos} = \frac{\text{Nascimentos registrados}\left(t\right)}{\text{Nascimentos esperados}\left(t\right)} \times 100
+$$
+
+### Método que faz uso das taxas de fecundidade
+
+Neste método serão utilizadas as taxas de fecundidade do estado de Roraima. Para estimar a cobertura nesse método, será utilizada a seguinte expressão:
+
+$$
+C_i = \frac{NV_{obs}\left(i\right)}{NV_{est}\left(i\right)} \text{,}
+$$
+em que $NV_{obs}\left(i\right)$ é o total de nascidos vivos observados na região $i$ e $NV_{est}\left(i\right)$ é o total de nascidos vivos estimados na região $i$.
+
+\vspace{12pt}
+
+Para encontrar a estimativa dos nascidos vivos $NV_{est}\left(i\right)$, será utilizado a taxa de fecundidade do estado de Roraima, que pode ser encontrado a partir da seguinte expressão:
+
+$$
+NV_{est} = \sum^{49}_{j=15} TEF_{j}\left(i\right) \times TM_{j} \text{,}
+$$
+em que $TEF_{j}\left(i\right)$ é a taxa específica de fecundidade na faixa etária quinquenal $j$ da região $i$ e $TM_j$ é o total de mulheres na faixa etária quinquenal $j$ da região $j$.
+
+### Método que faz uso da informação do SINASC e do IBGE
+
+Aqui são utilizadas as estimativas de nascidos vivos fornecidos pelo IBGE e os nascidos vivos fornecidos pelo SINASC. Por fim, para estimar a cobertura, basta calcular utilizar a seguinte expressão:
+
+$$
+C_i = \frac{NV_{obs}\left(i\right)}{NV_{est}\left(i\right)}
+$$
+
+## Métodos para estimação da cobertura de óbito
+
+A cobertura dos óbitos refere-se à proporção de mortes registradas em relação ao total de óbitos ocorridos em uma população. Em contextos onde há subnotificação ou falhas nos sistemas de informação, diferentes métodos são empregados para estimar a verdadeira magnitude da mortalidade.
+
+\vspace{12pt}
+
+Entre as principais abordagens utilizadas, destacam-se os métodos demográficos indiretos, como o método de Brass, que utiliza informações da estrutura etária da população e da mortalidade infantil para estimar a cobertura. Além disso, comparações entre diferentes bases de dados, modelagem estatística e técnicas de reconciliação de fontes são amplamente empregadas para corrigir deficiências nos registros.
+
+\vspace{12pt}
+
+Esses métodos são fundamentais para garantir a confiabilidade dos indicadores de mortalidade e subsidiar políticas públicas voltadas à saúde e ao planejamento populacional.
+
+### Método que faz uso da equação básica do crescimento populacional
+
+De forma semelhante ao método de cobertura de nascidos vivos que faz uso da equação básica do crescimento populacional, para estimar os óbitos, basta isolar a sua componente:
+
+$$
+O_t = N_t + P_{0} - P_n
+$$
+
+Por fim, para estimar a cobertura de óbitos, utiliza-se a seguinte expressão:
+
+$$
+\text{Cobertura dos óbitos} = \frac{\text{Óbitos registrados}\left(t\right)}{\text{Óbitos esperados}\left(t\right)} \times 100
+$$
+
+### Método da Equação do Balanço de Crescimento de Brass
+
+Esse método avalia a cobertura de óbitos da população a partir dos cinco anos de idade. Para fazer sua aplicação, é necessário considerar a população estável, a cobertura de óbitos é constante por idade a partir dos 5 anos e as distribuições por idade da população não devem conter erros de declaração.
+
+\vspace{12pt}
+
+Nesse método é utilizado uma regressão linear, a partir da qual será estimada o fator de correção dos óbitos $\left(k\right)$, a taxa de crescimento da população estável $\left(r\right)$. Dessa forma, essa regressão linear terá a seguinte relação:
+
+$$
+\frac{N\left(a\right)}{N\left(a+\right)} = r + k\frac{D^{'}\left(a+\right)}{N\left(a+\right)}\text{,}
+$$
+em que $N\left(a\right)$ é a população exata na idade $a$, $N\left(a+\right)$ o somatório de pessoas que estão na idade exata até um limite de idades $w$ qualquer e $D^{'}\left(a+\right)$ são os óbitos registrados e afetados por erros na idade $a+$.
+
+\vspace{12pt}
+
+Após o ajuste da regressão linear, a cobertura dos óbitos será dada por:
+
+$$
+C = \frac{1}{k}\text{,}
+$$
+em que se o fator de correção for $k > 1$ implica em sub-registro e $k<1$ implica em sobre-registro.
+
+### Método de Leadermann para redistribuição
+
+O método de Leadermann é uma abordagem utilizada para redistribuir óbitos classificados com causas mal definidas entre categorias específicas de mortalidade. Essa técnica busca minimizar o impacto da subnotificação e da imprecisão nos registros, permitindo uma estimativa mais fiel da estrutura de mortalidade de uma população.
+
+\vspace{12pt}
+
+A redistribuição é feita com base na suposição de que a proporção de óbitos por causas definidas segue um padrão semelhante ao dos óbitos mal definidosa. Assim, os óbitos mal classificados são redistribuídos proporcionalmente entre as categorias bem definidas, considerando a estrutura observada nos registros mais completos. Isso é feito utilizando-se uma regressão linear
+
+\vspace{12pt}
+
+A equação de redistribuição dos óbitos por causas mal definidas para uma determinada área é dada por:
+
+$$
+O_j = Y_j - X \beta_{j}
+$$
+em que $O_j$ são os óbitos redistribuídos da causa $j$, $Y_j$ os óbitos observados da causa $j$, $\beta_j$ é o fator de redistribuição da causa $j$ e $X$ são os óbitos da causa mal definida.
+
+# Resultado
 
 ## Resultado da estimação de cobertura de nascimentos
 
+Nesta seção serão apresentadas cada uma das técnicas utilizadas para analisar e estimar a cobertura dos nascidos vivos. O primeiro deles será o RSN, depois o método de estimação utilizando a equação do crescimento populacional, o que o utiliza as taxas de fecundidade e por último o que utiliza as estimativas do IBGE e os dados do SINASC.
+
 ### Razão de Sexo dos Nascimentos (RSN)
 
+A abaixo apresenta os valores da Razão de Sexo dos Nascimentos (RSN) para os anos de 2010 e 2020. Esse indicador expressa a relação entre os nascidos vivos do sexo masculino e feminino, sendo esperado um valor em torno de 105 em condições normais.
+
 ```{python}
+#| tbl-cap: Resultados da Razão de sexo dos nascimentos para o ano de 2010 e 2020
+
 df_nasc\
 	.assign(
-		RSN=lambda x: x.Masculino / x.Feminino * 100,
+		RSN=lambda x: (x.Masculino / x.Feminino * 100).round(4),
   	  	total=lambda x: x.Masculino + x.Feminino,
-  	  	intervalo_inferior=lambda x: x.Masculino / x.total - np.sqrt((x.Masculino / x.total * x.Feminino / x.total) / x.total),
-  	  	intervalo_superior=lambda x: x.Masculino / x.total + np.sqrt((x.Masculino / x.total * x.Feminino / x.total) / x.total),
-  	  	a=lambda x: x.intervalo_inferior / (1 - x.intervalo_inferior) * 100,
-  	  	b=lambda x: x.intervalo_superior / (1 - x.intervalo_superior) * 100,
-  	)
+  	  	x=lambda x: x.Masculino / x.total - np.sqrt((x.Masculino / x.total * x.Feminino / x.total) / x.total).round(4),
+  	  	y=lambda x: x.Masculino / x.total + np.sqrt((x.Masculino / x.total * x.Feminino / x.total) / x.total).round(4),
+  	  	a=lambda x: (x.x / (1 - x.x) * 100).round(4),
+  	  	b=lambda x: (x.y / (1 - x.y) * 100).round(4),
+  	).style\
+	.set_table_styles([
+        {"selector": "th", "props": [("text-align", "center")]},
+        {"selector": "td", "props": [("text-align", "center")]}
+    ])\
+	.format("{:.3f}", subset=["RSN", "x", "y", "a", "b"]).hide()
 ```
+
+Em 2010, a RSN foi de 105,097, indicando que para cada 100 meninas nasceram aproximadamente 105 meninos. Já em 2020, esse valor aumentou para 105,850, sugerindo um leve crescimento na proporção de nascimentos masculinos em relação aos femininos. Além disso, ao observar o intervalo $\left[a, b\right]$, tem-se que há uma boa qualidade no registro dos dados, pois os valores estimados da $RSN$ estão contidos dentro do intervalo.
+
 
 ### Método que utiliza a equação básica do crescimento populacional
 
@@ -156,14 +336,37 @@ df_obito_pop\
 	.assign(
 		nascimento_esperado=lambda x: x["População"].iloc[0] - x["População"].iloc[1] + x["Óbito"].iloc[0] + x["Óbito"].iloc[1],
     	cobertura_estimada=lambda x: (x.nasc_total.iloc[0] + x.nasc_total.iloc[1]) / x.nascimento_esperado * 100
-  	)
+  	).style\
+	.set_table_styles([
+        {"selector": "th", "props": [("text-align", "center")]},
+        {"selector": "td", "props": [("text-align", "center")]}
+	])\
+	.format("{:.3f}", subset=["nascimento_esperado", "cobertura_estimada"]).hide()
 ```
+
+\blandscape
 
 ### Método que faz uso das taxas de fecundidade
 
+
 ```{python}
-df_mulher_tfe
+df_mulher_tfe\
+	.rename(
+		columns={
+			"estimado_2000": "NV_2000",
+			"estimado_2010": "NV_2010",
+			"cobertura_2000": "C_2000",
+			"cobertura_2010": "C_2010",
+		}
+	).style\
+	.set_table_styles([
+        {"selector": "th", "props": [("text-align", "center")]},
+        {"selector": "td", "props": [("text-align", "center")]}
+	])\
+	.format("{:.3f}", subset=["TFE_2000", "TFE_2010", "NV_2000", "NV_2010", "C_2000", "C_2010"]).hide()
 ```
+
+\elandscape
 
 ### Método que faz uso dos dados do IBGE e SINASC
 
@@ -192,7 +395,7 @@ df_cobert_obito = pd.DataFrame(
 ).assign(obito_estimado=lambda x: (x.Nascidos.loc[0] + x.Nascidos.loc[1]) - x.População.loc[0] + x.População.loc[1])
 ```
 
-## Método da equação do balanço de crescimento de Brass
+### Método da equação do balanço de crescimento de Brass
 
 
 ```{python}
@@ -278,7 +481,7 @@ results = []
 for cause in df_leadermann_homens.query("Causas != 'Mal definidas'").Causas.unique().tolist():
     Y = df_leadermann_homens.query("Causas == @cause").values.flatten()[1:].astype(float)
 
-    slope, intercept, r_value, p_value, std_err = linregress(X_values, Y)
+    slope, intercept, r_value, p_value, std_err = stats.linregress(X_values, Y)
     predicted_Y = slope * X_values + intercept
 
     results.append(pd.DataFrame({
@@ -318,7 +521,7 @@ results = []
 for cause in df_leadermann_mulheres.query("Causas != 'Mal definidas'").Causas.unique().tolist():
     Y = df_leadermann_mulheres.query("Causas == @cause").values.flatten()[1:].astype(float)
 
-    slope, intercept, r_value, p_value, std_err = linregress(X_values, Y)
+    slope, intercept, r_value, p_value, std_err = stats.linregress(X_values, Y)
     predicted_Y = slope * X_values + intercept
 
     results.append(pd.DataFrame({
