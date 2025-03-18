@@ -148,8 +148,22 @@ df_obito_pop = df_obito\
 
 # Introdução
 
+Roraima é o estado menos populoso do Brasil, localizado na região Norte e caracterizado por uma extensa área territorial, baixa densidade demográfica e significativa presença de populações indígenas. Sua dinâmica demográfica é influenciada por fatores como migração, crescimento populacional e acesso a serviços de saúde.
+
+\vspace{12pt}
+
+Neste estudo, será realizada uma análise da cobertura de nascidos vivos e de óbitos no estado, utilizando diferentes técnicas demográficas. Algumas das abordagens baseiam-se na equação básica do crescimento populacional e na taxa de fecundidade, além da aplicação dos métodos de Brass, Hill e Leadermann para redistribuição de óbitos mal definidos. Essas técnicas permitem avaliar a qualidade dos registros vitais e fornecer estimativas mais precisas sobre a dinâmica populacional de Roraima.
 
 # Metodologia
+
+## Obtenção dos dados
+
+\ \ \ Os dados demográficos utilizados neste estudo foram obtidos de duas fontes principais. As informações sobre a população por faixa etária foram extraídas do TABNET, uma ferramenta desenvolvida pelo DATASUS. O TABNET é um tabulador genérico de domínio público que facilita a organização e consulta rápida de dados conforme os critérios definidos, enquanto o DATASUS fornece informações essenciais para a análise da saúde pública e variáveis demográficas, contribuindo para a formulação de políticas e programas de saúde. Alguns dos dados também foram obtidos a partir do sistema Sidra, como é o caso dos dados populacionais e de óbitos por faixa etária.
+
+## Recursos computacionais
+
+\ \ \ As análises apresentadas neste estudo foram realizadas utilizando a linguagem de programação Python [@van1995python], com o auxílio da biblioteca Pandas [@reback2020pandas] para manipulação de dados e da biblioteca Matplotlib para visualização gráfica [@Hunter:2007]. Os documentos do relatório foram elaborados com o Quarto [@quarto], um sistema de escrita e publicação científica. Todo o código-fonte utilizado nas análises está disponível no GitHub.
+
 
 ## Métodos para estimação da cobertura de nascidos vivos
 
@@ -189,6 +203,10 @@ $$
 a = \frac{x}{1 - x} \times 100 \text{ e } b = \frac{y}{1-y}\times 100\text{.}
 $$
 
+\vspace{12pt}
+
+Esse método foi utilizado apenas para os anos de 2010 e 2020, com dados obtidos do SINASC.
+
 ### Método que utiliza a equação básica do crescimento populacional
 
 O método que utiliza a equação básica do crescimento populacional é bastante simples, principalmente por assumir que a popuação é fechada. Dessa forma, a estimativa de nascidos vivos será expresso pela equação:
@@ -205,6 +223,10 @@ A partir dessa expressão, estima-se a cobertura dos nascimentos da seguinte for
 $$
 \text{Cobertura dos nascimentos} = \frac{\text{Nascimentos registrados}\left(t\right)}{\text{Nascimentos esperados}\left(t\right)} \times 100
 $$
+
+\vspace{12pt}
+
+Para esse método foi considerado os dados obtidos fornecidos pelo SIM e pelo Registro Civil, para anos entre 2010 e 2020.
 
 ### Método que faz uso das taxas de fecundidade
 
@@ -224,6 +246,10 @@ NV_{est} = \sum^{49}_{j=15} TEF_{j}\left(i\right) \times TM_{j} \text{,}
 $$
 em que $TEF_{j}\left(i\right)$ é a taxa específica de fecundidade na faixa etária quinquenal $j$ da região $i$ e $TM_j$ é o total de mulheres na faixa etária quinquenal $j$ da região $j$.
 
+\vspace{12pt}
+
+Esse método foi aplicado apenas para os anos de 2000 e 2010, com dados obtidos pelo TABNET.
+
 ### Método que faz uso da informação do SINASC e do IBGE
 
 Aqui são utilizadas as estimativas de nascidos vivos fornecidos pelo IBGE e os nascidos vivos fornecidos pelo SINASC. Por fim, para estimar a cobertura, basta calcular utilizar a seguinte expressão:
@@ -242,7 +268,7 @@ Entre as principais abordagens utilizadas, destacam-se os métodos demográficos
 
 \vspace{12pt}
 
-Esses métodos são fundamentais para garantir a confiabilidade dos indicadores de mortalidade e subsidiar políticas públicas voltadas à saúde e ao planejamento populacional.
+Esses métodos são fundamentais para garantir a confiabilidade dos indicadores de mortalidade e subsidiar políticas públicas voltadas à saúde e ao planejamento populacional. Além disso, esse método foi aplicado apenas para os anos de 2010 e 2020.
 
 ### Método que faz uso da equação básica do crescimento populacional
 
@@ -257,6 +283,10 @@ Por fim, para estimar a cobertura de óbitos, utiliza-se a seguinte expressão:
 $$
 \text{Cobertura dos óbitos} = \frac{\text{Óbitos registrados}\left(t\right)}{\text{Óbitos esperados}\left(t\right)} \times 100
 $$
+
+\vspace{12pt}
+
+A cobertura foi estimada apenas para o ano de 2010, utilizando-se de dados do SINASC, SIM e do censo seu cálculo.
 
 ### Método da Equação do Balanço de Crescimento de Brass
 
@@ -280,9 +310,73 @@ C = \frac{1}{k}\text{,}
 $$
 em que se o fator de correção for $k > 1$ implica em sub-registro e $k<1$ implica em sobre-registro.
 
+\vspace{12pt}
+
+O método de Brass foi considerado apenas para o ano de 2010 e 2020, para cada um dos sexos.
+
+### Método de Hill
+
+\ \ \ O método de Hill é uma abordagem utilizada para estimar a cobertura de óbitos. Ele se baseia em três pressupostos: a cobertura de cada censo é a mesma para todas as idades; a completude dos registros de óbitos é uniforme para todas as idades acima de um limite mínimo; e a população é fechada. Diferentemente de outros métodos, a estabilidade populacional não é um requisito nesse caso.
+
+\vspace{12pt}
+
+Para seu cálculo, são necessários dados sobre o número de indivíduos, organizados em grupos etários de cinco em cinco anos, incluindo o intervalo aberto $a+$ (com aa sendo a idade mais avançada possível), em dois momentos no tempo (geralmente dois anos censitários). Além disso, é necessário o número de óbitos ocorridos nessa população, também agrupados em intervalos etários quinquenais e no intervalo aberto $a+$, durante o período intercensitário.
+
+\vspace{12pt}
+
+O primeiro passo é estimar as taxas de natalidade e de mortalidade parciais e, para isso, é preciso acumular a população e o número de mortes para as idades $x$ em diante. Assim, no caso da população, a seguinte equação é usada:
+
+$$
+N\left(x+\right) = \sum^{A-5}_{y=x} {_5}N_y + {_\infty}N_A
+$$
+em que $A$ é a idade no início do intervalo aberto.
+
+\vspace{12pt}
+
+O segundo passo é calcular o número de pessoas-anos vividos, que pode ser calculado da seguinte forma:
+
+$$
+\text{PYL}\left(x+\right) = \left(t_{2} - t_{1}\right)\left(_{\infty}N_{x}\left(t_{1}\right)\times_{\infty}N_{x}\left(t_{2}\right)\right)^{1/2}
+$$
+em que $t_{1}$ é o ano do primeiro censo e $t_{2}$ é o ano do segundo censo.
+
+\vspace{12pt}
+
+No terceiro passo, deve-se calcular o número de pessoas que passaram para a idade $x$, que é estimada como a média geométrica dos números em uma coorte em tempos $t_{1}$ e $t_{2}$ dividido por 5, multiplicado pelo comprimento do período entre os censos, em anos, usando a seguinte fórmula:
+
+$$
+N\left(x\right) = \frac{t}{5}\left(_{5}N_{x-5}\left(t_{1}\right)\times_{5}N_{x-5}\left(t_{2}\right)\right)^{1/2}
+$$
+
+\vspace{12pt}
+
+Após o terceiro passo, deve-se calcular taxas parciais de natalidade, mortalidade e crescimento, as quais podem ser calculadas a partir das seguintes equações:
+
+$$
+b\left(x+\right) = \frac{N\left(x\right)}{PYL\left(x+\right)}
+$$
+
+$$
+d\left(x+\right) = \frac{D\left(x+\right)}{PYL\left(x+\right)}
+$$
+
+$$
+r\left(x+\right) = \frac{_{\infty}N_{x}\left(t_{2}\right) - _{\infty}N_{x}\left(t_{1}\right)}{PYL\left(x+\right)}\text{, }
+$$
+
+Por último, basta ajustar uma regressão linear, utilizando $d\left(x+\right)$ como variável independente e $r\left(x+\right)$ como variável dependente. Após o ajuste, será estimado o intercepto $a$ e o coeficiente $b$, que serão utilizados para estimar um valor $k_{1}$ e $k_{2}$ e da cobertura final. Para estimar a cobertura, deve-se verificar se $k_{1}/k_{2} = e^{a\left(t_{2} - t_{1}\right)} < 1$. Caso essa condição seja satisfeita, assume-se que $k_{2}$ é igual a 1 e a cobertura estimada será $c = e^{a\left(t_{2} - t_{1}\right)} / b$. Caso contrário, a cobertura estimada será $c = e^{-a\left(t_{2} - t_{1}\right)} / b$.
+
+\vspace{12pt}
+
+Esse método foi aplicado utilizando os dados do censo de 2010 e 2022, para o estado de Roraima. No caso dos óbitos, foram utilizados os dados disponibilizados pelo SIM.
+
+\vspace{12pt}
+
+O método de Hill foi utilizado utilizando-se de dados do censo de 2010 e 2022 e dados fornecidos pelo Registro Civil.
+
 ### Método de Leadermann para redistribuição
 
-O método de Leadermann é uma abordagem utilizada para redistribuir óbitos classificados com causas mal definidas entre categorias específicas de mortalidade. Essa técnica busca minimizar o impacto da subnotificação e da imprecisão nos registros, permitindo uma estimativa mais fiel da estrutura de mortalidade de uma população.
+\ \ \ O método de Leadermann é uma abordagem utilizada para redistribuir óbitos classificados com causas mal definidas entre categorias específicas de mortalidade. Essa técnica busca minimizar o impacto da subnotificação e da imprecisão nos registros, permitindo uma estimativa mais fiel da estrutura de mortalidade de uma população.
 
 \vspace{12pt}
 
@@ -296,6 +390,10 @@ $$
 O_j = Y_j - X \beta_{j}
 $$
 em que $O_j$ são os óbitos redistribuídos da causa $j$, $Y_j$ os óbitos observados da causa $j$, $\beta_j$ é o fator de redistribuição da causa $j$ e $X$ são os óbitos da causa mal definida.
+
+\vspace{12pt}
+
+O método de Leadermann foi utilizado apenas para o ano de 2022.
 
 # Resultado
 
@@ -323,7 +421,7 @@ df_nasc\
         {"selector": "th", "props": [("text-align", "center")]},
         {"selector": "td", "props": [("text-align", "center")]}
     ])\
-	.format("{:.3f}", subset=["RSN", "x", "y", "a", "b"]).hide()
+	.format("{:.3f}", subset=["RSN", "x", "y", "a", "b"], decimal=",", thousands=".").hide()
 ```
 
 Em 2010, a RSN foi de 105,097, indicando que para cada 100 meninas nasceram aproximadamente 105 meninos. Já em 2020, esse valor aumentou para 105,850, sugerindo um leve crescimento na proporção de nascimentos masculinos em relação aos femininos. Além disso, ao observar o intervalo $\left[a, b\right]$, tem-se que há uma boa qualidade no registro dos dados, pois os valores estimados da $RSN$ estão contidos dentro do intervalo.
@@ -331,28 +429,36 @@ Em 2010, a RSN foi de 105,097, indicando que para cada 100 meninas nasceram apro
 
 ### Método que utiliza a equação básica do crescimento populacional
 
+\ \ \ Para o método que utiliza a equação básica do crescimento populacional, foi estimado um nascimento esperado de 137299, bastante próximo ao valor observado no período de $N_{\text{observado}} = 128467$. Além disso, o óbito total estimado no período foi de $O_t = 24778$.
+
 ```{python}
 df_obito_pop\
+	.drop(columns=["nasc_total"])\
 	.assign(
-		nascimento_esperado=lambda x: x["População"].iloc[0] - x["População"].iloc[1] + x["Óbito"].iloc[0] + x["Óbito"].iloc[1],
-    	cobertura_estimada=lambda x: (x.nasc_total.iloc[0] + x.nasc_total.iloc[1]) / x.nascimento_esperado * 100
+		nascimento_esperado=lambda x: x["População"].iloc[0] - x["População"].iloc[1] + 24778,
+		C=lambda x: 128467 / x.nascimento_esperado * 100
   	).style\
 	.set_table_styles([
         {"selector": "th", "props": [("text-align", "center")]},
         {"selector": "td", "props": [("text-align", "center")]}
 	])\
-	.format("{:.3f}", subset=["nascimento_esperado", "cobertura_estimada"]).hide()
+	.format("{:.3f}", subset=["C"], decimal=",", thousands=".").hide()
 ```
+
+Por fim, a estimativa final da cobertura foi de 93,567%, o que indica um valor de cobertura bastante alto pelo método que utiliza a equação do crescimento populacional.
+
 
 \blandscape
 
 ### Método que faz uso das taxas de fecundidade
 
+\ \ \ Comparado ao método que utiliza a equação básica do crescimento populacional, o que faz uso das taxas de fecundidade entrega respostas bem melhores. Por exemplo, o número de nascidos vivos estimados de 2000 foi de 10897,410 e o de 2010 foi de 11088,013, bastante próximo de seus valores observados (9744 e 9738, respectivamente).
 
 ```{python}
 df_mulher_tfe\
 	.rename(
 		columns={
+			"Idade": "Faixa etária",
 			"estimado_2000": "NV_2000",
 			"estimado_2010": "NV_2010",
 			"cobertura_2000": "C_2000",
@@ -363,12 +469,16 @@ df_mulher_tfe\
         {"selector": "th", "props": [("text-align", "center")]},
         {"selector": "td", "props": [("text-align", "center")]}
 	])\
-	.format("{:.3f}", subset=["TFE_2000", "TFE_2010", "NV_2000", "NV_2010", "C_2000", "C_2010"]).hide()
+	.format("{:.3f}", subset=["TFE_2000", "TFE_2010", "NV_2000", "NV_2010", "C_2000", "C_2010"], decimal=",").hide()
 ```
+
+Com o resultado da cobertura estimada, tem-se uma cobertura de 89,4% no ano de 2000 e de 87,8% no ano de 2010, o que indica de fato uma boa cobertura de nascidos vivos, utilizando o método de estimação que faz uso das taxas de fecundidade.
 
 \elandscape
 
 ### Método que faz uso dos dados do IBGE e SINASC
+
+Por último, o método que utiliza os nascidos vivos estimados do IBGE e dos valores observados de nascidos vivos do SINASC, foi o que apresentou os melhores resultados para estimação da cobertura de nascidos vivos.
 
 ```{python}
 pd.DataFrame(
@@ -377,13 +487,24 @@ pd.DataFrame(
     	"IBGE": [13991, 10686],
     	"SINASC": [13760, 9738],
   	}
-).assign(Cobertura=lambda x: x.SINASC / x.IBGE)
+).assign(Cobertura=lambda x: x.SINASC / x.IBGE)\
+	.style\
+	.set_table_styles([
+        {"selector": "th", "props": [("text-align", "center")]},
+        {"selector": "td", "props": [("text-align", "center")]}
+	])\
+	.format("{:.3f}", subset=["Cobertura"], decimal=",").hide()
 ```
+
+Para a cobertura de 2020, foi estimado um valor de 98,3% para o ano de 2020 e de 91,1% para o ano de 2010.
 
 ## Resultados da estimação de cobertura de óbitos
 
+Agora serão apresentadas cada uma das técnicas utilizadas para analisar e estimar a cobertura dos óbitos. O primeiro deles será o método que utiliza a equação básica do crescimento populacional, depois o método de Brass, o que utiliza o método de Hill e, por útlimo, o método de Leadermann para redistribuição de óbitos mal definidos.
 
-### Método que utiliza a equação básica do cresimento populacional
+### Método que utiliza a equação básica do crescimento populacional
+
+A cobertura estimada pelo método que utiliza a equação básica do crescimento populacional não apresentou boas estimativas, tendo obtido uma estimativa para a cobertura de -80,3534%, indicando que o método subestimou os óbitos, principalmente devido ao crescimento da população obtido no ano de 2010. Para o seu cálculo, foi utilizado os nascidos vivos totais no período de 2000 a 2010 ($N_t = 106618$) e os óbitos totais observados no período ($O_t = 15640$).
 
 ```{python}
 df_cobert_obito = pd.DataFrame(
@@ -392,47 +513,97 @@ df_cobert_obito = pd.DataFrame(
 		"População": [450_479, 324_397],
 		"Nascidos": [9738, 9744],
 	}
-).assign(obito_estimado=lambda x: (x.Nascidos.loc[0] + x.Nascidos.loc[1]) - x.População.loc[0] + x.População.loc[1])
+).assign(
+	obito_estimado=lambda x: 106618 - x.População.loc[0] + x.População.loc[1],
+	C=lambda x: 15640 / x.obito_estimado * 100
+	)
+
+df_cobert_obito\
+	.drop(columns=["Nascidos"])\
+	.style\
+	.set_table_styles([
+        {"selector": "th", "props": [("text-align", "center")]},
+        {"selector": "td", "props": [("text-align", "center")]}
+	])\
+	.format(decimal=",").hide()
 ```
+
 
 ### Método da equação do balanço de crescimento de Brass
 
 
+Pelo método de Brass e considerando os dois anos para cada sexo, observa-se, pelo fator de correção $k$, um sub-registro da cobertura de óbitos, pois todos os fatores de correção estão acima de 1 $\left(k > 1\right)$.
+
 ```{python}
-df_brass = pd.read_csv("data/brass_2010.csv")\
+#| tbl-cap: Método de Brass para homens.
+
+df_brass = pd.read_csv("data/hill_2010.csv", delimiter=";")\
 	.assign(
 		N_a_homens=lambda x: np.cumsum(list(reversed(x.Homens)))[::-1],
 		N_a_mulheres=lambda x: np.cumsum(list(reversed(x.Mulheres)))[::-1],
+		D_a_homens=lambda x: np.cumsum(list(reversed(x.Homens_obitos)))[::-1],
+		D_a_mulheres=lambda x: np.cumsum(list(reversed(x.Mulheres_obitos)))[::-1]
 	)
-df_brass_2022 = pd.read_csv("data/brass_2022.csv")\
+df_brass_2022 = pd.read_csv("data/hill_2022.csv", delimiter=";")\
 	.assign(
 		N_a_homens=lambda x: np.cumsum(list(reversed(x.Homens)))[::-1],
 		N_a_mulheres=lambda x: np.cumsum(list(reversed(x.Mulheres)))[::-1],
+		D_a_homens=lambda x: np.cumsum(list(reversed(x.Homens_obitos)))[::-1],
+		D_a_mulheres=lambda x: np.cumsum(list(reversed(x.Mulheres_obitos)))[::-1]
 	)
 df_brass = pd.concat([df_brass, df_brass_2022])
 
-df_brass_obt = pd.read_csv("data/obitos_2010.csv").assign(
-	Ano=2010,
-	D_a_homens=lambda x: np.cumsum(list(reversed(x.Homens)))[::-1],
-	D_a_mulheres=lambda x: np.cumsum(list(reversed(x.Mulheres)))[::-1],
-	)
-df_brass_obt_2022 = pd.read_csv("data/obitos_2022.csv")\
-	.assign(
-		Ano=2022,
-		D_a_homens=lambda x: np.cumsum(list(reversed(x.Homens)))[::-1],
-		D_a_mulheres=lambda x: np.cumsum(list(reversed(x.Mulheres)))[::-1],
-	)
-df_brass_obt = pd.concat([df_brass_obt, df_brass_obt_2022])\
-	.rename(columns={"Homens": "Homens_obitos", "Mulheres": "Mulheres_obitos"})
-
 df_brass = df_brass\
-	.merge(df_brass_obt, on=["Faixa etária", "Ano"])\
 	.assign(
 		y_homens=lambda x: x.Homens_a / x.N_a_homens,
 		y_mulheres=lambda x: x.Mulheres_a / x.N_a_mulheres,
 		x_homens=lambda x: x.D_a_homens / x.N_a_homens,
 		x_mulheres=lambda x: x.D_a_mulheres / x.N_a_mulheres,
 	)
+
+df_brass\
+	.filter(regex="homens|Homens|Faixa etária")\
+	.rename(
+		columns={
+			"Homens_obitos": "Óbitos",
+			"Homens": "População",
+			"Homens_a": "N(a)",
+			"D_a_homens": "D'(a+)",
+			"N_a_homens": "N(a+)",
+			"y_homens": "y",
+			"x_homens": "x",
+		}
+	)\
+	.style\
+	.set_table_styles([
+        {"selector": "th", "props": [("text-align", "center")]},
+        {"selector": "td", "props": [("text-align", "center")]}
+	])\
+	.format("{:.0f}", subset=["N(a)"], decimal=",").hide()
+```
+
+```{python}
+#| tbl-cap: Método de Brass para mulheres.
+
+df_brass\
+	.filter(regex="Mulheres|mulheres|Faixa etária")\
+	.rename(
+		columns={
+			"Mulheres_obitos": "Óbitos",
+			"Mulheres": "População",
+			"Mulheres_a": "N(a)",
+			"D_a_mulheres": "D'(a+)",
+			"N_a_mulheres": "N(a+)",
+			"y_mulheres": "y",
+			"x_mulheres": "x",
+		}
+	)\
+	.style\
+	.set_table_styles([
+        {"selector": "th", "props": [("text-align", "center")]},
+        {"selector": "td", "props": [("text-align", "center")]}
+	])\
+	.format("{:.0f}", subset=["N(a)"], decimal=",").hide()
 ```
 
 
@@ -445,18 +616,210 @@ def fit_regression(df, year, gender):
     slope, intercept, r_value, p_value, std_err = stats.linregress(x, y)
     return slope, intercept, r_value**2
 
+results = []
 for year in [2010, 2022]:
     for gender in ["homens", "mulheres"]:
         try:
             slope, intercept, r2 = fit_regression(df_brass, year, gender)
-            print(f"Year: {year}, Gender: {gender}, Slope: {slope:.4f}, Intercept: {intercept:.4f}, R²: {r2:.4f}")
+            results.append({"Ano": year, "Sexo": gender, "k": slope, "r": intercept, "R²": r2, "C = 1/k": 1 / slope})
         except Exception as e:
-            print(f"Error for {year} - {gender}: {e}")
+            results.append({"Ano": year, "Sexo": gender, "k": None, "r": None, "R²": None, "Error": str(e)})
 
+df_results = pd.DataFrame(results)
+
+df_results\
+	.style\
+	.set_table_styles([
+        {"selector": "th", "props": [("text-align", "center")]},
+        {"selector": "td", "props": [("text-align", "center")]}
+	])\
+	.format(decimal=",").hide()
+```
+
+Além disso, a maioria das coberturas estimadas ficaram próximas de 60%, o que indica, pelo método de Brass, uma cobertura deficiente, para os dois sexos. Embora isso tenha sido um padrão para os dois sexos e anos considerados, o ano de 2010, considerando o sexo masculino, foi o que apresentou a maior cobertura, próximo de 68%.
+
+\blandscape
+
+
+
+### Método de Hill
+
+\ \ \ Aplicando o método de Hill para o sexo masculino e utilizando regressão para a estimação dos coeficientes e do intercepto no período intercensitário, obteve-se um intercepto de valor $-0,06346829$ $\left(a = -0,06346829\right)$ e um coeficiente $b = 1,78109927$. Além disso, como $\frac{k_{1}}{k_{2}} = e^{a\left(t_{2} - t_{1}\right)} = 0,46690964 < 1$, assumiu-se $k_{2} = 1$, resultando em $k_{1} = 0,46690964$. Dessa forma, a estimativa final para a cobertura de óbitos do sexo masculino foi de apenas $26,2146\%$.
+
+
+```{python}
+#| tbl-cap: Método de Hill para o sexo masculino.
+
+df_hill_2010 = pd.read_csv("data/hill_2010.csv", delimiter=";")\
+	.assign(
+		N_a_homens=lambda x: np.cumsum(list(reversed(x.Homens)))[::-1],
+		N_a_mulheres=lambda x: np.cumsum(list(reversed(x.Mulheres)))[::-1],
+		D_a_homens=lambda x: np.cumsum(list(reversed(x.Homens_obitos)))[::-1],
+		D_a_mulheres=lambda x: np.cumsum(list(reversed(x.Mulheres_obitos)))[::-1]
+	)
+
+df_hill_2022 = pd.read_csv("data/hill_2022.csv", delimiter=";")\
+	.assign(
+		N_a_homens=lambda x: np.cumsum(list(reversed(x.Homens)))[::-1],
+		N_a_mulheres=lambda x: np.cumsum(list(reversed(x.Mulheres)))[::-1],
+		D_a_homens=lambda x: np.cumsum(list(reversed(x.Homens_obitos)))[::-1],
+		D_a_mulheres=lambda x: np.cumsum(list(reversed(x.Mulheres_obitos)))[::-1]
+	)\
+	.rename(
+		columns={k: k + "_2022" for k in df_hill_2010.columns}
+	)
+
+df_hill =  df_hill_2010\
+	.merge(df_hill_2022, left_on="Faixa etária", right_on="Faixa etária_2022")
+
+df_hill_homens = df_hill\
+	.assign(
+		Homens_obitos=lambda x: x.Homens_obitos + x.Homens_obitos_2022,
+		D_a_homens=lambda x: x.D_a_homens + x.D_a_homens_2022
+	)\
+	.loc[:, ~df_hill.columns.str.contains("mulheres", case=False)]\
+	.drop(
+		columns=[
+			"Ano", "Ano_2022", "Faixa etária_2022", "D_a_homens_2022",
+			"Homens_obitos_2022"
+		]
+	)\
+	.rename(
+		columns={
+			"Homens_obitos": "5Dx",
+			"D_a_homens": "D(x+)",
+			"Homens": "5N(t1)",
+			"Homens_2022": "5N(t2)",
+			"N_a_homens": "N1(x+)",
+			"N_a_homens_2022": "N2(x+)",
+		}
+	)\
+	.assign(
+		PYL=lambda x: (2022 - 2010) * np.sqrt(x["N1(x+)"] * x["N2(x+)"]),
+		Nx=lambda x: [np.nan] + [(2022 - 2010) * np.sqrt(x["5N(t1)"].iloc[i] * x["5N(t2)"]
+		.iloc[i + 1]) / 5
+		for i in range(x.shape[0] - 2)] + [np.nan],
+		bx=lambda x: x.Nx / x.PYL,
+		dx=lambda x: x[["D(x+)", "PYL", "Faixa etária"]].apply(lambda y: y["D(x+)"] / y["PYL"] if y["Faixa etária"] not in ["0 a 4 anos", "80 anos e mais"] else np.nan, axis=1),
+		rx=lambda x: x[["N1(x+)", "N2(x+)", "PYL", "Faixa etária"]].apply(lambda y: (y["N2(x+)"] - y["N1(x+)"]) / y["PYL"] if y["Faixa etária"] not in ["0 a 4 anos", "80 anos e mais"] else np.nan, axis=1),
+		bxrx=lambda x: x.bx - x.rx
+	)\
+	.rename(
+		columns={
+			"Nx": "N(X)",
+			"bx": "b(x+)",
+			"dx": "d(x+)",
+			"rx": "r(x+)",
+			"bxrx": "b(x+) - r(x+)",
+		}
+	)\
+	.drop(columns=["Homens_a", "Homens_a_2022"])
+
+df_hill_homens2 = df_hill_homens.copy().dropna(subset=["r(x+)"])
+
+df_hill_homens\
+	.style\
+	.set_table_styles([
+        {"selector": "th", "props": [("text-align", "center")]},
+        {"selector": "td", "props": [("text-align", "center"), ("word-wrap", "break-word"), ("white-space", "pre-wrap"), ("max-width", "50px")]}
+	])\
+	.format("{:.3f}", subset=["PYL", "N(X)", "b(x+)", "d(x+)", "r(x+)", "b(x+) - r(x+)"], decimal=",").hide()
+
+# stats.linregress(df_hill_homens2["r(x+)"], df_hill_homens2["b(x+) - r(x+)"])
+# df_brass = pd.concat([df_brass, df_brass_2022])
+```
+
+\ \ \ Para o sexo feminino a cobertura estimada foi um pouco maior. Após a aplicação da regressão linear, o coeficiente estimado foi $b = 1.1428273$ e o seu intercepto foi de $a = -0.0458870$. Aqui também foi assumido $k_{2}$ como sendo 1, pois $k_{1} / k_{2} < 1$, além de ter sido obtido $k_{1} = 0.576577$. Por fim, a estimativa obtida para a cobertura foi de $50,4518\%$, o que representa uma cobertura deficiente dos nascidos vivos.
+
+
+```{python}
+#| tbl-cap: Método de Hill para o sexo feminino.
+
+df_hill_2010 = pd.read_csv("data/hill_2010.csv", delimiter=";")\
+	.assign(
+		N_a_homens=lambda x: np.cumsum(list(reversed(x.Homens)))[::-1],
+		N_a_mulheres=lambda x: np.cumsum(list(reversed(x.Mulheres)))[::-1],
+		D_a_homens=lambda x: np.cumsum(list(reversed(x.Homens_obitos)))[::-1],
+		D_a_mulheres=lambda x: np.cumsum(list(reversed(x.Mulheres_obitos)))[::-1]
+	)
+
+df_hill_2022 = pd.read_csv("data/hill_2022.csv", delimiter=";")\
+	.assign(
+		N_a_homens=lambda x: np.cumsum(list(reversed(x.Homens)))[::-1],
+		N_a_mulheres=lambda x: np.cumsum(list(reversed(x.Mulheres)))[::-1],
+		D_a_homens=lambda x: np.cumsum(list(reversed(x.Homens_obitos)))[::-1],
+		D_a_mulheres=lambda x: np.cumsum(list(reversed(x.Mulheres_obitos)))[::-1]
+	)\
+	.rename(
+		columns={k: k + "_2022" for k in df_hill_2010.columns}
+	)
+
+df_hill =  df_hill_2010\
+	.merge(df_hill_2022, left_on="Faixa etária", right_on="Faixa etária_2022")
+
+df_hill_mulheres = df_hill\
+	.assign(
+		Homens_obitos=lambda x: x.Homens_obitos + x.Homens_obitos_2022,
+		D_a_homens=lambda x: x.D_a_homens + x.D_a_homens_2022
+	)\
+	.loc[:, ~df_hill.columns.str.contains("homens", case=False)]\
+	.drop(
+		columns=[
+			"Ano", "Ano_2022", "Faixa etária_2022", "D_a_mulheres_2022",
+			"Mulheres_obitos_2022"
+		]
+	)\
+	.rename(
+		columns={
+			"Mulheres_obitos": "5Dx",
+			"D_a_mulheres": "D(x+)",
+			"Mulheres": "5N(t1)",
+			"Mulheres_2022": "5N(t2)",
+			"N_a_mulheres": "N1(x+)",
+			"N_a_mulheres_2022": "N2(x+)",
+		}
+	)\
+	.assign(
+		PYL=lambda x: (2022 - 2010) * np.sqrt(x["N1(x+)"] * x["N2(x+)"]),
+		Nx=lambda x: [np.nan] + [(2022 - 2010) * np.sqrt(x["5N(t1)"].iloc[i] * x["5N(t2)"]
+		.iloc[i + 1]) / 5
+		for i in range(x.shape[0] - 2)] + [np.nan],
+		bx=lambda x: x.Nx / x.PYL,
+		dx=lambda x: x[["D(x+)", "PYL", "Faixa etária"]].apply(lambda y: y["D(x+)"] / y["PYL"] if y["Faixa etária"] not in ["0 a 4 anos", "80 anos e mais"] else np.nan, axis=1),
+		rx=lambda x: x[["N1(x+)", "N2(x+)", "PYL", "Faixa etária"]].apply(lambda y: (y["N2(x+)"] - y["N1(x+)"]) / y["PYL"] if y["Faixa etária"] not in ["0 a 4 anos", "80 anos e mais"] else np.nan, axis=1),
+		bxrx=lambda x: x.bx - x.rx
+	)\
+	.rename(
+		columns={
+			"Nx": "N(X)",
+			"bx": "b(x+)",
+			"dx": "d(x+)",
+			"rx": "r(x+)",
+			"bxrx": "b(x+) - r(x+)",
+		}
+	)\
+	.drop(columns=["Mulheres_a", "Mulheres_a_2022"])
+
+df_hill_mulheres2 = df_hill_mulheres.copy().dropna(subset=["r(x+)"])
+
+df_hill_mulheres\
+	.style\
+	.set_table_styles([
+        {"selector": "th", "props": [("text-align", "center")]},
+        {"selector": "td", "props": [("text-align", "center"), ("word-wrap", "break-word"), ("white-space", "pre-wrap"), ("max-width", "50px")]}
+	])\
+	.format("{:.3f}", subset=["PYL", "N(X)", "b(x+)", "d(x+)", "r(x+)", "b(x+) - r(x+)"], decimal=",").hide()
+
+# stats.linregress(df_hill_mulheres2["r(x+)"], df_hill_mulheres2["b(x+) - r(x+)"])
 ```
 
 ### Método de Leadermann
 
+O método de Leadermann foi aplicado às microrregiões definidas pelo IBGE para o estado de Roraima, considerando as cinco principais causas de óbito, além de um grupo que engloba as demais causas. O primeiro resultado apresentado refere-se ao sexo masculino, para o qual foram registrados 57 óbitos mal definidos na região de Boa Vista, 6 no Nordeste de Roraima, 8 em Caracaraí e 9 no Sudeste de Roraima.
+
+\vspace{12pt}
+
+Como pode ser observado na tabela abaixo, ao aplicar o método de Leadermann para o sexo masculino e analisar os valores observados $\left(Y_{j}\right)$, verifica-se que a maioria dos valores estimados está bastante próxima dos valores observados. No entanto, algumas regiões apresentam discrepâncias mais evidentes, como o Sudeste de Roraima, o Nordeste de Roraima e alguns casos específicos em outras regiões.
 
 ```{python}
 df_leadermann_homens = pd.read_csv("data/leadermann_homens.csv", delimiter=";")\
@@ -473,6 +836,8 @@ df_leadermann_homens = pd.read_csv("data/leadermann_homens.csv", delimiter=";")\
 
 
 ```{python}
+#| tbl-cap: Método de Leadermann para o sexo masculino.
+
 X_values = df_leadermann_homens.query("Causas == 'Mal definidas'").values.flatten()[1:].astype(float)
 regions = df_leadermann_homens.columns[1:].tolist()
 
@@ -486,17 +851,39 @@ for cause in df_leadermann_homens.query("Causas != 'Mal definidas'").Causas.uniq
 
     results.append(pd.DataFrame({
         'Causas': [cause] * len(regions),
-        'Region': regions,
-        'Observed': Y,
-        'Predicted': predicted_Y,
-        'Slope': [slope] * len(regions),
-        'Intercept': [intercept] * len(regions)
+        'Região': regions,
+        'Yj': Y,
+        'Estimado': predicted_Y,
+        'Bj': [slope] * len(regions),
     }))
 
 df_results = pd.concat(results, ignore_index=True)
+
+df_results\
+	.style\
+	.set_table_styles([
+        {"selector": "th", "props": [("text-align", "center")]},
+        {"selector": "td", "props": [("text-align", "center"), ("word-wrap", "break-word"), ("white-space", "pre-wrap"), ("max-width", "50px")]}
+	])\
+	.format("{:.0f}", subset=["Yj"], decimal=",").hide()
 ```
 
+```{python}
+#| fig-cap: Método Leadermann para o sexo masculino.
 
+sns.scatterplot(
+	data=df_results,
+	x="Yj",
+	y="Estimado",
+	hue="Causas"
+)
+
+plt.legend(bbox_to_anchor=(1.13, .2), loc='upper left')
+plt.tight_layout()
+plt.show()
+```
+
+\elandscape
 
 ```{python}
 df_leadermann_mulheres = pd.read_csv("data/leadermann_mulheres.csv", delimiter=";")\
@@ -511,8 +898,14 @@ df_leadermann_mulheres = pd.read_csv("data/leadermann_mulheres.csv", delimiter="
 	)
 ```
 
+\blandscape
+
+A tabela abaixo apresenta os resultados obtidos para o sexo feminino. Tanto a tabela quanto o gráfico dos valores estimados e observados indicam que os valores estimados estão muito próximos dos valores reais, exibindo um padrão semelhante ao observado para o sexo masculino.
+
 
 ```{python}
+#| tbl-cap: Método de Leadermann para o sexo feminino.
+
 X_values = df_leadermann_mulheres.query("Causas == 'Mal definidas'").values.flatten()[1:].astype(float)
 regions = df_leadermann_mulheres.columns[1:].tolist()
 
@@ -526,12 +919,51 @@ for cause in df_leadermann_mulheres.query("Causas != 'Mal definidas'").Causas.un
 
     results.append(pd.DataFrame({
         'Causas': [cause] * len(regions),
-        'Region': regions,
-        'Observed': Y,
-        'Predicted': predicted_Y,
-        'Slope': [slope] * len(regions),
-        'Intercept': [intercept] * len(regions)
+        'Região': regions,
+        'Yj': Y,
+        'Estimado': predicted_Y,
+        'Bj': [slope] * len(regions),
     }))
 
 df_results_mulheres = pd.concat(results, ignore_index=True)
+
+df_results_mulheres\
+	.style\
+	.set_table_styles([
+        {"selector": "th", "props": [("text-align", "center")]},
+        {"selector": "td", "props": [("text-align", "center"), ("word-wrap", "break-word"), ("white-space", "pre-wrap"), ("max-width", "50px")]}
+	])\
+	.format("{:.0f}", subset=["Yj"], decimal=",").hide()
 ```
+
+```{python}
+#| fig-cap: Leadermann para o sexo feminino
+
+sns.scatterplot(
+	data=df_results_mulheres,
+	x="Yj",
+	y="Estimado",
+	hue="Causas"
+)
+
+plt.legend(bbox_to_anchor=(1.13, .2), loc='upper left')
+plt.tight_layout()
+plt.show()
+```
+
+\elandscape
+
+# Conclusão
+
+\ \ \ Para a razão de sexo dos nascimentos no estado de Roraima, foi visto que não apresenta víes de cobertura entre os sexos dos nascimentos. Em relação aos métodos utilizados para estimação da cobertura de nascidos vivos, o que apresentou melhores resultados foi o que utiliza os dados do IBGE e SINASC, tendo obtido uma cobertura de 98,3% para o ano de 2020.
+
+\vspace{12pt}
+
+Analisando-se os métodos utilizados para estimativa da cobertura de óbitos, a maioria dos métodos não obtiveram boas estimativas, principalmente o que fez uso da equação básica de crescimento populacional, que acabou subestimando a estimativa de óbitos. O método que obteve os melhores resultados foi o de Brass, tendo sido o melhore para o ano de 2010, considerando-se o sexo masculino, embora ainda tenha sido abaixo de uma estimativa significante, próxima de 68%. Por último, analisando-se o método de Leadermann para o sexo masculino e feminino, os dois sexos apresentaram padrões bastante semelhantes para cada uma das regiões.
+
+# \centering Referências {.unlisted .unnumbered}
+
+\markboth{Referências}{Referências}
+
+::: {#refs}
+:::
