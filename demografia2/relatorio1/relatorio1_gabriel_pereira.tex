@@ -179,7 +179,7 @@
 \@ifundefined{codebgcolor}{\definecolor{codebgcolor}{HTML}{F0F2F4}}{}
 \makeatother
 \makeatletter
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, boxrule=0pt, breakable, frame hidden, colback={codebgcolor}, enhanced]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, colback={codebgcolor}, enhanced, breakable, boxrule=0pt, sharp corners]}{\end{tcolorbox}}\fi
 \makeatother
 
 \ifLuaTeX
@@ -668,7 +668,7 @@ torno de 105 em condições normais.
 
 \begin{longtable}[]{@{}lllllllll@{}}
 \caption{Resultados da Razão de sexo dos nascimentos para o ano de 2010
-e 2020}\label{T_c7532}\tabularnewline
+e 2020.}\label{T_cc35a}\tabularnewline
 \toprule\noalign{}
 Ano & Masculino & Feminino & RSN & total & x & y & a & b \\
 \midrule\noalign{}
@@ -703,7 +703,8 @@ próximo ao valor observado no período de
 período foi de \(O_t = 24778\).
 
 \begin{longtable}[]{@{}lllll@{}}
-\caption{}\label{T_dc1fd}\tabularnewline
+\caption{Estimativa da cobertura de nascidos vivos pela equação básica
+do crescimento populacional.}\label{T_0cc95}\tabularnewline
 \toprule\noalign{}
 Ano & Óbito & População & nascimento\_esperado & C \\
 \midrule\noalign{}
@@ -734,7 +735,8 @@ foi de 10897,410 e o de 2010 foi de 11088,013, bastante próximo de seus
 valores observados (9744 e 9738, respectivamente).
 
 \begin{longtable}[]{@{}lllllllll@{}}
-\caption{}\label{T_31a78}\tabularnewline
+\caption{Estimativa da cobertura de 2000 e 2010 pelo método que utiliza
+taxas de fecundidade.}\label{T_e64e9}\tabularnewline
 \toprule\noalign{}
 Faixa etária & Mulheres\_2000 & Mulheres\_2010 & TFE\_2000 & TFE\_2010 &
 NV\_2000 & NV\_2010 & C\_2000 & C\_2010 \\
@@ -778,7 +780,8 @@ dos valores observados de nascidos vivos do SINASC, foi o que apresentou
 os melhores resultados para estimação da cobertura de nascidos vivos.
 
 \begin{longtable}[]{@{}llll@{}}
-\caption{}\label{T_2fa52}\tabularnewline
+\caption{Estimativa da cobertura pelo método que utiliza dados do IBGE e
+SINASC.}\label{T_e6349}\tabularnewline
 \toprule\noalign{}
 Ano & IBGE & SINASC & Cobertura \\
 \midrule\noalign{}
@@ -817,7 +820,8 @@ vivos totais no período de 2000 a 2010 (\(N_t = 106618\)) e os óbitos
 totais observados no período (\(O_t = 15640\)).
 
 \begin{longtable}[]{@{}llll@{}}
-\caption{}\label{T_9d74d}\tabularnewline
+\caption{Estimativa da cobertura pelo método que utiliza a equação
+básica do crescimento populacional.}\label{T_6f4fc}\tabularnewline
 \toprule\noalign{}
 Ano & População & obito\_estimado & C \\
 \midrule\noalign{}
@@ -841,7 +845,7 @@ de óbitos, pois todos os fatores de correção estão acima de 1
 \(\left(k > 1\right)\).
 
 \begin{longtable}[]{@{}llllllll@{}}
-\caption{Método de Brass para homens.}\label{T_dcd47}\tabularnewline
+\caption{Método de Brass para homens.}\label{T_c5ab4}\tabularnewline
 \toprule\noalign{}
 Faixa etária & Óbitos & População & N(a) & N(a+) & D\textquotesingle(a+)
 & y & x \\
@@ -899,7 +903,7 @@ Faixa etária & Óbitos & População & N(a) & N(a+) & D\textquotesingle(a+)
 \end{longtable}
 
 \begin{longtable}[]{@{}llllllll@{}}
-\caption{Método de Brass para mulheres.}\label{T_14dea}\tabularnewline
+\caption{Método de Brass para mulheres.}\label{T_89971}\tabularnewline
 \toprule\noalign{}
 Faixa etária & Óbitos & População & N(a) & N(a+) & D\textquotesingle(a+)
 & y & x \\
@@ -949,7 +953,7 @@ Faixa etária & Óbitos & População & N(a) & N(a+) & D\textquotesingle(a+)
 \end{longtable}
 
 \begin{longtable}[]{@{}llllll@{}}
-\caption{}\label{T_a87cd}\tabularnewline
+\caption{}\label{T_3d0b9}\tabularnewline
 \toprule\noalign{}
 Ano & Sexo & k & r & R² & C = 1/k \\
 \midrule\noalign{}
@@ -988,7 +992,7 @@ foi de apenas \(26,2146\%\).
 
 \begin{longtable}[]{@{}lllllllllllll@{}}
 \caption{Método de Hill para o sexo
-masculino.}\label{T_23de2}\tabularnewline
+masculino.}\label{T_5a126}\tabularnewline
 \toprule\noalign{}
 Faixa etária & 5Dx & 5N(t1) & N1(x+) & D(x+) & 5N(t2) & N2(x+) & PYL &
 N(X) & b(x+) & d(x+) & r(x+) & b(x+) - r(x+) \\
@@ -1047,7 +1051,7 @@ cobertura deficiente dos nascidos vivos.
 
 \begin{longtable}[]{@{}lllllllllllll@{}}
 \caption{Método de Hill para o sexo
-feminino.}\label{T_fb7d7}\tabularnewline
+feminino.}\label{T_28869}\tabularnewline
 \toprule\noalign{}
 Faixa etária & 5Dx & 5N(t1) & N1(x+) & D(x+) & 5N(t2) & N2(x+) & PYL &
 N(X) & b(x+) & d(x+) & r(x+) & b(x+) - r(x+) \\
@@ -1117,7 +1121,7 @@ regiões.
 
 \begin{longtable}[]{@{}lllll@{}}
 \caption{Método de Leadermann para o sexo
-masculino.}\label{T_732c5}\tabularnewline
+masculino.}\label{T_a1030}\tabularnewline
 \toprule\noalign{}
 Causas & Região & Yj & Estimado & Bj \\
 \midrule\noalign{}
@@ -1204,7 +1208,7 @@ exibindo um padrão semelhante ao observado para o sexo masculino.
 
 \begin{longtable}[]{@{}lllll@{}}
 \caption{Método de Leadermann para o sexo
-feminino.}\label{T_17c09}\tabularnewline
+feminino.}\label{T_72f97}\tabularnewline
 \toprule\noalign{}
 Causas & Região & Yj & Estimado & Bj \\
 \midrule\noalign{}

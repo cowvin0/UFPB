@@ -406,7 +406,7 @@ Nesta seção serão apresentadas cada uma das técnicas utilizadas para analisa
 A abaixo apresenta os valores da Razão de Sexo dos Nascimentos (RSN) para os anos de 2010 e 2020. Esse indicador expressa a relação entre os nascidos vivos do sexo masculino e feminino, sendo esperado um valor em torno de 105 em condições normais.
 
 ```{python}
-#| tbl-cap: Resultados da Razão de sexo dos nascimentos para o ano de 2010 e 2020
+#| tbl-cap: Resultados da Razão de sexo dos nascimentos para o ano de 2010 e 2020.
 
 df_nasc\
 	.assign(
@@ -432,6 +432,8 @@ Em 2010, a RSN foi de 105,097, indicando que para cada 100 meninas nasceram apro
 \ \ \ Para o método que utiliza a equação básica do crescimento populacional, foi estimado um nascimento esperado de 137299, bastante próximo ao valor observado no período de $N_{\text{observado}} = 128467$. Além disso, o óbito total estimado no período foi de $O_t = 24778$.
 
 ```{python}
+#| tbl-cap: Estimativa da cobertura de nascidos vivos pela equação básica do crescimento populacional.
+
 df_obito_pop\
 	.drop(columns=["nasc_total"])\
 	.assign(
@@ -455,6 +457,8 @@ Por fim, a estimativa final da cobertura foi de 93,567%, o que indica um valor d
 \ \ \ Comparado ao método que utiliza a equação básica do crescimento populacional, o que faz uso das taxas de fecundidade entrega respostas bem melhores. Por exemplo, o número de nascidos vivos estimados de 2000 foi de 10897,410 e o de 2010 foi de 11088,013, bastante próximo de seus valores observados (9744 e 9738, respectivamente).
 
 ```{python}
+#| tbl-cap: Estimativa da cobertura de 2000 e 2010 pelo método que utiliza taxas de fecundidade.
+
 df_mulher_tfe\
 	.rename(
 		columns={
@@ -481,6 +485,8 @@ Com o resultado da cobertura estimada, tem-se uma cobertura de 89,4% no ano de 2
 Por último, o método que utiliza os nascidos vivos estimados do IBGE e dos valores observados de nascidos vivos do SINASC, foi o que apresentou os melhores resultados para estimação da cobertura de nascidos vivos.
 
 ```{python}
+#| tbl-cap: Estimativa da cobertura pelo método que utiliza dados do IBGE e SINASC.
+
 pd.DataFrame(
 	{
 		"Ano": [2020, 2010],
@@ -507,6 +513,8 @@ Agora serão apresentadas cada uma das técnicas utilizadas para analisar e esti
 A cobertura estimada pelo método que utiliza a equação básica do crescimento populacional não apresentou boas estimativas, tendo obtido uma estimativa para a cobertura de -80,3534%, indicando que o método subestimou os óbitos, principalmente devido ao crescimento da população obtido no ano de 2010. Para o seu cálculo, foi utilizado os nascidos vivos totais no período de 2000 a 2010 ($N_t = 106618$) e os óbitos totais observados no período ($O_t = 15640$).
 
 ```{python}
+#| tbl-cap: Estimativa da cobertura pelo método que utiliza a equação básica do crescimento populacional.
+
 df_cobert_obito = pd.DataFrame(
 	{
 		"Ano": [2010, 2000],
