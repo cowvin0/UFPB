@@ -124,6 +124,8 @@ rec <- recipe(Outcome ~ ., data = train_data) |>
 ### Código
 
 ```{r}
+set.seed(123)
+
 cv_folds <- vfold_cv(train_data,
                      v = 10,
                      strata = Outcome
@@ -301,7 +303,7 @@ metrics_table |>
 
 <!-- O modelo que obteve o melhor resultado foi o discriminante linear, com base na curva ROC e o brier. Na base de teste, ele obteve um ROC AUC de 0,8652, a métrica de brier 0,1443 e obteve uma acurácia de 78,57%. O que pior perfomou foi o Naive Bayes, obtendo as piores estatísticas para todas as métricas consideradas. -->
 
-O modelo que obteve o melhor resultado foi o boosting, com base na curva ROC e o brier. Na base de teste, ele obteve um ROC AUC de 0,8641, a métrica de brier 0,1462 e obteve uma acurácia de 78,57%. O que pior perfomou foi o Bagging, obtendo as piores estatísticas para todas as métricas consideradas.
+O modelo que obteve o melhor resultado foi o boosting, com base na curva ROC e o brier. Na base de teste, ele obteve um ROC AUC de 0,8513, a métrica de brier 0,1477 e obteve uma acurácia de 77,27%. O que pior perfomou foi o Bagging, obtendo as piores estatísticas para todas as métricas consideradas.
 
 ## Hiperparâmetros selecionados dos modelos tunados
 
