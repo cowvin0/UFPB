@@ -1,0 +1,401 @@
+---
+title: Ajuste dos modelos baseados em árvores
+author: Gabriel de Jesus Pereira
+date: '`r Sys.Date()`'
+cache: true
+execute:
+  refresh: true
+  warning: false
+  error: false
+  eval: true
+  echo: true
+format:
+  revealjs:
+    theme: [default, style.scss]
+    embed-resources: true
+    transition: slide
+    background-transition: fade
+    scrollable: true
+    preview-links: auto
+editor:
+  markdown:
+    wrap: 72
+lang: pt-br
+---
+
+# Sobre o banco de dados
+
+## Sobre o banco de dados
+
+- Foi originado do National Institute of Diabetes and Digestive and Kidney Diseases.
+
+- Essa base foi criada com base nos Pima, um grupo de nativos americanos que vivem em uma área que atualmente abrange o centro e o sul do estado do Arizona.
+
+- A base possui 768 observações e 9 colunas. O objetivo é classificar se um paciente tem diabetes com base em algumas características do paciente.
+
+## Descrição das colunas
+
+- `Pregnancies`: Número de gestações da paciente.
+
+- `Glucose`: Concentração de glicose plasmática em teste oral de tolerância à glicose.
+
+- `BloodPressure`: Pressão arterial diastólica (mm Hg).
+
+- `SkinThickness`: Espessura da dobra cutânea do tríceps (mm).
+
+- `Insulin`: Nível sérico de insulina (mu U/ml).
+
+- `BMI`: Índice de Massa Corporal (peso em kg / altura em m², IMC).
+
+- `DiabetesPedigreeFunction`: Histórico familiar de diabetes (mede a predisposição genética).
+
+- `Age`: Idade do paciente.
+
+- `Outcome`: 0 é não diabético e 1 é diabético.
+
+
+# Métricas utilizadas para avalização dos modelos
+
+## Métricas utilizadas para avalização dos modelos
+
+- ROC AUC
+
+- Acurácia
+
+- Brier Score: $BS = \frac{1}{N}\sum_{t=1}^N\left(f_t - o_t\right)^2$. $N$ é o tamanho da amostra classificada, $f_t$ é a probabilidade predita e $o_t$ é o valor observado.
+
+# Preparação dos dados
+
+## Preparação dos dados
+
+```{r}
+library(rpart.plot)
+library(parsnip)
+library(yardstick)
+library(ranger)
+library(dplyr)
+library(ggplot2)
+library(kknn)
+library(naivebayes)
+library(glmnet)
+library(discrim)
+library(tidyverse)
+library(purrr)
+library(tidymodels)
+library(visdat)
+library(corrplot)
+library(baguette)
+
+# data <- read_csv("aprendizagem_maquina/diabetes.csv") |> mutate(Outcome = as.factor(Outcome))
+data <- read_csv("diabetes.csv") |> mutate(Outcome = as.factor(Outcome))
+cols <- c("Glucose", "BloodPressure", "SkinThickness", "Insulin", "BMI")
+data[cols][data[cols] == 0] <- NA
+
+data_split <- initial_split(data, prop = 0.8, strata = Outcome)
+train_data <- training(data_split)
+test_data <- testing(data_split)
+
+rec <- recipe(Outcome ~ ., data = train_data) |>
+  step_impute_median(all_numeric_predictors()) |>
+  step_mutate(across(all_numeric_predictors(), log1p)) |>
+  step_mutate(
+    N0 = BMI * SkinThickness,
+    N8 = Age / Insulin,
+    N13 = Glucose / DiabetesPedigreeFunction,
+  ) |>
+  step_nzv(all_numeric_predictors()) |>
+  step_normalize(all_numeric_predictors())
+```
+
+## Preparação dos dados
+
+- Os dados foram divididos entre teste e treino, com 20% para o conjunto de teste e estratificado pela variável dependente.
+
+- Os valores ausentes foram substituídos pela mediana das variáveis.
+
+- Foram criadas novas variáveis, idade por nível de insulina, glicose por predisposição de ter diabetes e o produto entre IMC e a espessura da dobra cutânea do tríceps.
+
+- Todas as variáveis foram transformadas com $\log \left(1 + x\right)$ e normalizadas com a função `step_normalize`.
+
+## Algoritmos e validação cruzada
+
+::: {.panel-tabset}
+
+### Código
+
+```{r}
+cv_folds <- vfold_cv(train_data,
+                     v = 10,
+                     strata = Outcome
+                     )
+
+dt_spec <- decision_tree(
+  cost_complexity = tune(),
+  min_n = tune(),
+  tree_depth = tune()) |>
+  set_engine(engine = "rpart") |>
+  set_mode("classification")
+
+bt_spec <- bag_tree(
+		cost_complexity = tune(),
+		min_n = tune(),
+		tree_depth = tune()
+	) |>
+  	set_engine("rpart") |>
+  	set_mode("classification")
+
+rf_spec <- rand_forest(
+		mtry = tune(),
+		min_n = tune(),
+		trees = tune()
+	) |>
+  	set_engine(engine = "ranger") |>
+  	set_mode("classification")
+
+xgb_spec <- boost_tree(
+	tree_depth = tune(),
+	learn_rate = tune(),
+	loss_reduction = tune(),
+	min_n = tune(),
+	sample_size = tune(),
+	trees = tune(),
+	mtry = tune()
+	) |>
+  	set_engine(engine = "xgboost") |>
+  	set_mode("classification")
+
+wf = workflow_set(
+  preproc = list(rec),
+  models = list(
+		dt_fit = dt_spec,
+		bt_fit = bt_spec,
+		rf_fit = rf_spec,
+		xgb_fit = xgb_spec
+    )
+  )  |>
+  mutate(wflow_id = gsub("(recipe_)", "", wflow_id))
+
+grid_ctrl = control_grid(
+  save_pred = TRUE,
+  parallel_over = "resamples",
+  save_workflow = TRUE
+)
+
+grid_results = wf  |>
+  workflow_map(
+    seed = 123,
+    resamples = cv_folds,
+    grid = 50,
+    control = grid_ctrl
+  )
+```
+
+```{r eval=FALSE}
+autoplot(grid_results, metric = "roc_auc") +
+  theme_bw() +
+  labs(y = "Métrica", x = "")
+```
+
+```{r eval=FALSE}
+autoplot(grid_results, select_best = TRUE) +
+  theme_bw() +
+  labs(y = "Métrica", x = "")
+```
+
+
+### Melhores resultados para cada métrica
+
+```{r echo=FALSE}
+autoplot(grid_results, select_best = TRUE) +
+  theme_bw() +
+  labs(y = "Métrica", x = "")
+```
+
+:::
+
+## Algoritmos e validação cruzada
+
+- A validação cruzada foi realizada com 10 folds, estratificado pela variável dependente e foi criado um grid de 50 combinações entre os hiperparâmetros. Assim, foram otimizados hiperparâmetros do custo de complexidade, a quantidade de árvores, profundidades de árvores, a quantidade mínima de observações em cada folha e a quantidade de variáveis selecionadas aleatoriamente na Random Forest.
+
+## Resultado geral da otimização
+```{r echo=FALSE}
+autoplot(grid_results, metric = "roc_auc") +
+  theme_bw() +
+  labs(y = "Métrica", x = "")
+```
+
+## Resultado na base de teste
+
+::: {.panel-tabset}
+
+### Código
+
+```{r}
+results_acc = workflowsets::rank_results(
+  grid_results,
+  select_best = TRUE,
+  rank_metric = "roc_auc"
+  ) |>
+  filter(.metric == "roc_auc") |>
+  dplyr::select(wflow_id, mean, std_err, model, rank)
+
+model_ids <- c(
+  "dt_fit", "bt_fit",
+  "rf_fit", "xgb_fit")
+
+best_sets <- map(model_ids, ~ grid_results |>
+                   extract_workflow_set_result(.x) |>
+                   select_best(metric = "roc_auc"))
+
+names(best_sets) <- model_ids
+
+test_results <- function(rc_rslts, fit_obj, par_set, split_obj) {
+  rc_rslts |>
+    extract_workflow(fit_obj) |>
+    finalize_workflow(par_set) |>
+    last_fit(
+      split = split_obj,
+      metrics = metric_set(accuracy, roc_auc, brier_class
+      )
+    )
+}
+
+test_results_list <- map2(model_ids, best_sets,
+                          ~ test_results(grid_results, .x, .y, data_split))
+
+metrics_table <- map_dfr(test_results_list, collect_metrics, .id = "model_id") |>
+  dplyr::select(model_id, .metric, .estimate) |>
+  pivot_wider(names_from = .metric, values_from = .estimate) |>
+  mutate(across(where(is.numeric), round, 4)) |>
+  mutate(
+    Modelo = c(
+      "Árvore de Decisão", "Bagging",
+      "Floresta aleatória", "XGBoost"
+    )
+  ) |>
+  relocate(Modelo) |>
+  dplyr::select(-model_id)
+
+colnames(metrics_table) <- c("Modelo", "Accuracy", "ROC AUC", "Brier Score")
+
+metrics_table <- as_tibble(metrics_table)
+```
+
+```{r eval=FALSE}
+metrics_table |>
+  arrange(desc(`ROC AUC`)) |>
+  knitr::kable()
+```
+
+### Resultados
+
+```{r echo=FALSE}
+metrics_table |>
+  arrange(desc(`ROC AUC`)) |>
+  knitr::kable()
+```
+
+:::
+
+## Resultado na base de teste
+
+<!-- O modelo que obteve o melhor resultado foi o discriminante linear, com base na curva ROC e o brier. Na base de teste, ele obteve um ROC AUC de 0,8652, a métrica de brier 0,1443 e obteve uma acurácia de 78,57%. O que pior perfomou foi o Naive Bayes, obtendo as piores estatísticas para todas as métricas consideradas. -->
+
+O modelo que obteve o melhor resultado foi o boosting, com base na curva ROC e o brier. Na base de teste, ele obteve um ROC AUC de 0,8641, a métrica de brier 0,1462 e obteve uma acurácia de 78,57%. O que pior perfomou foi o Bagging, obtendo as piores estatísticas para todas as métricas consideradas.
+
+## Hiperparâmetros selecionados dos modelos tunados
+
+```{r eval=TRUE}
+# Hiperparâmetros para bagged trees
+
+grid_results |>
+  extract_workflow_set_result("bt_fit") |>
+  select_by_one_std_err(desc(tree_depth), metric = "roc_auc") |>
+  knitr::kable()
+
+# Hiperparâmetros da random forest
+
+grid_results |>
+  extract_workflow_set_result("rf_fit") |>
+  select_by_one_std_err(desc(trees), metric = "roc_auc") |>
+  knitr::kable()
+
+# Hiperparâmetros do boosting
+
+grid_results |>
+  extract_workflow_set_result("xgb_fit") |>
+  select_by_one_std_err(desc(tree_depth), metric = "roc_auc") |>
+  knitr::kable()
+
+# Hiperparâmetros da árvore de decisão
+
+grid_results |>
+  extract_workflow_set_result("dt_fit") |>
+  select_by_one_std_err(desc(tree_depth), metric = "roc_auc") |>
+  knitr::kable()
+```
+
+## Matriz de confusão
+
+```{r}
+final_xgb_wf <- grid_results |>
+  extract_workflow("xgb_fit") |>
+  finalize_workflow(best_sets[["xgb_fit"]])
+
+final_xgb_fit <- final_xgb_wf |>
+  fit(data = training(data_split))
+
+xgb_preds <- final_xgb_fit |>
+  predict(new_data = testing(data_split), type = "class") |>
+  bind_cols(testing(data_split) |> select(Outcome))
+
+
+xgb_preds |>
+  conf_mat(truth = Outcome, estimate = .pred_class)
+```
+
+## Matriz de confusão
+
+A precisão (69,6%) indica que quando o modelo prevê diabetes, cerca de 30% das vezes ele está errado (falsos positivos). $(39 / (39 + 17))$
+
+A sensibilidade (72,2%) indica que 27,8% dos indivíduos com diabetes são erroneamente classificados como saudáveis (falsos negativos). $(39/(39 + 15))$
+
+A especificidade (83%) mostra que o modelo é melhor para identificar quem não tem diabetes do que quem tem. $(83 / (83 + 17))$
+
+## Árvore de decisão
+
+::: {.panel-tabset}
+
+### Código
+
+```{r}
+final_dt_wf <- grid_results |>
+  extract_workflow("dt_fit") |>
+  finalize_workflow(best_sets[["dt_fit"]])
+
+final_dt_fit <- final_dt_wf |> fit(data = training(data_split))
+
+dt_rpart <- extract_fit_engine(final_dt_fit)
+
+rpart.plot(
+  dt_rpart,
+  type = 5,
+  extra = 108,
+)
+```
+
+### Resultados
+
+```{r echo=FALSE}
+rpart.plot(
+  dt_rpart,
+  type = 5,
+  extra = 108,
+)
+```
+
+:::
+
+# Referência
+
+Pima Indians Diabetes. Baixado através do Kaggle em: <https://www.kaggle.com/datasets/uciml/pima-indians-diabetes-database>.

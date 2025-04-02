@@ -20,7 +20,7 @@ format:
 editor:
   markdown:
     wrap: 72
-lang: pt-b
+lang: pt-br
 ---
 
 # Sobre o banco de dados
