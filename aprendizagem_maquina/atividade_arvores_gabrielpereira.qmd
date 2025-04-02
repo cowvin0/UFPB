@@ -270,7 +270,7 @@ metrics_table <- map_dfr(test_results_list, collect_metrics, .id = "model_id") |
   mutate(
     Modelo = c(
       "Árvore de Decisão", "Bagging",
-      "Floresta aleatória", "XGBoost"
+      "Floresta aleatória", "Boosting"
     )
   ) |>
   relocate(Modelo) |>
