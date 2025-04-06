@@ -1,0 +1,579 @@
+---
+block-headings: false
+# cache: true
+template-partials:
+  - includes/before-body.tex
+toc-title: \centering Sumário \thispagestyle{empty}
+format:
+  pdf:
+    pdf-engine: lualatex
+    papersize: A4
+    keep-tex: true
+    geometry:
+      - left=3cm,
+      - right=2cm,
+      - top=3cm,
+      - bottom=2cm
+    include-before-body:
+      text: |
+        \numberwithin{algorithm}{chapter}
+        \algrenewcommand{\algorithmiccomment}[1]{\hskip3em$\rightarrow$ #1}
+    code-block-bg: "#F0F2F4"
+    code-block-background: true
+crossref:
+  custom:
+    - kind: float
+      key: algo
+      reference-prefix: "Algoritmo"
+      caption-prefix: "Algoritmo"
+      latex-env: algo
+      latex-list-of-description: Algoritmo
+filters:
+  - pseudocode
+pseudocode:
+  caption-prefix: "Algoritmo"
+  reference-prefix: "Algoritmo"
+  caption-number: true
+number-sections: true
+indent: true
+documentclass: scrreprt
+whitespace: small
+lang: pt-br
+bibliography: includes/bib.bib
+csl: includes/ufpe-abnt.csl
+toc: true
+title: Relatório de estágio supervisionado II
+author: Gabriel de Jesus Pereira
+mermaid:
+  theme: forest
+date: today
+date-format: "MMMM, YYYY"
+highlight-style: github
+fontsize: 12pt
+interlinespace: 1.5pt
+fig-cap-location: bottom
+warning: false
+echo: false
+include-in-header:
+  - includes/pdf_config.sty
+---
+
+\pagenumbering{arabic}
+\pagestyle{fancy}
+
+\fancyhf{}
+\fancyhead[RO, LE]{\thepage}
+\fancyhead[LO]{\leftmark}
+\fancyhead[RE]{\thepage}
+
+\fancypagestyle{plain}{
+  \pagestyle{fancy}
+  \fancyhf{}
+  \fancyhead[RO, LE]{\thepage}
+  \fancyhead[RE]{\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+}
+
+\thispagestyle{empty}
+
+\newpage
+
+\bgroup
+\hypersetup{linkcolor = black}
+
+\cleardoublepage
+\renewcommand{\listfigurename}{\centering{Lista de Figuras}}
+\listoffigures
+\thispagestyle{empty}
+
+\cleardoublepage
+\renewcommand{\listtablename}{\centering{Lista de Tabelas}}
+\listoftables
+\thispagestyle{empty}
+
+\cleardoublepage
+\renewcommand{\listalgorithmname}{\centering{Lista de Algoritmos}}
+\listofalgorithms
+\thispagestyle{empty}
+
+\egroup
+
+# Introdução
+
+# Sobre a empresa
+
+# Recursos Computacionais
+
+\ \ \ Nesta seção, serão apresentados os recursos computacionais utilizados no desenvolvimento do projeto realizado durante o estágio. As ferramentas selecionadas incluem a linguagem de programação Python, amplamente conhecida, e o sistema de banco de dados Denodo, utilizado por toda a empresa para consulta à base de dados. Dessa forma, a primeira etapa consiste em descrever a tecnologia empregada na coleta dos dados utilizados no projeto.
+
+## Recurso para coleta de dados
+
+\ \ \ Para a coleta dos dados utilizados no projeto, foi adotado o **Denodo**, uma plataforma de virtualização de dados amplamente utilizada pela empresa. Essa ferramenta permite o acesso, integração e consulta a múltiplas fontes de dados, estruturadas ou não estruturadas, sem a necessidade de mover ou replicar os dados fisicamente.
+
+\vspace{12pt}
+
+A partir do **Denodo**, é possível extrair dados da quantidade de novos associados obtidos pelas cooperativas e agências, os lucros obtidos da empresa em relação a produtos de crédito, previdência, despesas e receitas, entre muitos outros. No caso do projeto realizado durante o estágio, foram coletados dados de receitas, despesas e quantidade de novos associados em cada uma das agências sediadas no nordeste.
+
+\vspace{12pt}
+
+A utilização do Denodo proporcionou maior agilidade no processo de extração e consulta das informações necessárias, além de garantir padronização e segurança no acesso aos dados corporativos. Por meio de sua interface intuitiva, suporte à linguagem SQL e sua fácil conexão com a linguagem **Python**, foi possível realizar consultas eficientes à base de dados, atendendo às demandas específicas do projeto desenvolvido durante o estágio.
+
+\vspace{12pt}
+
+Com os dados coletados, o próximo passo foi fazer toda a sua organização para finalmente realizar a modelagem e poder utilizar esses dados na modelagem final. Portanto, a seção a seguir irá descrever quais ferramentas foram utilizadas para realizar a limpeza, organização e modelagem de cada um dos produtos utilizados.
+
+## Recursos utilizados para modelagem e visualização dos resultados
+
+\ \ \ Com os dados coletados, a etapa de modelagem dos valores de imóveis torna-se essencial para converter essas informações em entendimentos relevantes e aplicáveis. Essa etapa permite identificar padrões de comportamento entre as variáveis que influenciam os valores imobiliários, além de determinar quais fatores exercem maior impacto sobre esses valores. Para chegar a esses resultados, foram utilizadas bibliotecas desenvolvidas em **Python**, como [**scikit-learn**](https://scikit-learn.org/stable/) [@scikit-learn], [**pandas**](https://pandas.pydata.org/) [@reback2020pandas], empregada para a manipulação das bases de dados utilizadas neste trabalho, [**numpy**](https://numpy.org/) [@harris2020array], voltada para computação numérica, entre outras.
+
+\vspace{12pt}
+
+O [**scikit-learn**](https://scikit-learn.org/stable/) é uma das bibliotecas de aprendizado de máquina mais populares em **Python**. Ela oferece uma extensa coleção de algoritmos para tarefas como classificação, regressão, clusterização, além de ferramentas para pré-processamento de dados, validação cruzada e seleção de modelos. O projeto teve início no Google Summer of Code como uma iniciativa do engenheiro francês David Cournapeau. O [**scikit-learn**](https://scikit-learn.org/stable/) foi criado como uma ferramenta baseada na biblioteca [**SciPy**](https://scipy.org/) [@2020SciPy-NMeth], que é voltada para computação científica e cálculo numérico em **Python**.
+
+\vspace{12pt}
+
+Uma das funcionalidades mais úteis do [**scikit-learn**](https://scikit-learn.org/stable/) é o uso de pipelines para transformar dados. As pipelines permitem combinar etapas de pré-processamento e ajuste de modelos em um único fluxo organizado. Isso não apenas simplifica o código, mas também assegura que as transformações aplicadas aos dados de treinamento sejam automaticamente replicadas nos dados de teste ou em novos dados. Além de serem úteis para tarefas mais simples, como normalização de variáveis, as pipelines permitem a inclusão de etapas personalizadas para lidar com cenários mais complexos, como tratamentos avançados de dados ou integração com ferramentas externas.
+
+\vspace{12pt}
+
+O exemplo abaixo ilustra uma pipeline para pré-processamento e modelagem. As variáveis numéricas passam por padronização, enquanto as variáveis categóricas são transformadas em variáveis binárias utilizando codificação one-hot. Por fim, os dados processados alimentam um algoritmo de Random Forest para regressão:
+
+```{python}
+#| echo: true
+#| eval: false
+
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.pipeline import Pipeline
+from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.ensemble import RandomForestRegressor
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y,
+    test_size=0.2,
+    random_state=42
+)
+
+numerical_features = X.select_dtypes(include=np.number).columns
+categorical_features = X.select_dtypes(include=object).columns
+
+pipeline = Pipeline([
+    ('preprocessor', ColumnTransformer([
+        ('num', StandardScaler(), numerical_features),
+        ('cat', OneHotEncoder(), categorical_features)
+    ])),
+    ('model', RandomForestRegressor(
+        n_estimators=100,
+        random_state=42
+    ))
+])
+
+pipeline.fit(X_train, y_train)
+```
+
+Outra etapa fundamental no processo de aprendizado de máquina, além do pré-processamento dos dados e do ajuste do algoritmo, é a otimização dos hiperparâmetros. O [**scikit-learn**](https://scikit-learn.org/stable/) oferece algumas ferramentas para essa tarefa, mas elas possuem funcionalidades mais básicas e podem ser limitadas para cenários mais complexos. Dessa forma, de forma complementar, esse trabalho utilizou a biblioteca [**Optuna**](https://optuna.org/) [@optuna_2019], que é uma biblioteca que contém uma grande quantidade de algoritmos para otimização, como, por exemplo, métodos de otimização bayesiana.
+
+\vspace{12pt}
+
+Além das funcionalidades de otimização, o [**Optuna**](https://optuna.org/) também oferece ferramentas para analisar o comportamento da função objetivo durante o processo de otimização e identificar os hiperparâmetros mais relevantes. Uma dessas ferramentas é a função `plot_param_importances`, que gera um gráfico destacando a importância relativa de cada hiperparâmetro. Além disso, como o `plot_param_importances` utiliza a biblioteca [**Matplotlib**](https://matplotlib.org/) [@Hunter:2007], os gráficos gerados podem ser personalizados pelo usuário.
+
+\vspace{12pt}
+
+Vale destacar que bibliotecas como o [**Matplotlib**](https://matplotlib.org/) e o [**seaborn**](https://seaborn.pydata.org/) [@Waskom2021] desempenharam um papel fundamental na geração dos gráficos e na visualização dos dados apresentados neste trabalho. Essas ferramentas foram indispensáveis para a análise exploratória e a apresentação dos resultados de forma clara e compreensível. Além dessas bibliotecas, também foram utilizados recursos voltados para a análise do impacto e das relações entre as variáveis e as previsões realizadas pelos modelos. Nesse contexto, destacam-se o [**SHAP**](https://shap.readthedocs.io/en/latest) [@NIPS2017_7062], que fornece explicações interpretáveis para os modelos de aprendizado de máquina, e o próprio [**scikit-learn**](https://scikit-learn.org/stable/), que foi essencial para a criação dos gráficos de ICE (Individual Conditional Expectation). Esses métodos serão detalhados na seção de metodologia deste trabalho.
+
+\vspace{12pt}
+
+Vale ressaltar que algumas bibliotecas externas, baseadas na API do [**scikit-learn**](https://scikit-learn.org/stable/), também foram utilizadas neste trabalho. Entre elas, destacam-se a [**LightGBM**](https://lightgbm.readthedocs.io/en/stable/) [@ke2017lightgbm] e a [**XGBoost**](https://xgboost.readthedocs.io/en/stable/) [@chen2016xgboost], empregadas para a implementação de algoritmos de aprendizado de máquina. Essas bibliotecas fornecem, respectivamente, os algoritmos de gradient boosting LightGBM e Extreme Gradient Boosting, reconhecidos por sua eficiência computacional e desempenho em tarefas de modelagem preditiva.
+
+\vspace{12pt}
+
+Conclui-se, assim, a apresentação das ferramentas empregadas na modelagem e visualização dos resultados. A seguir, serão descritas as tecnologias utilizadas no desenvolvimento da aplicação final deste trabalho. Vale destacar que o [**scikit-learn**](https://scikit-learn.org/stable/) continuou desempenhando um papel relevante na aplicação, com sua pipeline sendo serializada no formato `.pkl` por meio da biblioteca [**pickle**](https://docs.python.org/3/library/pickle.html). Essa biblioteca permitiu a reutilização da pipeline no back-end^[Back-end é a parte de um sistema ou aplicação responsável pelo processamento de dados, lógica e comunicação com bancos de dados e servidores, funcionando nos bastidores da interface com o usuário.] da aplicação, garantindo a consistência, eficiência do processamento dos dados e predição do modelo para novos dados. Segue, então, a descrição das ferramentas empregadas na construção da aplicação final.
+
+## Recursos utilizados para a criação da aplicação final
+
+\ \ \ A aplicação final foi desenvolvida com o objetivo de realizar previsões de valores de imóveis e oferecer uma análise detalhada do mercado imobiliário da cidade de João Pessoa. Além de integrar a pipeline de machine learning criada durante a etapa de modelagem, a aplicação também dispõe de funcionalidades interativas que permitem aos usuários explorar os dados e visualizar os resultados de forma clara e intuitiva. Para alcançar esses objetivos, foram empregadas tecnologias para o desenvolvimento do front-end^[Front-end é a parte de um sistema ou aplicação responsável pela interface gráfica e pela interação com o usuário.] e do back-end, que foram desenvolvidos em **Python**.
+
+\vspace{12pt}
+
+O front-end da aplicação foi desenvolvido utilizando a biblioteca [**Dash**](https://dash.plotly.com/) [@shammamah_hossain-proc-scipy-2019], uma ferramenta voltada para a criação de aplicativos web em **Python**. Desenvolvida pela [**Plotly**](https://plotly.com/) [@plotly], a [**Dash**](https://dash.plotly.com/) permite construir interfaces gráficas completas sem a necessidade de conhecimentos avançados em desenvolvimento web, integrando tecnologias como `HTML`, `CSS` e **JavaScript** diretamente no ambiente **Python**. Entre suas principais características, destacam-se a facilidade de criar gráficos interativos, a integração com bibliotecas populares como [**Plotly**](https://plotly.com/) e a capacidade de atualizar componentes de forma dinâmica por meio de funções suas funções `callback`. A seguir é apresentado um exemplo do uso da função `callback`:
+
+```{python}
+#| eval: false
+#| echo: true
+
+from dash import Dash, dcc, html, Output, Input
+import plotly.express as px
+import pandas as pd
+
+df = pd.DataFrame({
+    'Categoria': ['A', 'B', 'C'],
+    'Valores': [10, 20, 30]
+})
+
+app = Dash(__name__)
+
+app.layout = html.Div([
+    dcc.Dropdown(
+        id='dropdown',
+        options=[
+          {'label': cat, 'value': cat}
+          for cat in df['Categoria']
+        ],
+        value='A',
+        clearable=False
+    ),
+    dcc.Graph(id='graph')
+])
+
+@app.callback(
+    Output('graph', 'figure'),
+    Input('dropdown', 'value')
+)
+def update_graph(selected_category):
+    filtered_df = df[df['Categoria'] == selected_category]
+    fig = px.bar(
+      filtered_df,
+      x='Categoria',
+      y='Valores',
+      title=f'Valores da Categoria {selected_category}')
+
+    return fig
+
+if __name__ == '__main__':
+    app.run_server(debug=True)
+```
+
+Neste exemplo, o código permite que o usuário selecione um valor em um menu suspenso, criado a partir da classe `Dropdown`, e exiba o valor escolhido em um gráfico. Primeiramente, é criado um pequeno conjunto de dados utilizando a biblioteca [**pandas**](https://pandas.pydata.org/), contendo categorias (A, B e C) e valores associados a elas. Em seguida, define-se o layout da aplicação (`app.layout`), que consiste em um `Dropdown` para selecionar uma categoria e um componente `Graph` para exibir o gráfico correspondente. A lógica para atualizar o gráfico conforme a seleção do usuário é implementada por meio da função `callback`. O decorador `@app.callback` conecta o valor selecionado no `Dropdown` (definido pela classe `Input`) ao gráfico (definido pela classe `Output`). A função associada ao decorador `callback`, chamada `update_graph`, recebe como argumento o valor escolhido no `Dropdown`, filtra o DataFrame com base na categoria selecionada e gera um gráfico de barras utilizando a biblioteca [**Plotly**](https://plotly.com/). Este gráfico é então retornado para ser exibido no componente `Graph`.
+
+\vspace{12pt}
+
+Para o desenvolvimento do back-end da aplicação foi utilizado o framework [**FastAPI**](https://fastapi.tiangolo.com/), uma ferramenta moderna e eficiente para a criação de APIs em **Python**. O [**FastAPI**](https://fastapi.tiangolo.com/) é conhecido por sua alta performance, graças ao uso de tipagem estática e a sua facilidade de suporte assíncrono, além de permitir a criação de APIs de maneira rápida e simples. Além disso, integra-se facilmente com bibliotecas como [**Pydantic**](https://docs.pydantic.dev/latest/) para validação de dados e [**SQLAlchemy**](https://www.sqlalchemy.org/) [@sqlalchemy] para interação e conexão com bancos de dados.
+
+\vspace{12pt}
+
+No projeto, o [**SQLAlchemy**](https://www.sqlalchemy.org/) foi utilizado para gerenciar a conexão com o banco de dados, implementado com [**PostgresSQL**](https://www.postgresql.org/), um sistema de gerenciamento de banco de dados relacional amplamente reconhecido por sua robustez e alto desempenho. Isso permitiu que os dados fossem expostos na API e consumidos no front-end. Além disso, a API foi responsável por expor a pipeline do modelo, possibilitando a realização de previsões de valores imobiliários diretamente na aplicação. Não obstante, os mapas da cidade de João Pessoa, criados com a biblioteca [**Folium**](https://python-visualization.github.io/folium/latest/) [@folium], foram servidos pela API, que expôs seus arquivos HTML para consumo no front-end.
+
+\vspace{12pt}
+
+O [**Docker**](https://www.docker.com/) foi utilizado para facilitar a execução e integração dos componentes da aplicação, permitindo a criação de ambientes isolados e consistentes para o front-end e o back-end. Por meio de containers, foi possível iniciar e conectar ambos os serviços de forma simplificada, garantindo que a aplicação funcionasse corretamente independentemente do ambiente em que fosse executada. Com o uso do [**Docker**](https://www.docker.com/), a configuração do ambiente tornou-se reprodutível, escalável e de fácil manutenção. Além disso, o banco de dados [**PostgresSQL**](https://www.postgresql.org/) foi criado a partir do [**Docker**](https://www.docker.com/).
+
+\vspace{12pt}
+
+O [**Docker**](https://www.docker.com/) é uma plataforma que permite empacotar aplicações e suas dependências em unidades chamadas containers, que podem ser executadas de maneira padronizada em qualquer sistema que possua o [**Docker**](https://www.docker.com/) instalado. Isso elimina problemas comuns relacionados a diferenças de ambiente e facilita o processo de desenvolvimento, teste e implantação de aplicações.
+
+\vspace{12pt}
+
+Com as tecnologias mencionadas anteriormente e o modelo final obtido, foi possível criar uma aplicação capaz de realizar previsões para os imóveis da cidade de João Pessoa, além de proporcionar uma análise de seu setor imobiliário. No entanto, o desenvolvimento de todo o código da aplicação exigiu o uso de ferramentas que facilitassem sua escrita, desenvolvimento e organização. Assim, a seguir serão apresentadas as ferramentas utilizadas tanto para a implementação do código deste trabalho quanto para a elaboração do documento final de texto que o descreve.
+
+## Recursos utilizados para escrita de código e de documento
+
+\ \ \ O desenvolvimento deste trabalho foi realizado em um computador equipado com processador AMD Ryzen 7 5800H (16 núcleos), 8 GB de memória RAM, placa de vídeo GeForce GTX 1650 e um SSD NVMe de 256 GB, operando sob o sistema Pop!_OS 22.04 LTS. Embora a máquina ofereça um desempenho geral satisfatório, a quantidade limitada de memória RAM apresentou desafios em tarefas mais intensivas, como a otimização de hiperparâmetros dos modelos. Essas tarefas frequentemente demandavam até dois dias para sua conclusão e, em alguns casos, falhavam próximo ao término devido ao alto consumo computacional. Dessa forma, a escolha das ferramentas utilizadas para a escrita do código foram as que impactassem o mínimo possível no desempenho do sistema.
+
+\vspace{12pt}
+
+O [**Visual Studio Code (VSCode)**](https://code.visualstudio.com/) foi a principal ferramenta utilizada para a escrita do código neste trabalho. O [**VSCode**](https://code.visualstudio.com/) é um editor bastante leve e oferece suporte a diversas linguagens de programação e permite integração com inúmeras tecnologias por meio de suas extensões. Entre as extensões utilizadas, destaca-se o [**vscodevim**](https://marketplace.visualstudio.com/items?itemName=vscodevim.vim), que incorpora os key mappings do editor de texto Vim, originalmente criado por Bram Moolenaar e lançado em 2 de novembro de 1991. Além disso, foram empregadas extensões específicas para as linguagens **Python** e **R**, tendo como principal objetivo uma melhor formatação de código, execução e identificação de possíveis erros.
+
+\vspace{12pt}
+
+Por exemplo, uma das extensões utilizadas para análise estática de código em **Python** foi o [**Pyright**](https://marketplace.visualstudio.com/items?itemName=ms-pyright.pyright), desenvolvido pela Microsoft. Essa ferramenta é projetada para detectar erros durante o desenvolvimento e verificar a tipagem de código em **Python**, contribuindo para a melhoria da qualidade e da manutenção do programa. Outra ferramenta empregada foi o [**Black Formatter**](https://marketplace.visualstudio.com/items?itemName=ms-python.black-formatter), um formatador de código **Python**. Ele automatiza a padronização do estilo de código, garantindo consistência e legibilidade. Além disso, foi utilizado o [**Flake8**](https://marketplace.visualstudio.com/items?itemName=ms-python.flake8), que analisa o código em busca de erros de sintaxe, problemas de estilo com base no padrão [**PEP 8**](https://peps.python.org/pep-0008/), e outras questões, como redundâncias ou importações desnecessárias. Por fim, também foi utilizada uma extensão mais geral de suporte à linguagem **Python**, que oferece diversas funcionalidades, como correção de código por meio da extensão [**PythonDebugger**](https://marketplace.visualstudio.com/items?itemName=ms-python.debugpy), que utiliza a biblioteca debugpy para suporte ao processo de debugging.
+
+
+\vspace{12pt}
+
+Para a elaboração deste documento, foi utilizado o [**Quarto**](https://quarto.org/) [@quarto], uma plataforma de publicação científica desenvolvida pela empresa Posit. O [**Quarto**](https://quarto.org/) é uma evolução do RMarkdown e se destaca por sua capacidade de criar documentos de alta qualidade que integram texto e código. Compatível com diversas linguagens de programação, como **R**, **Python**, e outras, essa ferramenta é extremamente versátil para análise de dados e geração de relatórios. Com o [**Quarto**](https://quarto.org/), é possível produzir relatórios, artigos, livros, apresentações e até sites. Ele é amplamente adotado na comunidade científica, especialmente entre usuários de **R**, e oferece suporte a Markdown e \LaTeX, o que facilita a inclusão de fórmulas matemáticas, gráficos, tabelas e outros elementos visuais. Além disso, os documentos gerados podem ser exportados para diversos formatos, como HTML, PDF, MS Word, entre outros. O [**Quarto**](https://quarto.org/) também foi utilizado através do [**VSCode**](https://code.visualstudio.com/), com a sua extensão disponível em <https://quarto.org/docs/tools/vscode.html>.
+
+\vspace{12pt}
+
+No contexto deste trabalho, o [**Quarto**](https://quarto.org/) foi utilizado para a produção de todo o texto, garantindo conformidade com as normas da ABNT. Sua capacidade de integrar texto, código e gráficos de maneira organizada foi essencial para facilitar o desenvolvimento do documento.
+
+# Modelos utilizados no projeto
+
+Neste capítulo, serão descritos os algoritmos de aprendizado de máquina e estatísticos utilizados no projeto. Alguns dos métodos utilizados podem fazer uso de diversos algoritmos, modelos estatísticos, regressão com regularização. Entre os algoritmos de aprendizagem de máquinas utilizados, estão aqueles que são baseados em árvores e uma rede neural conhecida como LSTM (Long Short-Term Memory). Dessa forma, esse capítulo começará explicando os algoritmos baseados em árvores utilizados no projeto, fundamentando primeiramente as árvores de decisão.
+
+## Árvores de decisão
+
+\ \ \ Árvores de decisão podem ser utilizadas tanto para regressão quanto para classificação. Elas servem de base para os modelos baseados em árvores empregados neste trabalho, focando particularmente nas árvores de regressão^[Uma árvore de regressão é um caso específico da árvore de decisão, mas para regressão.]. O processo de construção de uma árvore se baseia no particionamento recursivo do espaço dos preditores, onde cada particionamento é chamado de nó e o resultado final é chamado de folha ou nó terminal. Em cada nó, é definida uma condição e, caso essa condição seja satisfeita, o resultado será uma das folhas desse nó. Caso contrário, o processo segue para o próximo nó e verifica a próxima condição, podendo gerar uma folha ou outro nó. Veja um exemplo na @fig-arvore.
+
+![Exemplo de estrutura de árvore de regressão. A árvore tem cinco folhas e quatro nós internos.](includes/mermaid-tree.png){#fig-arvore}
+
+\vspace{12pt}
+
+O espaço dos preditores é dividido em $J$ regiões distintas e disjuntas denotadas por $R_1, R_2, \dots, R_J$. Essas regiões são construídas em formato de caixa de forma a minimizar a soma dos quadrados dos resíduos. Dessa forma, pode-se modelar a variável resposta como uma constante $c_j$ em cada região $R_j$:
+
+$$
+f\left(x\right) = \sum^J_{j=1}c_j I\left(x \in R_j \right)\text{.}
+$$
+
+O estimador para a constante $c_j$ é encontrado pelo método de mínimos quadrados. Assim, deve-se minimizar $\sum_{x_i \in R_j} \left[y_i - f\left(x_i\right)\right]^2$. No entanto, perceba que $f\left(x_i\right)$ está sendo avaliado somente em um ponto específico $x_i$, o que reduzirá $f\left(x_i\right)$ para uma constante $c_j$. É fácil de se chegar ao resultado se for observada a definição da função indicadora $I\left(x \in R_j\right)$:
+
+$$
+I_{R_j}(x_i) =
+\begin{cases}
+    1,& \text{se } x_i \in R_j \\
+    0,& \text{se } x_i \notin R_j
+\end{cases}\text{.}
+$$
+
+Como as regiões são disjuntas, $x_i$ não pode estar simultaneamente em duas regiões. Assim, para um ponto específico $x_i$, apenas um dos casos da função indicadora será diferente de 0. Portanto, $f\left(x_i\right) = c_j$. Agora, derivando $\sum_{x_i \in R_j}\left(yi - c_j\right)^2$ em relação a $c_j$
+
+$$
+\frac{\partial}{\partial{c_j}}\sum_{x_i \in R_j} \left(y_i - c_j\right)^2 = -2\sum_{x_i \in R_j} \left(y_i - c_j\right)
+$${#eq-partialdev}
+e, ao igualar a @eq-partialdev a 0, tem-se a seguinte igualdade:
+
+$$
+\sum_{x_i \in R_j} \left(y_i - \hat{c}_j\right) = 0\text{.}
+$$
+
+Expandindo o somatório e dividindo pelo número total de pontos $N_j$ na região $R_j$, concluí-se que o estimador de $c_j$, denotado por $\hat{c}_j$, é simplesmente a média dos valores observados $y_i$ dentro da região $R_j$:
+
+$$
+\sum_{x_i \in R_j} y_i - \hat{c}_j N_j = 0 \Rightarrow \hat{c}_j = \frac{1}{N_{j}}\sum_{x_i \in R_j} y_i\text{.}
+$${#eq-estimacjdev}
+
+\vspace{12pt}
+
+No entanto, @james2013introduction caracteriza como inviável considerar todas as possíveis partições do espaço das variáveis em $J$ caixas devido ao alto custo computacional. Dessa forma, a abordagem a ser adotada é uma divisão binária recursiva. O processo começa no topo da árvore de regressão, o ponto em que contém todas as observações, e continua sucessivamente dividindo o espaço dos preditores. As divisões são indicadas como dois novos ramos na árvore, como pode ser visto na [@fig-arvore].
+
+\vspace{12pt}
+
+Para executar a divisão binária recursiva, deve-se primeiramente selecionar a variável independente $X_j$ e o ponto de corte $s$ tal que a divisão do espaço dos preditores conduza a maior redução possível na soma dos quadrados dos resíduos. Dessa forma, definimos dois semi-planos:
+
+$$
+R_{1}\left(j, s\right) = \{X | X_j \leq s\} \text{ e } R_{2}\left(j, s\right) = \{X | X_j > s\}\text{,}
+$$
+e procuramos a divisão da variável $j$ e o ponto de corte $s$ que minimizem a seguinte expressão:
+
+$$
+\min_{j, s}\left[\min_{c_1} \sum_{x_i \in R_1\left(j, s\right)} \left(y_i - c_{1}\right)^2 + \min_{c_2} \sum_{x_i \in R_2\left(j, s\right)} \left(y_i - c_{2}\right)^2\right]\text{,}
+$$
+em que $c_1$ e $c_2$ é a média da variável dependente para as observações nas regiões $R_1\left(j, s\right)$ e $R_2\left(j, s\right)$, respectivamente. Após determinar a melhor divisão, os dados são particionados nessas duas regiões, e o processo é repetido recursivamente para todas as sub-regiões resultantes.
+
+\vspace{12pt}
+
+O tamanho da árvore pode ser considerado um hiperparâmetro para regular a complexidade do modelo, pois uma árvore muito grande pode causar sobreajuste aos dados de treinamento, capturando não apenas os padrões relevantes, mas também o ruído. Como resultado, o modelo pode apresentar bom desempenho nos dados de treinamento, mas falhar ao lidar com novos dados devido à sua incapacidade de generalização. Por outro lado, uma árvore muito pequena pode não captar padrões, relações e estruturas importantes presentes nos dados. Dessa forma, a estratégia adotada para selecionar o tamanho da árvore consiste em crescer uma grande árvore $T_0$, interrompendo o processo de divisão apenas ao atingir um tamanho mínimo de nós. Posteriormente, a árvore $T_0$ é podada utilizando o critério de custo complexidade, que será definido a seguir.
+
+\vspace{12pt}
+
+Para o processo de poda da árvore, definimos uma árvore qualquer $T$ que pode ser obtida através do processo da poda de $T_0$, de modo que $T \subset T_0$. Assim, sendo $N_j$ a quantidade de pontos na região $R_j$, seja
+
+$$
+Q_j\left(T\right) = \frac{1}{N_j} \sum_{x_i \in R_j}\left(y_i - \hat{c}_j\right)^2
+$$
+uma medida de impureza do nó pelo erro quadrático médio. Assim, define-se o critério de custo complexidade:
+
+$$
+C_{\alpha}\left(T\right) = \sum_{m = 1}^{|T|}N_jQ_j\left(T\right) + \alpha |T|\text{,}
+$$
+em que $|T|$ denota a quantidade total de folhas, e $\alpha \geq 0$ é um hiperparâmetro que equilibra o tamanho da árvore e a adequação aos dados. A ideia é encontrar, para cada $\alpha$, a árvore $T_{\alpha} \subset T_0$ que minimiza $C_{\alpha}\left(T\right)$. Valores grandes de $\alpha$ resultam em árvores menores, enquanto valores menores resultam em árvores maiores, e $\alpha = 0$ resulta na própria árvore $T_0$. A busca por $T_{\alpha}$ envolve colapsar sucessivamente o nó interno que provoca o menor aumento em $\sum_j N_j Q_j\left(T\right)$, continuando o processo até produzir uma árvore com um único nó. Esse processo gera uma sequência de subárvores, na qual existe uma única subárvore menor que, para cada $\alpha$, minimiza $C_{\alpha}\left(T\right)$.
+
+\vspace{12pt}
+
+A estimação de $\alpha$ pode ser realizada por validação cruzada com cinco ou dez folds, sendo $\hat \alpha$ escolhido para minimizar a soma dos quadrados dos resíduos durante o processo de validação cruzada. Assim, a árvore final será $T_{\hat \alpha}$. O @algo-buildtree exemplifica o processo de crescimento de uma árvore de regressão:
+
+::: {#algo-buildtree}
+
+```pseudocode
+#| pdf-line-number: false
+
+\begin{algorithm}
+\caption{Algoritmo para crescer uma árvore de regressão.}
+\begin{algorithmic}
+\State \textbf{1.} Use a divisão binária recursiva para crescer uma árvore grande $T_0$ nos dados de treinamento, parando apenas quando cada folha tiver menos do que um número mínimo de observações.
+
+\vspace{3.7pt}
+
+\State \textbf{2.} Aplique o critério custo de complexidade à árvore grande \( T_0 \) para obter uma sequência de melhores subárvores \( T_\alpha \), em função de \( \alpha \).
+
+\vspace{3.7pt}
+
+\State \textbf{3.} Use validação cruzada $K\text{-fold}$ para escolher \( \alpha \). Isto é, divida as observações de treinamento em $K$ folds. Para cada \( k = 1, \ldots, K \):
+    \State \hspace{1em} (a) Repita os Passos 1 e 2 em todos os folds, exceto no $k\text{-ésimo}$ fold dos dados de
+    \State \hspace{1em} treinamento.
+    \State \hspace{1em} (b) Avalie o erro quadrático médio da previsão no $k\text{-ésimo}$ fold deixado
+    \State \hspace{1em} de fora, em função de \( \alpha \).
+
+    \vspace{3pt}
+
+    \State \hspace{1em} Faça a média dos resultados para cada valor de \( \alpha \) e escolha \( \alpha \) que minimize o erro
+    \State \hspace{1em} médio.
+
+\vspace{3.7pt}
+
+\State \textbf{4.} Retorne a subárvore \( T_{\hat{\alpha}} \) do Passo 2 que corresponde ao valor estimado de \( \alpha \).
+\end{algorithmic}
+\end{algorithm}
+```
+
+Fonte: @james2013introduction [p. 337].
+
+:::
+
+\vspace{12pt}
+
+No caso de uma árvore de decisão para classificação, a principal diferença está no critério de divisão dos nós e na poda da árvore. Para a classificação, a previsão em um nó $j$, correspondente a uma região $R_j$ com $N_j$ observações, será simplesmente a classe majoritária. Assim, tem-se:
+
+$$
+\hat{p}_{jk} = \frac{1}{N_j}\sum_{x_i \in R_j} I\left(y_i = k\right)\text{,}
+$$
+como sendo a proporção de observações da classe $k$ no nó $j$. Dessa forma, as observações no nó $j$ são classificadas na classe $k\left(j\right) = \arg \max_{k} \hat{p}_{jk}$, que é a moda no nó $j$.
+
+\vspace{12pt}
+
+Para a divisão dos nós no caso da regressão, foi utilizado o erro quadrático médio como medida de impureza. Para a classificação, algumas medidas comuns para $Q_j\left(T\right)$ são o erro de classificação, o índice de Gini ou a entropia cruzada.
+
+## Métodos Ensemble
+
+\ \ \ As árvores de decisão são conhecidas por sua alta interpretabilidade, mas geralmente apresentam um desempenho preditivo inferior em comparação com outros modelos e algoritmos. No entanto, é possível superar essa limitação construindo um modelo preditivo que combina a força de uma coleção de estimadores base, um processo conhecido como aprendizado em conjunto (Ensemble Learning). De acordo com @hastie2009elements, o aprendizado em conjunto pode ser dividido em duas etapas principais: a primeira etapa consiste em desenvolver uma população de algoritmos de aprendizado base a partir dos dados de treinamento, e a segunda etapa envolve a combinação desses algoritmos para formar um estimador agregado. Portanto, nesta seção, serão definidos os métodos de aprendizado em conjunto utilizados neste trabalho.
+
+### Random Forest
+
+::: {#algo-rf}
+
+```pseudocode
+#| pdf-line-number: false
+
+\begin{algorithm}
+\caption{Algoritmo de uma Random Forest para regressão ou classificação.}
+\begin{algorithmic}
+\State \hspace{1em} \textbf{1.} Para b = 1 até B:
+
+\vspace{0.8em}
+
+    \State \hspace{2em} (a) Construa amostras bootstrap $\mathbf{\mathcal{L}}^*$ de tamanho \( N \) dos dados de
+    \State \hspace{3.6em} \vspace{0.1em} treinamento.
+
+    \State \hspace{2em} (b) Faça crescer uma árvore de floresta aleatória \( T_b \) para os dados bootstrap,
+    \State \hspace{3.6em} repetindo recursivamente os seguintes passos para cada folha da árvore,
+    \State \hspace{3.6em} \vspace{0.5em} até que o tamanho mínimo do nó \( n_{min} \) seja atingido:
+    \State \hspace{4em} \vspace{0.1em} i. Selecione \( m \) variáveis aleatoriamente entre as \( p \) variáveis.
+    \State \hspace{4em} \vspace{0.1em} ii. Escolha a melhor variável entre as \( m \).
+    \State \hspace{4em} \vspace{0.1em} iii. Divida o nó em dois subnós.
+
+\vspace{0.8em}
+
+\State \hspace{1em} \textbf{2.} Por fim, o conjunto de árvores \( \{T_b\}^{B}_1\) é construído.
+
+\vspace{1em}
+
+\State \hspace{0.7em} No caso da regressão, para fazer uma predição em um novo ponto \( x \), temos a seguinte função:
+
+
+$$
+\hat{f}^{B}_{rf}\left(x\right) = \frac{1}{B}\sum^{B}_{b = 1} T_{b}\left(x\right)
+$$
+
+\vspace{1em}
+
+\State \hspace{0.7em} Para a classificação é utilizado o voto majoritário. Assim, seja $\hat{C}_{b}\left(x\right)$ a previsão da classe da árvore de floresta aleatória $b$. Assim:
+
+$$
+\hat{C}^{B}_{rf}\left(x\right) = \arg \max_c \sum^{B}_{b = 1}I\left(\hat{C}_b\left(x\right) = c\right)\text{,}
+$$
+
+\State em que $c$ representa as classes possíveis.
+
+\end{algorithmic}
+\end{algorithm}
+```
+
+Fonte: @hastie2009elements [p. 588].
+
+:::
+
+\ \ \ O algoritmo Random Forest é uma técnica derivada do método de Bagging, mas com modificações específicas na construção das árvores. O objetivo é melhorar a redução da variância ao diminuir a correlação entre as árvores, sem aumentar significativamente a variabilidade. Isso é alcançado durante o processo de crescimento das árvores por meio da seleção aleatória de variáveis independentes.
+
+\vspace{12pt}
+
+No algoritmo Random Forest, ao construir uma árvore a partir de amostras bootstrap, selecionam-se aleatoriamente $m \leq p$ das $p$ variáveis independentes como candidatas para a divisão, antes de cada ramificação (com $m = p$ no caso do Bagging). Dessa forma, diferente do Bagging, aqui não se considera todas as $p$ variáveis independentes para realizar a divisão e minimizar a impureza, mas apenas $m$ dessas $p$ variáveis. A escolha aleatória de apenas $m$ covariáveis como candidatas para a divisão ajuda a solucionar um dos principais problemas do algoritmo de Bagging, que tende a gerar árvores de decisão semelhantes, resultando em previsões altamente correlacionadas. O Random Forest busca diminuir esse problema ao criar oportunidades para que diferentes preditores sejam considerados. Em média, uma fração $(p -m)/ p$ das divisões nem sequer incluirá o preditor mais forte como candidato, permitindo que outros preditores tenham a chance de serem selecionados [@james2013introduction]. Esse mecanismo reduz a correlação entre as árvores, o que, por sua vez, diminui a variabilidade das predições produzidas pelas árvores.
+
+\vspace{12pt}
+
+A quantidade de variáveis independentes $m$ selecionadas aleatoriamente é um hiperparâmetro que pode ser estimado por meio de validação cruzada. Valores comuns para $m$ são $m=\sqrt{p}$​ com tamanho mínimo do nó igual a um para classificação, e $m=p/3$​ com tamanho mínimo do nó igual a cinco para regressão [@hastie2009elements]. Quando o número de variáveis é grande, mas poucas são realmente relevantes, o algoritmo Random Forest pode ter um desempenho inferior com valores pequenos de $m$, pois isso reduz as chances de selecionar as variáveis mais importantes. No entanto, usar um valor pequeno de $m$ pode ser vantajoso quando há muitos preditores correlacionados. Além disso, assim como no Bagging, a Random Forest não sofre de sobreajuste com o aumento da quantidade de árvores $B$. Portanto, é suficiente usar um $B$ grande o bastante para que a taxa de erro se estabilize [@james2013introduction].
+
+**(FALAR SOBRE O EXTRA TREES)**
+
+## Modelos de séries temporais
+
+### Suavização exponencial sazonal de Holt-Winters
+
+\ \ \ O método de suavização exponencial de Holt-Winters (HW) é uma extensão da suavização exponencial para séries que contém tendência e sazonalidade. Esse método é baseado em três equações com constantes de suavização diferentes, que são associadas a cada uma das componentes do padrão da série: nível, tendência e sazonalidade [@morettin2022analise].
+
+\vspace{12pt}
+
+Considerando uma série sazonal com período $s$, a variante mais usual do método considera o fator sazonal $F_t$ como sendo multiplicativo, enquanto a tendência permanece aditiva, isto é,
+
+$$
+Z_t = \mu_{t} F_{t} + T_{t} + a_{t}, t = 1, \cdots, N.
+$$
+
+As três equações de suavização são dadas por
+
+$$
+\begin{aligned}
+\hat{F}_{t} &= D \left(\frac{Z_{t}}{\bar{Z}_{t}}\right) + \left(1 - D\right) \hat{F}_{t-s}, \ 0 < D< 1, \ t = s + 1, \cdots, N \text{, } \\
+\bar{Z}_{t} &= A \left(\frac{Z_{t}}{\hat{F}_{t-s}}\right) + \left(1 - A\right)\left(\hat{Z}_{t-1} + \hat{T}_{t-1}\right), \ 0<A<1, \ t = s+1,\cdots, N \text{, } \\
+\hat{T}_{t} &= C\left(\bar{Z}_{t} - \bar{Z}_{t -1}\right) + \left(1 - C\right)\hat{T}_{t - 1}, \ 0< C <1, \ t=s+1, \cdots, N
+\end{aligned}
+$$
+e representam estimativas do fator sazonal, do nível e da tendência, respectivamente. $A$, $C$ e $D$ são as constantes de suavização. Por fim, para esse caso, a previsão dos valores futures se dá por
+
+$$
+\hat{Z}_{t+1}\left(h - 1\right) = \left(\bar{Z}_{t+1} + \left(h - 1\right)\hat{T}_{t+1}\right)\hat{F}_{t+1+h - s} \text{, } h = 1, 2, \cdots, s + 1
+$$
+
+No caso em que o fator sazonal é aditivo, o procedimento anterior pode ser modificado para
+
+$$
+Z_{t} = \mu_{t} + T_{t} + F_{t} + a_{t}.
+$$
+
+Nesse caso, as estimativas do fator sazonal, nível e tendência da série são dadas por
+
+$$
+\begin{aligned}
+\hat{F}_{t} &= D \left(Z_{t} - \bar{Z}_{t}\right) + \left(1 - D\right) \hat{F}_{t-s}, \ 0 < D< 1 \text{, } \\
+\bar{Z}_{t} &= A \left(Z_{t} - \hat{F}_{t-s}\right) + \left(1 - A\right)\left(\bar{Z}_{t-1} + \hat{T}_{t-1}\right), \ 0<A<1 \text{, } \\
+\hat{T}_{t} &= C\left(\bar{Z}_{t} - \bar{Z}_{t -1}\right) + \left(1 - C\right)\hat{T}_{t - 1}, \ 0< C <1 \text{, }
+\end{aligned}
+$$
+respectivamente. As constantes $A$, $C$ e $D$ são as constantes de suavização. Por fim, para esse caso a previsão final é dada por
+
+$$
+\hat{Z}_{t+1}\left(h - 1\right) = \bar{Z}_{t + 1} + \left(h - 1\right)\hat{T}_{t+1}+\hat{F}_{t + 1 + h - s}, \ h=1,\cdots, s+1 \text{.}
+$$
+
+### Naive sazonal
+
+O naive sazonal é um método bastante simples. Ele utiliza a última observação conhecida do mesmo período para realizar as previsões. Dessa forma, embora seja simples, consegue capturar variações sazonais presentes na série.
+
+\vspace{12pt}
+
+Formalmente, a previsão para o tempo $t + h$ pode ser escrito como
+
+$$i
+\hat{Z}_{t+h|t} = Z_{t+h-m\left(k+1\right)} \text{,}
+$$
+em que $m$ é o período sazonal e $k$ é a parte inteira de $\left(h-1\right)/ m$, isto é, o número de anos completos na previsão do período anterior ao tempo $t+h$. Por exemplo, com dados mensais, as previsões para todos futuros meses de fevereiro é igual ao último mês de fevereiro observado. Com dados trimestrais, a previsão para o segundo trimestre é igual ao último segundo trimestre observado. Essa regra se aplica a outros períodos sazonais [@hyndman2018forecasting].
+
+### ARIMA
+
+### LSTM
+
+## Elastic-Net
+
+# Metodologia
+
+# Produto final
+
+# Conclusão
+
+
+
+# \centering Referências {.unlisted .unnumbered}
+
+\markboth{Referências}{Referências}
+
+::: {#refs}
+:::

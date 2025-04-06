@@ -73,10 +73,12 @@ library(tidyverse)
 library(purrr)
 library(tidymodels)
 library(visdat)
+library(kernlab)
 library(corrplot)
 library(baguette)
 
-data <- read_csv("aprendizagem_maquina/diabetes.csv") |> mutate(Outcome = as.factor(Outcome))
+# data <- read_csv("aprendizagem_maquina/diabetes.csv") |> mutate(Outcome = as.factor(Outcome))
+data <- read_csv("diabetes.csv") |> mutate(Outcome = as.factor(Outcome))
 cols <- c("Glucose", "BloodPressure", "SkinThickness", "Insulin", "BMI")
 data[cols][data[cols] == 0] <- NA
 
@@ -316,6 +318,8 @@ rec <- recipe(Outcome ~ ., data = train_data) |>
 ### Código
 
 ```{r}
+set.seed(123)
+
 cv_folds <- vfold_cv(train_data,
                      v = 10,
                      strata = Outcome
@@ -384,6 +388,24 @@ xgb_spec <- boost_tree(
   	set_engine(engine = "xgboost") |>
   	set_mode("classification")
 
+lsvm_spec <- svm_linear(cost = tune(),
+                        margin = tune()) |>
+  set_engine(engine = "kernlab") |>
+  set_mode("classification")
+
+rsvm_spec <- svm_rbf(cost = tune(),
+                     rbf_sigma = tune(),
+                     margin = tune()) |>
+  set_engine(engine = "kernlab") |>
+  set_mode("classification")
+
+psvm_spec <- svm_poly(cost = tune(),
+                      degree = tune(),
+                      scale_factor = tune(),
+                      margin = tune()) |>
+  set_engine("kernlab")  |>
+  set_mode("classification")
+
 wf = workflow_set(
   preproc = list(rec),
   models = list(
@@ -395,7 +417,10 @@ wf = workflow_set(
 		dt_fit = dt_spec,
 		bt_fit = bt_spec,
 		rf_fit = rf_spec,
-		xgb_fit = xgb_spec
+		xgb_fit = xgb_spec,
+    lsvm_fit = lsvm_spec,
+    rsvm_fit = rsvm_spec,
+    psvm_fit = psvm_spec
     )
   )  |>
   mutate(wflow_id = gsub("(recipe_)", "", wflow_id))
@@ -469,7 +494,8 @@ model_ids <- c(
   "linear_fit", "knn_fit",
   "nbayes_fit", "lda_fit",
   "qda_fit", "dt_fit",
-  "bt_fit", "rf_fit", "xgb_fit")
+  "bt_fit", "rf_fit", "xgb_fit",
+  "rsvm_fit", "lsvm_fit", "psvm_fit")
 
 best_sets <- map(model_ids, ~ grid_results %>%
                    extract_workflow_set_result(.x) %>%
@@ -499,7 +525,8 @@ metrics_table <- map_dfr(test_results_list, collect_metrics, .id = "model_id") |
     Modelo = c("Logistic", "K-NN",
     "Naive Bayes", "LDA",
     "QDA", "Árvore de Decisão", "Boost tree",
-    "Floresta aleatória", "XGBoost"
+    "Floresta aleatória", "XGBoost",
+    "RSVM", "LSVM", "PSVM"
     )
   ) |>
   relocate(Modelo) |>
@@ -552,6 +579,34 @@ grid_results |>
 grid_results |>
   extract_workflow_set_result("linear_fit") |>
   select_by_one_std_err(desc(mixture), metric = "roc_auc") |>
+  knitr::kable()
+
+# Hiperparâmetros para bagged trees
+
+grid_results |>
+  extract_workflow_set_result("bt_fit") |>
+  select_by_one_std_err(desc(tree_depth), metric = "roc_auc") |>
+  knitr::kable()
+
+# Hiperparâmetros da random forest
+
+grid_results |>
+  extract_workflow_set_result("rf_fit") |>
+  select_by_one_std_err(desc(trees), metric = "roc_auc") |>
+  knitr::kable()
+
+# Hiperparâmetros do boosting
+
+grid_results |>
+  extract_workflow_set_result("xgb_fit") |>
+  select_by_one_std_err(desc(tree_depth), metric = "roc_auc") |>
+  knitr::kable()
+
+# Hiperparâmetros da árvore de decisão
+
+grid_results |>
+  extract_workflow_set_result("dt_fit") |>
+  select_by_one_std_err(desc(tree_depth), metric = "roc_auc") |>
   knitr::kable()
 ```
 

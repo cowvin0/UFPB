@@ -1,3 +1,4 @@
+ranger
 dplyr
 ggplot2
 kknn
@@ -27,5 +28,9 @@ workflows
 workflowsets
 yardstick
 visdat
+kernlab
 corrplot
+baguette
 MASS
+rpart
+xgboost
