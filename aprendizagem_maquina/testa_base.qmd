@@ -555,7 +555,9 @@ metrics_table |>
 
 ## Resultado na base de teste
 
-O modelo que obteve o melhor resultado foi o discriminante linear, com base na curva ROC e o brier. Na base de teste, ele obteve um ROC AUC de 0,8652, a métrica de brier 0,1443 e obteve uma acurácia de 78,57%. O que pior perfomou foi o Naive Bayes, obtendo as piores estatísticas para todas as métricas consideradas.
+O modelo que apresentou o melhor desempenho geral foi o Boosted Tree, destacando-se especialmente pelo maior valor de ROC AUC (0,8787) e pelo menor Brier Score (0,1357), indicando excelente capacidade de discriminação e boa calibração das probabilidades. Sua acurácia foi de 78,57%, compatível com os demais bons modelos. Outro destaque positivo foi o LSVM, que obteve a maior acurácia (79,22%), embora com um Brier Score um pouco mais alto (0,1465) em comparação ao Boosted Tree.
+
+Por outro lado, o modelo que apresentou o pior desempenho foi o Naive Bayes, que teve as piores estatísticas em todas as métricas avaliadas, com acurácia de 70,13%, ROC AUC de 0,8128 e um Brier Score de 0,1842, indicando desempenho inferior tanto em acurácia quanto em qualidade de probabilidade preditiva.
 
 ## Hiperparâmetros selecionados dos modelos tunados
 
@@ -564,8 +566,7 @@ O modelo que obteve o melhor resultado foi o discriminante linear, com base na c
 
 grid_results |>
   extract_workflow_set_result("knn_fit") |>
-  select_by_one_std_err(desc(neighbors), metric = "roc_auc") |>
-  knitr::kable()
+  select_by_one_std_err(desc(neighbors), metric = "roc_auc") |> knitr::kable()
 
 # Hiperparâmetros do naive bayes
 
@@ -607,6 +608,27 @@ grid_results |>
 grid_results |>
   extract_workflow_set_result("dt_fit") |>
   select_by_one_std_err(desc(tree_depth), metric = "roc_auc") |>
+  knitr::kable()
+
+# Hiperparâmetros da LSVM
+
+grid_results |>
+  extract_workflow_set_result("lsvm_fit") |>
+  select_by_one_std_err(desc(cost), metric = "roc_auc") |>
+  knitr::kable()
+
+# Hiperparâmetros da árvore de RSVM
+
+grid_results |>
+  extract_workflow_set_result("rsvm_fit") |>
+  select_by_one_std_err(desc(cost), metric = "roc_auc") |>
+  knitr::kable()
+
+# Hiperparâmetros da árvore de PSVM
+
+grid_results |>
+  extract_workflow_set_result("psvm_fit") |>
+  select_by_one_std_err(desc(cost), metric = "roc_auc") |>
   knitr::kable()
 ```
 
