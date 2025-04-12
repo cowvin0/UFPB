@@ -492,7 +492,9 @@ No algoritmo Random Forest, ao construir uma árvore a partir de amostras bootst
 
 A quantidade de variáveis independentes $m$ selecionadas aleatoriamente é um hiperparâmetro que pode ser estimado por meio de validação cruzada. Valores comuns para $m$ são $m=\sqrt{p}$​ com tamanho mínimo do nó igual a um para classificação, e $m=p/3$​ com tamanho mínimo do nó igual a cinco para regressão [@hastie2009elements]. Quando o número de variáveis é grande, mas poucas são realmente relevantes, o algoritmo Random Forest pode ter um desempenho inferior com valores pequenos de $m$, pois isso reduz as chances de selecionar as variáveis mais importantes. No entanto, usar um valor pequeno de $m$ pode ser vantajoso quando há muitos preditores correlacionados. Além disso, assim como no Bagging, a Random Forest não sofre de sobreajuste com o aumento da quantidade de árvores $B$. Portanto, é suficiente usar um $B$ grande o bastante para que a taxa de erro se estabilize [@james2013introduction].
 
-**(FALAR SOBRE O EXTRA TREES)**
+\vspace{12pt}
+
+Outro método bastante utilizado e semelhante ao algoritmo de Random Forest é o Extra Trees (ou Extremely Randomized Trees). A principal diferença entre eles está na forma como as árvores são construídas. No algoritmo Extra Trees, as divisões nos nós são feitas de maneira completamente aleatória, sem a busca exaustiva pela melhor variável ou pelo melhor ponto de corte. Essa aleatoriedade reduz significativamente o custo computacional, tornando o método mais eficiente em termos de tempo de processamento, especialmente em conjuntos de dados de grande dimensão.
 
 ## Modelos de séries temporais
 
@@ -548,52 +550,6 @@ $$
 \hat{Z}_{t+1}\left(h - 1\right) = \bar{Z}_{t + 1} + \left(h - 1\right)\hat{T}_{t+1}+\hat{F}_{t + 1 + h - s}, \ h=1,\cdots, s+1 \text{.}
 $$
 
-<!-- \ \ \ O método de suavização exponencial de Holt-Winters (HW) é uma extensão da suavização exponencial para séries que contém tendência e sazonalidade. Esse método é baseado em três equações com constantes de suavização diferentes, que são associadas a cada uma das componentes do padrão da série: nível, tendência e sazonalidade [@morettin2022analise].
-
-\vspace{12pt}
-
-Considerando uma série sazonal com período $s$, a variante mais usual do método considera o fator sazonal $F_t$ como sendo multiplicativo, enquanto a tendência permanece aditiva, isto é,
-
-$$
-Z_t = \mu_{t} F_{t} + T_{t} + a_{t}, t = 1, \cdots, N.
-$$
-
-As três equações de suavização são dadas por
-
-$$
-\begin{aligned}
-\hat{F}_{t} &= D \left(\frac{Z_{t}}{\bar{Z}_{t}}\right) + \left(1 - D\right) \hat{F}_{t-s}, \ 0 < D< 1, \ t = s + 1, \cdots, N \text{, } \\
-\bar{Z}_{t} &= A \left(\frac{Z_{t}}{\hat{F}_{t-s}}\right) + \left(1 - A\right)\left(\hat{Z}_{t-1} + \hat{T}_{t-1}\right), \ 0<A<1, \ t = s+1,\cdots, N \text{, } \\
-\hat{T}_{t} &= C\left(\bar{Z}_{t} - \bar{Z}_{t -1}\right) + \left(1 - C\right)\hat{T}_{t - 1}, \ 0< C <1, \ t=s+1, \cdots, N
-\end{aligned}
-$$
-e representam estimativas do fator sazonal, do nível e da tendência, respectivamente. $A$, $C$ e $D$ são as constantes de suavização. Por fim, para esse caso, a previsão dos valores futures se dá por
-
-$$
-\hat{Z}_{t+1}\left(h - 1\right) = \left(\bar{Z}_{t+1} + \left(h - 1\right)\hat{T}_{t+1}\right)\hat{F}_{t+1+h - s} \text{, } h = 1, 2, \cdots, s + 1
-$$
-
-No caso em que o fator sazonal é aditivo, o procedimento anterior pode ser modificado para
-
-$$
-Z_{t} = \mu_{t} + T_{t} + F_{t} + a_{t}.
-$$
-
-Nesse caso, as estimativas do fator sazonal, nível e tendência da série são dadas por
-
-$$
-\begin{aligned}
-\hat{F}_{t} &= D \left(Z_{t} - \bar{Z}_{t}\right) + \left(1 - D\right) \hat{F}_{t-s}, \ 0 < D< 1 \text{, } \\
-\bar{Z}_{t} &= A \left(Z_{t} - \hat{F}_{t-s}\right) + \left(1 - A\right)\left(\bar{Z}_{t-1} + \hat{T}_{t-1}\right), \ 0<A<1 \text{, } \\
-\hat{T}_{t} &= C\left(\bar{Z}_{t} - \bar{Z}_{t -1}\right) + \left(1 - C\right)\hat{T}_{t - 1}, \ 0< C <1 \text{, }
-\end{aligned}
-$$
-respectivamente. As constantes $A$, $C$ e $D$ são as constantes de suavização. Por fim, para esse caso a previsão final é dada por
-
-$$
-\hat{Z}_{t+1}\left(h - 1\right) = \bar{Z}_{t + 1} + \left(h - 1\right)\hat{T}_{t+1}+\hat{F}_{t + 1 + h - s}, \ h=1,\cdots, s+1 \text{.}
-$$
-
 ### Naive sazonal
 
 \ \ \ O método naive sazonal é uma abordagem bastante simples, porém eficaz. Ele utiliza a última observação conhecida do mesmo período sazonal para realizar as previsões. Assim, mesmo com sua simplicidade, consegue capturar variações sazonais presentes na série temporal.
@@ -609,7 +565,7 @@ em que $m$ representa o período da sazonalidade e $k$ é a parte inteira de $\l
 
 \vspace{12pt}
 
-Por exemplo, em séries mensais, a previsão para todos os futuros meses de fevereiro será igual ao valor observado no último mês de fevereiro disponível. Em séries trimestrais, a previsão para o segundo trimestre corresponderá ao último segundo trimestre observado. Essa regra se aplica analogamente a outras frequências sazonais [@hyndman2018forecasting]. -->
+Por exemplo, em séries mensais, a previsão para todos os futuros meses de fevereiro será igual ao valor observado no último mês de fevereiro disponível. Em séries trimestrais, a previsão para o segundo trimestre corresponderá ao último segundo trimestre observado. Essa regra se aplica analogamente a outras frequências sazonais [@hyndman2018forecasting].
 
 ### LSTM
 

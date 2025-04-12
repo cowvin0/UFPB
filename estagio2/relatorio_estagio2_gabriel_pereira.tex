@@ -224,7 +224,7 @@
 \@ifundefined{codebgcolor}{\definecolor{codebgcolor}{HTML}{F0F2F4}}{}
 \makeatother
 \makeatletter
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[breakable, frame hidden, sharp corners, boxrule=0pt, enhanced, colback={codebgcolor}]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, boxrule=0pt, sharp corners, breakable, colback={codebgcolor}, enhanced]}{\end{tcolorbox}}\fi
 \makeatother
 \makeatletter
 \@ifpackageloaded{algorithm}{}{\usepackage{algorithm}}
@@ -1178,7 +1178,17 @@ Random Forest não sofre de sobreajuste com o aumento da quantidade de
 árvores \(B\). Portanto, é suficiente usar um \(B\) grande o bastante
 para que a taxa de erro se estabilize (JAMES et al., 2013).
 
-\textbf{(FALAR SOBRE O EXTRA TREES)}
+\vspace{12pt}
+
+Outro método bastante utilizado e semelhante ao algoritmo de Random
+Forest é o Extra Trees (ou Extremely Randomized Trees). A principal
+diferença entre eles está na forma como as árvores são construídas. No
+algoritmo Extra Trees, as divisões nos nós são feitas de maneira
+completamente aleatória, sem a busca exaustiva pela melhor variável ou
+pelo melhor ponto de corte. Essa aleatoriedade reduz significativamente
+o custo computacional, tornando o método mais eficiente em termos de
+tempo de processamento, especialmente em conjuntos de dados de grande
+dimensão.
 
 \section{Modelos de séries
 temporais}\label{modelos-de-suxe9ries-temporais}
@@ -1246,6 +1256,32 @@ Por fim, a previsão dos valores futuros para o caso aditivo é dada por:
 \[
 \hat{Z}_{t+1}\left(h - 1\right) = \bar{Z}_{t + 1} + \left(h - 1\right)\hat{T}_{t+1}+\hat{F}_{t + 1 + h - s}, \ h=1,\cdots, s+1 \text{.}
 \]
+
+\subsection{Naive sazonal}\label{naive-sazonal}
+
+~~~O método naive sazonal é uma abordagem bastante simples, porém
+eficaz. Ele utiliza a última observação conhecida do mesmo período
+sazonal para realizar as previsões. Assim, mesmo com sua simplicidade,
+consegue capturar variações sazonais presentes na série temporal.
+
+\vspace{12pt}
+
+Formalmente, a previsão para o tempo \(t + h\) pode ser escrita como:
+
+\[
+\hat{Z}_{t+h|t} = Z_{t+h-m\left(k+1\right)} \text{,}
+\] em que \(m\) representa o período da sazonalidade e \(k\) é a parte
+inteira de \(\left(h - 1\right)/m\), ou seja, o número de ciclos
+sazonais completos entre \(t\) e \(t + h\).
+
+\vspace{12pt}
+
+Por exemplo, em séries mensais, a previsão para todos os futuros meses
+de fevereiro será igual ao valor observado no último mês de fevereiro
+disponível. Em séries trimestrais, a previsão para o segundo trimestre
+corresponderá ao último segundo trimestre observado. Essa regra se
+aplica analogamente a outras frequências sazonais (HYNDMAN;
+ATHANASOPOULOS, 2018).
 
 \subsection{LSTM}\label{lstm}
 
@@ -1436,6 +1472,10 @@ Org.). {[}S.l.{]}: {[}s.n.{]}, 2019. p. 126--133.
 HUNTER, J. D. \href{https://doi.org/10.1109/MCSE.2007.55}{Matplotlib: A
 2D graphics environment}. \textbf{Computing in Science \& Engineering},
 2007. v. 9, n. 3, p. 90--95.
+
+\bibitem[\citeproctext]{ref-hyndman2018forecasting}
+HYNDMAN, R. J.; ATHANASOPOULOS, G. \textbf{Forecasting: principles and
+practice}. {[}S.l.{]}: OTexts, 2018.
 
 \bibitem[\citeproctext]{ref-plotly}
 INC., P. T. Collaborative data science. 2015. Disponível em:
