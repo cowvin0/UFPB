@@ -498,7 +498,57 @@ A quantidade de variáveis independentes $m$ selecionadas aleatoriamente é um h
 
 ### Suavização exponencial sazonal de Holt-Winters
 
-\ \ \ O método de suavização exponencial de Holt-Winters (HW) é uma extensão da suavização exponencial para séries que contém tendência e sazonalidade. Esse método é baseado em três equações com constantes de suavização diferentes, que são associadas a cada uma das componentes do padrão da série: nível, tendência e sazonalidade [@morettin2022analise].
+\ \ \ O método de suavização exponencial de Holt-Winters (HW) é uma extensão da suavização exponencial simples para séries temporais que apresentam tendência e sazonalidade. Esse método baseia-se em três equações, cada uma com uma constante de suavização distinta, associadas às três componentes fundamentais da série: nível, tendência e sazonalidade [@morettin2022analise].
+
+\vspace{12pt}
+
+Considerando uma série com sazonalidade de período $s$, a forma mais comum do método assume um componente sazonal multiplicativo e uma tendência aditiva. Nesse caso, a série é modelada por:
+
+$$
+Z_t = \mu_{t} F_{t} + T_{t} + a_{t}, t = 1, \cdots, N.
+$$
+
+As três equações de suavização associadas ao fator sazonal, ao nível e à tendência são, respectivamente:
+
+$$
+\begin{aligned}
+\hat{F}_{t} &= D \left(\frac{Z_{t}}{\bar{Z}_{t}}\right) + \left(1 - D\right) \hat{F}_{t-s}, \ 0 < D< 1, \ t = s + 1, \cdots, N \text{, } \\
+\bar{Z}_{t} &= A \left(\frac{Z_{t}}{\hat{F}_{t-s}}\right) + \left(1 - A\right)\left(\hat{Z}_{t-1} + \hat{T}_{t-1}\right), \ 0<A<1, \ t = s+1,\cdots, N \text{, } \\
+\hat{T}_{t} &= C\left(\bar{Z}_{t} - \bar{Z}_{t -1}\right) + \left(1 - C\right)\hat{T}_{t - 1}, \ 0< C <1, \ t=s+1, \cdots, N
+\end{aligned}
+$$
+
+As constantes $A$, $C$ e $D$ representam os parâmetros de suavização do nível, da tendência e da sazonalidade, respectivamente. A previsão futura dos valores, nesse caso, é dada por:
+
+$$
+\hat{Z}_{t+1}\left(h - 1\right) = \left(\bar{Z}_{t+1} + \left(h - 1\right)\hat{T}_{t+1}\right)\hat{F}_{t+1+h - s} \text{, } h = 1, 2, \cdots, s + 1
+$$
+
+\vspace{12pt}
+
+No caso em que o fator sazonal é aditivo, o modelo assume a forma:
+
+$$
+Z_{t} = \mu_{t} + T_{t} + F_{t} + a_{t}.
+$$
+
+As equações de suavização para o componente sazonal, o nível e a tendência, respectivamente, tornam-se:
+
+$$
+\begin{aligned}
+\hat{F}_{t} &= D \left(Z_{t} - \bar{Z}_{t}\right) + \left(1 - D\right) \hat{F}_{t-s}, \ 0 < D< 1 \text{, } \\
+\bar{Z}_{t} &= A \left(Z_{t} - \hat{F}_{t-s}\right) + \left(1 - A\right)\left(\bar{Z}_{t-1} + \hat{T}_{t-1}\right), \ 0<A<1 \text{, } \\
+\hat{T}_{t} &= C\left(\bar{Z}_{t} - \bar{Z}_{t -1}\right) + \left(1 - C\right)\hat{T}_{t - 1}, \ 0< C <1 \text{, }
+\end{aligned}
+$$
+
+Por fim, a previsão dos valores futuros para o caso aditivo é dada por:
+
+$$
+\hat{Z}_{t+1}\left(h - 1\right) = \bar{Z}_{t + 1} + \left(h - 1\right)\hat{T}_{t+1}+\hat{F}_{t + 1 + h - s}, \ h=1,\cdots, s+1 \text{.}
+$$
+
+<!-- \ \ \ O método de suavização exponencial de Holt-Winters (HW) é uma extensão da suavização exponencial para séries que contém tendência e sazonalidade. Esse método é baseado em três equações com constantes de suavização diferentes, que são associadas a cada uma das componentes do padrão da série: nível, tendência e sazonalidade [@morettin2022analise].
 
 \vspace{12pt}
 
@@ -546,22 +596,109 @@ $$
 
 ### Naive sazonal
 
-O naive sazonal é um método bastante simples. Ele utiliza a última observação conhecida do mesmo período para realizar as previsões. Dessa forma, embora seja simples, consegue capturar variações sazonais presentes na série.
+\ \ \ O método naive sazonal é uma abordagem bastante simples, porém eficaz. Ele utiliza a última observação conhecida do mesmo período sazonal para realizar as previsões. Assim, mesmo com sua simplicidade, consegue capturar variações sazonais presentes na série temporal.
 
 \vspace{12pt}
 
-Formalmente, a previsão para o tempo $t + h$ pode ser escrito como
+Formalmente, a previsão para o tempo $t + h$ pode ser escrita como:
 
-$$i
+$$
 \hat{Z}_{t+h|t} = Z_{t+h-m\left(k+1\right)} \text{,}
 $$
-em que $m$ é o período sazonal e $k$ é a parte inteira de $\left(h-1\right)/ m$, isto é, o número de anos completos na previsão do período anterior ao tempo $t+h$. Por exemplo, com dados mensais, as previsões para todos futuros meses de fevereiro é igual ao último mês de fevereiro observado. Com dados trimestrais, a previsão para o segundo trimestre é igual ao último segundo trimestre observado. Essa regra se aplica a outros períodos sazonais [@hyndman2018forecasting].
+em que $m$ representa o período da sazonalidade e $k$ é a parte inteira de $\left(h - 1\right)/m$, ou seja, o número de ciclos sazonais completos entre $t$ e $t + h$.
 
-### ARIMA
+\vspace{12pt}
+
+Por exemplo, em séries mensais, a previsão para todos os futuros meses de fevereiro será igual ao valor observado no último mês de fevereiro disponível. Em séries trimestrais, a previsão para o segundo trimestre corresponderá ao último segundo trimestre observado. Essa regra se aplica analogamente a outras frequências sazonais [@hyndman2018forecasting]. -->
 
 ### LSTM
 
+### ARIMA
+
+\ \ \ Os modelos de séries temporais da classe ARIMA estão entre os mais utilizados na modelagem de dados temporais. Seu principal objetivo é descrever as autocorrelações presentes nos dados.
+
+\vspace{12pt}
+
+Os modelos ARIMA são compostos por dois componentes fundamentais: o modelo autorregressivo (AR) e o modelo de médias móveis (MA). O modelo autorregressivo utiliza uma combinação linear de valores passados da variável. Assim, um modelo AR de ordem $p$ pode ser escrito como:
+
+$$
+y_{t} = c + \phi_{1}y_{t-1} + \phi_{2}y_{t-2} + \cdots + \phi_{p}y_{t-p} + \epsilon_{t}\text{, }
+$$
+em que $\epsilon_{t}$ representa o ruído branco. O modelo autorregressivo de ordem $p$ é denotado por $\text{AR}\left(p\right)$.
+
+\vspace{12pt}
+
+Por sua vez, o modelo de médias móveis de ordem $q$, denotado por $\text{MA}\left(q\right)$, utiliza erros passados para prever os valores futuros da série. Ele é expresso por:
+
+$$
+y_{t} = c + \epsilon_{t} + \theta_{1}\epsilon_{t - 1} + \theta_{2}\epsilon_{t-2} + \cdots + \theta_{q}\epsilon_{t-q}\text{.}
+$$
+
+A partir da combinação dos modelos AR e MA, tem-se o modelo ARIMA, cuja estrutura incorpora também a diferenciação da série temporal para torná-la estacionária. O modelo ARIMA é dado por:
+
+$$
+y^{'}_{t} = c + \phi_{1}y^{'}_{t-1} + \cdots + \phi_{p}y^{'}_{t-p} + \theta_{1}\epsilon_{t-1}+ \cdots + \theta_{q}\epsilon_{t-q} + \epsilon_{t}\text{, }
+$$
+em que $y^{'}_t$ representa a série temporal após ter sido diferenciada (possivelmente mais de uma vez). O modelo é denotado por $\text{ARIMA}\left(p, d, q\right)$, em que $p$ é a ordem da componente autorregressiva, $d$ é o número de diferenciações aplicadas e $q$ é a ordem da componente de médias móveis.
+
+\vspace{12pt}
+
+O modelo ARIMA apresentado anteriormente aplica-se ao caso em que não há sazonalidade. No entanto, os modelos ARIMA também podem ser estendidos para séries temporais com padrão sazonal. Nessa situação, são incluídas componentes sazonais adicionais, resultando no modelo sazonal ARIMA, denotado por:
+
+$$
+\text{ARIMA}\left(p, d, q\right)\left(P, D, Q\right)_m
+$$
+em que $m$ representa o período da sazonalidade (por exemplo, o número de observações por ano), e $P$, $D$ e $Q$ correspondem, respectivamente, às ordens das componentes autorregressiva, de diferenciação e de médias móveis para a parte sazonal do modelo.
+
 ## Elastic-Net
+
+\ \ \ O modelo de Elastic-Net combina dois tipos de regressão com penalização, o Lasso e o Ridge, que servem para reduzir os coeficientes de regressão linear.
+
+\vspace{12pt}
+
+A regressão Ridge é um tipo de regressão que busca controlar os coeficientes impondo uma penalidade aos seus valores. Quando existem múltiplas variáveis correlacionadas em um modelo de regressão linear, os coeficientes podem exibir alta variância. Um coeficiente altamente positivo em uma variável pode ser cancelado por um altamente negativo em outra variável correlacionada. O objetivo da regressão Ridge é mitigar esse problema.
+
+\vspace{12pt}
+
+A regressão ridge é muito semelhante aos mínimos quadrados, exceto que os coeficientes são estimados minimizando uma quantidade ligeiramente diferente. Em particular, as estimativas do coeficiente de regressão de ridge $\hat{\beta}^{\text{ridge}}$ são os valores que minimizam
+
+$$
+\hat{\beta}^{\text{ridge}} = \arg \min_{\beta} \Biggl\{\sum_{i = 1}^{n}\left(y_{i} - \beta_{0} - \sum_{j=1}^{p}x_{ij}\beta_{j}\right)^2 + \lambda \sum_{j=1}^{p}\beta_{j}^2 \Biggl\}\text{, }
+$$
+em que $\lambda \geq 0$ é um parâmetro de ajuste, a ser determinado separadamente.
+
+\vspace{12pt}
+
+Assim como com os mínimos quadrados, a regressão ridge busca estimativas de coeficientes que se ajustem bem aos dados, tornando o soma dos quadrados dos erros pequeno. No entanto, o segundo termo, $\lambda \sum_{j=1}^{p}\beta_{j}^2$, chamado de penalidade de encolhimento (shrinkage penalty), é pequeno quando $\beta_{1}, \cdots, \beta_{p}$ estão próximos de zero e, portanto, tem o efeito de encolher as estimativas de $\beta_j$ em direção a zero. O parâmetro de ajuste $\lambda$ serve para controlar o impacto relativo desses dois termos nas estimativas do coeficiente de regressão.
+
+\vspace{12pt}
+
+Quando $\lambda = 0$, o termo de penalidade não tem efeito e a regressão ridge produzirá as estimativas dos mínimos quadrados. No entanto, conforme $\lambda \rightarrow \infty$, o impacto da penalidade de encolhimento aumenta e as estimativas do coeficiente de regressão ridge se aproximarão de zero.
+
+\vspace{12pt}
+
+Na regressão lasso, a soma dos mínimos quadrados penalizada é dada por:
+
+$$
+\hat{\beta}^{\text{lasso}} = \arg \min_{\beta} \Biggl\{\frac{1}{2}\sum_{i = 1}^{n}\left(y_{i} - \beta_{0} - \sum_{j=1}^{p}x_{ij}\beta_{j}\right)^2 + \lambda \sum_{j=1}^{p}|\beta_{j}| \Biggl\}\text{, }
+$$
+em que um valor de $\lambda$ suficientemente grande fará com que alguns coeficientes sejam exatamente 0.
+
+\vspace{12pt}
+
+A regressão Lasso tem algumas limitações. Em problemas com $p$ grande e $n$ pequeno, a regressão lasso selecionará no máximo $n$ variáveis. Além disso, em um grupo de variáveis muito correlacionadas, a lasso tende a selecionar apenas uma variável do grupo.
+
+\vspace{12pt}
+
+Para solucionar essas limitações a regressão elastic net adiciona a penalização quadrática da ridge à penalização da lasso. Dessa forma, o problema então torna-se:
+
+$$
+\hat{\beta} = \arg \min_{\beta} \Biggl\{\frac{1}{2}\sum_{i = 1}^{n}\left(y_{i} - \beta_{0} - \sum_{j=1}^{p}x_{ij}\beta_{j}\right)^2 + \lambda_{2} \sum_{j=1}^{p}\beta_{j}^2 + \lambda_{1} \sum_{j=1}^{p}|\beta_{j}| \Biggl\}\text{, }
+$$
+
+\vspace{12pt}
+
+Com $\lambda_{1} = 0$, temos ridge, com $\lambda_{2} = 0$, temos lasso e com $\lambda_{1} = \lambda_{2} = 0$, temos regressão linear sem regularização.
 
 # Metodologia
 
