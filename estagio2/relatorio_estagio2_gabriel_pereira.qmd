@@ -364,7 +364,7 @@ $$
 uma medida de impureza do nó pelo erro quadrático médio. Assim, define-se o critério de custo complexidade:
 
 $$
-C_{\alpha}\left(T\right) = \sum_{m = 1}^{|T|}N_jQ_j\left(T\right) + \alpha |T|\text{,}
+C_{\alpha}\left(T\right) = \sum_{j = 1}^{|T|}N_jQ_j\left(T\right) + \alpha |T|\text{,}
 $$
 em que $|T|$ denota a quantidade total de folhas, e $\alpha \geq 0$ é um hiperparâmetro que equilibra o tamanho da árvore e a adequação aos dados. A ideia é encontrar, para cada $\alpha$, a árvore $T_{\alpha} \subset T_0$ que minimiza $C_{\alpha}\left(T\right)$. Valores grandes de $\alpha$ resultam em árvores menores, enquanto valores menores resultam em árvores maiores, e $\alpha = 0$ resulta na própria árvore $T_0$. A busca por $T_{\alpha}$ envolve colapsar sucessivamente o nó interno que provoca o menor aumento em $\sum_j N_j Q_j\left(T\right)$, continuando o processo até produzir uma árvore com um único nó. Esse processo gera uma sequência de subárvores, na qual existe uma única subárvore menor que, para cada $\alpha$, minimiza $C_{\alpha}\left(T\right)$.
 
@@ -429,6 +429,8 @@ Para a divisão dos nós no caso da regressão, foi utilizado o erro quadrático
 
 ### Random Forest
 
+\ \ \ O algoritmo Random Forest é uma técnica derivada do método de Bagging, mas com modificações específicas na construção das árvores. O objetivo é melhorar a redução da variância ao diminuir a correlação entre as árvores, sem aumentar significativamente a variabilidade. Isso é alcançado durante o processo de crescimento das árvores por meio da seleção aleatória de variáveis independentes.
+
 ::: {#algo-rf}
 
 ```pseudocode
@@ -481,10 +483,6 @@ $$
 Fonte: @hastie2009elements [p. 588].
 
 :::
-
-\ \ \ O algoritmo Random Forest é uma técnica derivada do método de Bagging, mas com modificações específicas na construção das árvores. O objetivo é melhorar a redução da variância ao diminuir a correlação entre as árvores, sem aumentar significativamente a variabilidade. Isso é alcançado durante o processo de crescimento das árvores por meio da seleção aleatória de variáveis independentes.
-
-\vspace{12pt}
 
 No algoritmo Random Forest, ao construir uma árvore a partir de amostras bootstrap, selecionam-se aleatoriamente $m \leq p$ das $p$ variáveis independentes como candidatas para a divisão, antes de cada ramificação (com $m = p$ no caso do Bagging). Dessa forma, diferente do Bagging, aqui não se considera todas as $p$ variáveis independentes para realizar a divisão e minimizar a impureza, mas apenas $m$ dessas $p$ variáveis. A escolha aleatória de apenas $m$ covariáveis como candidatas para a divisão ajuda a solucionar um dos principais problemas do algoritmo de Bagging, que tende a gerar árvores de decisão semelhantes, resultando em previsões altamente correlacionadas. O Random Forest busca diminuir esse problema ao criar oportunidades para que diferentes preditores sejam considerados. Em média, uma fração $(p -m)/ p$ das divisões nem sequer incluirá o preditor mais forte como candidato, permitindo que outros preditores tenham a chance de serem selecionados [@james2013introduction]. Esse mecanismo reduz a correlação entre as árvores, o que, por sua vez, diminui a variabilidade das predições produzidas pelas árvores.
 
@@ -568,6 +566,24 @@ em que $m$ representa o período da sazonalidade e $k$ é a parte inteira de $\l
 Por exemplo, em séries mensais, a previsão para todos os futuros meses de fevereiro será igual ao valor observado no último mês de fevereiro disponível. Em séries trimestrais, a previsão para o segundo trimestre corresponderá ao último segundo trimestre observado. Essa regra se aplica analogamente a outras frequências sazonais [@hyndman2018forecasting].
 
 ### LSTM
+
+O modelo LSTM (Long Short-Term Memory) é uma arquitetura de rede neural recorrente (RNN) [@goodfellow2016deep] projetada para modelar sequências de dados com dependências temporais de longo prazo, superando limitações das RNNs tradicionais, que tendem a sofrer com o problema do desvanecimento ou explosão do gradiente durante o treinamento.
+
+\vspace{12pt}
+
+A principal inovação do LSTM está em sua estrutura interna, composta por uma célula de memória e três portas (gates) que controlam o fluxo de informações ao longo do tempo: a porta de entrada, a porta de esquecimento e a porta de saída.
+
+\vspace{12pt}
+
+A porta de entrada é responsável por definir quais informações da entrada atual serão armazenadas na célula de memória. A porta de esquecimento tem a função de decidir quais dados previamente armazenados devem ser descartados. Já a porta de saída determina quais informações contidas na célula de memória serão utilizadas como saída naquele momento.
+
+\vspace{12pt}
+
+Essas portas são implementadas por meio de funções sigmoides e multiplicações ponto a ponto, o que permite ao modelo aprender, de forma adaptativa, quais informações manter ou esquecer ao longo da sequência.
+
+\vspace{12pt}
+
+De maneira geral, o LSTM é capaz de capturar padrões complexos em séries temporais, sendo amplamente utilizado em tarefas como previsão de séries temporais, processamento de linguagem natural, reconhecimento de voz e análise de sentimentos. Sua capacidade de armazenar e manipular informações por longos intervalos de tempo o torna particularmente adequado para contextos em que eventos passados distantes são relevantes para a predição futura.
 
 ### ARIMA
 

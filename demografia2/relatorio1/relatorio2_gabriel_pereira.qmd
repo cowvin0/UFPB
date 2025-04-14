@@ -1,0 +1,371 @@
+---
+block-headings: false
+# cache: true
+template-partials:
+  - includes/before-body.tex
+toc-title: \centering Sumário \thispagestyle{empty}
+format:
+  pdf:
+    pdf-engine: lualatex
+    papersize: A4
+    keep-tex: true
+    geometry:
+      - left=3cm,
+      - right=2cm,
+      - top=3cm,
+      - bottom=2cm
+    code-block-bg: "#F0F2F4"
+    code-block-background: true
+number-sections: true
+indent: true
+documentclass: scrreprt
+whitespace: small
+lang: pt-br
+bibliography: includes/bib.bib
+csl: includes/ufpe-abnt.csl
+toc: true
+title: Segundo relatório da disciplina de demografia II - Roraima
+author: Gabriel de Jesus Pereira
+date: today
+date-format: "MMMM, YYYY"
+highlight-style: github
+fontsize: 12pt
+interlinespace: 1.5pt
+fig-cap-location: bottom
+warning: false
+echo: false
+include-in-header:
+  - includes/pdf_config.sty
+---
+
+\pagenumbering{arabic}
+\pagestyle{fancy}
+
+\fancyhf{}
+\fancyhead[RO, LE]{\thepage}
+\fancyhead[LO]{\leftmark}
+\fancyhead[RE]{\thepage}
+
+\fancypagestyle{plain}{
+  \pagestyle{fancy}
+  \fancyhf{}
+  \fancyhead[RO, LE]{\thepage}
+  \fancyhead[RE]{\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+}
+
+```{python}
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import statsmodels.api as sm
+from sklearn.linear_model import LinearRegression
+```
+
+# Introdução
+
+## Recursos computacionais
+
+# Metodologia
+
+## Técnica de sobrevivência de Brass
+
+A técnica de sobrevivência de Brass, proposta por William Brass, é um método indireto utilizado para estimar níveis de mortalidade infantil e na infância em populações com dados vitais incompletos ou de baixa qualidade. O método baseia-se em informações obtidas a partir de censos ou pesquisas domiciliares, onde as mulheres são questionadas sobre número de filhos nascidos vivos e número de filhos sobreviventes na data do censo por grupos de idade das mulheres, em diferentes faixas etárias reprodutivas.
+
+\vspace{12pt}
+
+Para sua aplicação, o método de Brass pressupõe algumas características. Por exemplo, A fecundidade específica por idade tem sido aproximadamente constante no passado recente, coeficientes de mortalidade infantil e na infância têm sido aproximadamente constantes, não há acentuada associação entre mortalidade infantil e idade da mãe ou entre os coeficientes de mortalidade das mães e dos seus filhos, taxas de subenumeração para crianças sobreviventes e não sobreviventes são aproximadamente iguais. Por último, O “padrão etário” de mortalidade para idades jovens segue aproximadamente os padrões das tábuas-modelo
+
+\vspace{12pt}
+
+o princípio do método é que, conhecendo o número de filhos nascidos e o número de filhos sobreviventes, é possível calcular a proporção de filhos falecidos para cada grupo etário de mães. Essa proporção reflete indiretamente o nível de mortalidade infantil, já que mulheres mais velhas, por exemplo, tiveram filhos há mais tempo, e portanto o risco acumulado de morte é maior entre seus filhos.
+
+\vspace{12pt}
+
+A fórmula básica usada é:
+
+$$
+D_i = 1 - \frac{\text{FV}_i}{\text{FNV}_i}\text{, }
+$$
+em que $\text{FV}_i$ é o número de filhos sobreviventes na data do censo por grupos de idade das mulheres e $\text{FNV}_i$ é o número de nascidos vivos por grupo etário das mulheres.
+
+\vspace{12pt}
+
+Utilizando-se a relação entre a proporção de filhos mortos, $D_i$, e a probabilidade de morrer da tábua de vida, $q_x$, Brass estabeleceu um conjunto de multiplicadores, $k_i$, que podem ser calculados a partir de interpolação linear a partir da tabela padrão a seguir:
+
+![Tabela para determinação de multiplicadores $k_i$.](includes/sob_brass.png)
+
+Agora, com esses valores $k_i$, pode-se converter os valores observados $D_i$ em estimativas de $q_x$, ou seja, probabilidade de morte entre o nascimento e idades exatas:
+
+$$
+q_x = k_i D_i\text{.}
+$$
+
+Tendo estimado o conjunto de probabilidades de morte $q_x$, obtém-se, por diferença, a probabilidade de sobrevivência entre o nascimento e idades exatas, $I_x$:
+
+$$
+I_x = I - q_x\text{.}
+$$
+
+
+## Técnica de Brass para estimar a fecundidade
+
+\ \ \ O objetivo da técnica de Brass estimar a fecundidade é estimar a fecundidade em países cujos dados de registro civil não permitem um cálculo razoável do seu nível.
+
+\vspace{12pt}
+
+Um de seus pressupostos parar aplicação do método é que a fecundidade tenha sido aproximadamente constante no passado recente. Além desse pressuposto, é necessário também que os coeficientes específicos de fecundidade por idade da mulher, tais como os obtidos através de perguntas diretas, são corretos quanto ao padrão etário da fecundidade e o nível de fecundidade é corretamente medido através do número de filhos tidos (nascidos vivos) informados pelas mulheres mais jovens (usualmente do grupo etário 20-25) – ou seja, através da parturição média dessas mulheres.
+
+\vspace{12pt}
+
+Para utilizar a técnica de Brass, será necessário calcular os nascidos vivos no ano anterior ao censo por mulher, que é denotado por $f_i$, total de nascidos vivos por mulher $P_i$. A partir de $f_i$, calcula-se a fucundidade acumulada no começo do intervalo $F^{'}_i = 5 \sum_{j=0}^{i-1} f_{j}$. Uma das outras componentes que compõe o método são os fatores de multiplicação $W_i$, que são valores tabelados e que podem ser calculados por interporlação linear a partir do intervalo que $f_{1}/f_{2}$ estão definidos na tabela a seguir:
+
+![Valores tabelados para cálculo de fatores de multiplicação $W_i$.](includes/fatores_mult.png)
+
+Após encontrar os fatores de multiplicação $W_i$, basta cálcular a fecundidade acumulada média com $F_i =  F_i + W_if_i$. Por fim, encontram-se os coeficientes específicos corrigidos $f^{'}=f_iP_{2}/F_{2}$.
+
+## Modelando taxa de fecundidade marital
+
+\ \ \ O modelo de fecundidade marital de Coale-Trussell é uma das abordagens clássicas para estudar o comportamento reprodutivo de mulheres casadas, oferecendo uma maneira prática de estimar e interpretar padrões de fecundidade observados com base em uma curva-padrão e parâmetros de ajuste. Sua aplicação é especialmente útil em estudos demográficos comparativos entre diferentes regiões ou ao longo do tempo.
+
+\vspace{12pt}
+
+O modelo parte da ideia de que a fecundidade marital observada pode ser representada como uma modificação de um padrão considerado "natural" ou "biológico" de fecundidade. A fórmula principal é:
+
+$$
+f\left(a\right) = G\left(a\right) r\left(a\right)\text{, }
+$$
+em que $a$ é a idade, $f\left(a\right)$ é a taxa específica de fecundidade, $G\left(a\right)$ é o risco do primeiro casamento, $r\left(a\right)$ é a taxa específica de fecundidade marital, a qual é expressa da seguinte forma:
+
+$$
+r\left(a\right) = M n\left(a\right) e^{m v\left(a\right)} \text{, }
+$$
+em que $M$ é o nível de fecundidade e $m$ é o padrão de fecundidade. $n\left(a\right)$ é a fecundidade marital natural e $v\left(a\right)$ é a fecundidade fixa.
+
+\vspace{12pt}
+
+Por fim, a partir da expressão de $r\left(a\right)$ pode ser definida uma regressão linear da seguinte forma:
+
+$$
+\ln\left(r\left(a\right) / n\left(a\right)\right) = \ln\left(M\right) + mv\left(a\right)
+$$
+
+\vspace{12pt}
+
+Além disso, vale ressaltar que a fecundidade marital e natural e a fecundidade fixa são derivadas por experiência de alguns países, principalmente europeus. A imagem a seguir mostra os valores que foram considerados para esse trabalho:
+
+![Valores tabelados de $n\left(a\right)$ e $v\left(a\right)$ para aplicação do método de Coale-Trussel.](includes/tabela_coell.png)
+
+## Modelo relacional de Gompertz
+
+\ \ \ O modelo relacional de Gompertz é uma metodologia demográfica amplamente utilizada para descrever e ajustar padrões de fecundidade, especialmente quando os dados observados apresentam problemas de cobertura ou qualidade. Sua principal utilidade está em permitir comparações entre diferentes populações ou períodos por meio de uma curva-padrão acumulada de fecundidade.
+
+\vspace{12pt}
+
+A lógica do modelo baseia-se na função de Gompertz, originalmente utilizada para modelar taxas de mortalidade, mas que também pode ser aplicada ao padrão acumulado da fecundidade, $F\left(a\right)$, isto é, a proporção da fecundidade total que já ocorreu até determinada idade $a$. O modelo assume a seguinte forma funcional:
+
+$$
+\text{Gompit}\left(F\left(a\right)\right) = \ln\left[-\ln\left(1-F\left(a\right)\right)\right] = \alpha + \beta\text{Gompit}\left(F_{s}\left(a\right)\right)
+$$
+em que $F\left(a\right)$ é a distribuição acumulada de fecundidade da população observada, $F_{s}\left(a\right)$ é a distribuição acumulada de fecundidade da população padrão, $-0,5< \alpha < 0,5$ e $0,65 < \beta < 1,5$ são o nível da fecundidade e padrão da fecundidade, respectivamente.
+
+\vspace{12pt}
+
+Para aplicar o modelo, é necessário calcular a distribuição proporcional das taxas específicas de fecundidade $p\left(a\right)$, obter a distribuição acumulada $F\left(a\right)$, aplicar a transformação Gompit $\ln\left[-\ln\left(1 - F\left(a\right)\right)\right]$, ajustar uma regressão linear entre os gompits da população observada e os da curva padrão e, por fim, estimar os parâmetros $\alpha$ e $\beta$, que permitem reconstruir a curva ajustada ou fazer comparações com outras populações.
+
+# Resultados
+
+## Técnica de sobrevivência de Brass
+
+```{python}
+df_brass_sob = pd.read_csv("data_relatorio2/nascidos_vivos_idade_mae_2010.csv")\
+    .assign(
+        Mulheres=[
+            25590, 23250, 21788, 21792,
+            18669, 14839, 12269, 10379,
+            8087
+        ],
+    ).query("Idade not in ['10 a 14 anos', '50 a 54 anos']")\
+    .assign(
+      Vivos_referencia=[
+        5823, 19694, 34552,
+        42227, 40899, 37730,
+        33505
+      ],
+      FV=lambda x: x.Vivos_referencia.sum() / x.Mulheres,
+      FNV=lambda x: x.Nascidos.sum() / x.Mulheres,
+      Prop_nao_sob=lambda x: 1 - x.FV / x.FNV
+    )
+```
+
+## Técnica de Brass para a fecundidade
+
+$0.096731 / 0.134156 = 0.721033721935657$
+
+$(0.764 - 0.721033721935657) / (0.764 - 0.605) = 0.2702281639266858$
+
+```{python}
+df_brass_fec = pd.read_csv("data_relatorio2/nascidos_vivos_idade_mae_2010.csv")\
+    .assign(
+        Mulheres=[
+            25590, 23250, 21788, 21792,
+            18669, 14839, 12269, 10379,
+            8087
+        ],
+        Nascidos_vivos_2009=[
+            199, 2249, 2923, 2306,
+            1264, 542, 168, 21, 1
+        ],
+        fi=lambda x: x.Nascidos_vivos_2009 / x.Mulheres,
+        Pi=lambda x: x.Nascidos.sum() / x.Mulheres,
+        Fi=lambda x: np.cumsum([0] + (x.fi * 5).iloc[:-1].tolist()),
+    ).query("Idade not in ['10 a 14 anos', '50 a 54 anos']")\
+    .assign(
+        Wi=[
+            2.640*0.2702281639266858 + (1 - 0.2702281639266858) * 2.925,
+            2.925*0.2702281639266858 + (1 - 0.2702281639266858) * 2.960,
+            3.055*0.2702281639266858 + (1 - 0.2702281639266858) * 3.075,
+            3.165*0.2702281639266858 + (1 - 0.2702281639266858) * 3.190,
+            3.325*0.2702281639266858 + (1 - 0.2702281639266858) * 3.375,
+            3.740*0.2702281639266858 + (1 - 0.2702281639266858) * 3.915,
+            4.840*0.2702281639266858 + (1 - 0.2702281639266858) * 4.985,
+        ],
+        Fi_acum_media=lambda x: x.Fi + x.Wi*x.fi,
+        fi_corrigido=lambda x: x.fi * x.Pi.iloc[1] / x.Fi_acum_media.iloc[1]
+    )
+```
+
+## Modelando taxa de fecundidade marital
+
+```{python}
+df_tfe = pd.read_csv("data/tfe_roraima_2000_2010.csv", delimiter="\t")\
+  .query("Ano == 2010")\
+  .set_index("Ano")\
+  .stack()\
+  .reset_index(name="TFE")\
+  .rename(columns={"level_1": "Idade"})\
+  .query("Idade != '15 a 19 anos'")\
+  .drop(columns="Ano")\
+  .assign(
+    v_a=[
+      0, -0.316, -0.814,
+      -1.048, -1.424,
+      -1.667
+    ],
+    n_a=[
+      0.46, 0.431, 0.396,
+      0.321, 0.167, 0.024
+    ],
+    Mulheres=[
+        21788, 21792,
+        18669, 14839, 12269, 10379
+    ],
+    Nascimentos_casadas=[
+      1164, 1159,
+      811, 340, 96,
+      14
+    ],
+    r_a=lambda x: x.Nascimentos_casadas / x.Mulheres,
+    log_r_a_n_a=lambda x: np.log(x.r_a/x.n_a)
+  )
+
+X = sm.add_constant(df_tfe.v_a)
+y = df_tfe.log_r_a_n_a
+
+mod = sm.OLS(y, X)
+res = mod.fit()
+
+M = np.exp(res.params["const"])
+m = np.exp(res.params["v_a"])
+preds = res.predict(X)
+df_tfe = df_tfe\
+  .assign(
+    r_a_estimado=lambda x: np.exp(preds) * x.n_a
+  )
+```
+
+## Modelo relacional de Gompertz
+
+```{python}
+df_tfe_gomp = pd.read_csv("data/tfe_roraima_2000_2010.csv", delimiter="\t")\
+  .query("Ano == 2010")\
+  .set_index("Ano")\
+  .stack()\
+  .reset_index(name="TFE")\
+  .rename(columns={"level_1": "Idade"})\
+  .drop(columns="Ano")\
+  .assign(
+    p_a=lambda x: x.TFE / x.TFE.sum(),
+    idade_e=lambda x: x.Idade.str.split().apply(lambda y: y[2]).astype(int) + 1,
+    F_a=lambda x: x.p_a.cumsum(),
+    Gompit=lambda x: -np.log(-np.log(x.F_a)),
+    F_a_padrao=[
+      0.136, 0.377, 0.609, 0.796,
+      0.930, 0.992, 1
+    ],
+    Gompit_padrao=[
+      -0.691, 0.026, 0.7,
+      1.479, 2.626, 4.809,
+      np.nan
+    ]
+  ).dropna()
+
+X = df_tfe_gomp[['Gompit_padrao']]
+y = df_tfe_gomp['Gompit']
+
+model = LinearRegression()
+model.fit(X, y)
+
+df_tfe_gomp["Gompit\'"] = model.predict(X)
+df_tfe_gomp["antgompt"] = np.exp(-np.exp(-model.predict(X)))
+df_tfe_gomp["p\'(a)"] = [4.540190] + [
+  df_tfe_gomp.antgompt.iloc[i] - df_tfe_gomp.antgompt.iloc[i - 1]
+  for i in range(1, df_tfe_gomp.shape[0])
+  ]
+
+df_tfe_gomp["f'(a)"] = df_tfe_gomp["p'(a)"] * df_tfe_gomp.TFE.sum()
+
+alpha = model.intercept_
+beta = model.coef_[0]
+
+# plt.figure(figsize=(8,5))
+# plt.scatter(df_tfe_gomp['Gompit_padrao'], df_tfe_gomp['Gompit'], label='Dados observados')
+# plt.plot(df_tfe_gomp['Gompit_padrao'], model.predict(X), color='red', label='Ajuste linear')
+# plt.xlabel('Gompit(Padrão)')
+# plt.ylabel('Gompit(F_a)')
+# plt.title('Ajuste do Modelo Relacional de Gompertz')
+# plt.legend()
+# plt.grid(True)
+# plt.show()
+```
+
+# Exercícios do Mortpak
+
+::: {layout-nrow=2}
+![Tábua de vida para o sexo masculino.](includes/tabua_vida_homens.png)
+
+![Tábua de vida para o sexo feminino.](includes/tabua_vida_mulheres.png)
+:::
+
+## Questão 1)
+
+Ver no Mortpak qual é o melhor modelo ao comparar os Modelos das Nações Unidas aos de Coale-Demeny (Função COMPAR);
+
+::: {layout-ncol=2}
+![Função COMPAR para o sexo masculino.](includes/expec_vida_homens.png)
+
+![Função COMPAR para o sexo feminino.](includes/expec_vida_mulheres.png)
+:::
+
+## Questão 2)
+
+Considerar apenas os Modelos das Nações Unidas e ver qual é o melhor (Função COMPAR);
+
+## Questão 3)
+
+Observar os valores da $E\left(x\right)$ e escolher a TV Modelo das Nações Unidas mais adequada (depende do passo 2...);
+
+## Questão 4)
+
+Usar o sistema logito de tábuas de vida de dois parâmetros de Brass e considerar os seguintes padrões: Modelo Geral de Brass; MAB e o resultado do passo 3.

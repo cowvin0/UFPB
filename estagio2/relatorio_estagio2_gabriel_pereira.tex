@@ -224,7 +224,7 @@
 \@ifundefined{codebgcolor}{\definecolor{codebgcolor}{HTML}{F0F2F4}}{}
 \makeatother
 \makeatletter
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, boxrule=0pt, sharp corners, breakable, colback={codebgcolor}, enhanced]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, breakable, enhanced, boxrule=0pt, colback={codebgcolor}, frame hidden]}{\end{tcolorbox}}\fi
 \makeatother
 \makeatletter
 \@ifpackageloaded{algorithm}{}{\usepackage{algorithm}}
@@ -981,7 +981,7 @@ Q_j\left(T\right) = \frac{1}{N_j} \sum_{x_i \in R_j}\left(y_i - \hat{c}_j\right)
 define-se o critério de custo complexidade:
 
 \[
-C_{\alpha}\left(T\right) = \sum_{m = 1}^{|T|}N_jQ_j\left(T\right) + \alpha |T|\text{,}
+C_{\alpha}\left(T\right) = \sum_{j = 1}^{|T|}N_jQ_j\left(T\right) + \alpha |T|\text{,}
 \] em que \(|T|\) denota a quantidade total de folhas, e
 \(\alpha \geq 0\) é um hiperparâmetro que equilibra o tamanho da árvore
 e a adequação aos dados. A ideia é encontrar, para cada \(\alpha\), a
@@ -1081,6 +1081,13 @@ aprendizado em conjunto utilizados neste trabalho.
 
 \subsection{Random Forest}\label{random-forest}
 
+~~~O algoritmo Random Forest é uma técnica derivada do método de
+Bagging, mas com modificações específicas na construção das árvores. O
+objetivo é melhorar a redução da variância ao diminuir a correlação
+entre as árvores, sem aumentar significativamente a variabilidade. Isso
+é alcançado durante o processo de crescimento das árvores por meio da
+seleção aleatória de variáveis independentes.
+
 \begin{algo}
 
 \centering{
@@ -1133,15 +1140,6 @@ $$
 \caption{\label{algo-rf}Fonte: HASTIE et al. (2009, p. 588).}
 
 \end{algo}%
-
-~~~O algoritmo Random Forest é uma técnica derivada do método de
-Bagging, mas com modificações específicas na construção das árvores. O
-objetivo é melhorar a redução da variância ao diminuir a correlação
-entre as árvores, sem aumentar significativamente a variabilidade. Isso
-é alcançado durante o processo de crescimento das árvores por meio da
-seleção aleatória de variáveis independentes.
-
-\vspace{12pt}
 
 No algoritmo Random Forest, ao construir uma árvore a partir de amostras
 bootstrap, selecionam-se aleatoriamente \(m \leq p\) das \(p\) variáveis
@@ -1284,6 +1282,44 @@ aplica analogamente a outras frequências sazonais (HYNDMAN;
 ATHANASOPOULOS, 2018).
 
 \subsection{LSTM}\label{lstm}
+
+O modelo LSTM (Long Short-Term Memory) é uma arquitetura de rede neural
+recorrente (RNN) (GOODFELLOW et al., 2016) projetada para modelar
+sequências de dados com dependências temporais de longo prazo, superando
+limitações das RNNs tradicionais, que tendem a sofrer com o problema do
+desvanecimento ou explosão do gradiente durante o treinamento.
+
+\vspace{12pt}
+
+A principal inovação do LSTM está em sua estrutura interna, composta por
+uma célula de memória e três portas (gates) que controlam o fluxo de
+informações ao longo do tempo: a porta de entrada, a porta de
+esquecimento e a porta de saída.
+
+\vspace{12pt}
+
+A porta de entrada é responsável por definir quais informações da
+entrada atual serão armazenadas na célula de memória. A porta de
+esquecimento tem a função de decidir quais dados previamente armazenados
+devem ser descartados. Já a porta de saída determina quais informações
+contidas na célula de memória serão utilizadas como saída naquele
+momento.
+
+\vspace{12pt}
+
+Essas portas são implementadas por meio de funções sigmoides e
+multiplicações ponto a ponto, o que permite ao modelo aprender, de forma
+adaptativa, quais informações manter ou esquecer ao longo da sequência.
+
+\vspace{12pt}
+
+De maneira geral, o LSTM é capaz de capturar padrões complexos em séries
+temporais, sendo amplamente utilizado em tarefas como previsão de séries
+temporais, processamento de linguagem natural, reconhecimento de voz e
+análise de sentimentos. Sua capacidade de armazenar e manipular
+informações por longos intervalos de tempo o torna particularmente
+adequado para contextos em que eventos passados distantes são relevantes
+para a predição futura.
 
 \subsection{ARIMA}\label{arima}
 
@@ -1452,6 +1488,10 @@ Fearless Hacks}. {[}S.l.{]}: aosabook.org, 2012.
 \bibitem[\citeproctext]{ref-chen2016xgboost}
 CHEN, T.; GUESTRIN, C. Xgboost: A scalable tree boosting system.
 {[}S.l.{]}: {[}s.n.{]}, 2016. p. 785--794.
+
+\bibitem[\citeproctext]{ref-goodfellow2016deep}
+GOODFELLOW, I. et al. \textbf{Deep learning}. {[}S.l.{]}: MIT press
+Cambridge, 2016. V. 1.
 
 \bibitem[\citeproctext]{ref-harris2020array}
 HARRIS, C. R. et al. Array programming with {NumPy}. \textbf{Nature},
