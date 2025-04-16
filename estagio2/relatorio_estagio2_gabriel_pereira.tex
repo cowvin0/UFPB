@@ -224,7 +224,7 @@
 \@ifundefined{codebgcolor}{\definecolor{codebgcolor}{HTML}{F0F2F4}}{}
 \makeatother
 \makeatletter
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, breakable, enhanced, boxrule=0pt, colback={codebgcolor}, frame hidden]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[breakable, sharp corners, boxrule=0pt, colback={codebgcolor}, enhanced, frame hidden]}{\end{tcolorbox}}\fi
 \makeatother
 \makeatletter
 \@ifpackageloaded{algorithm}{}{\usepackage{algorithm}}
@@ -356,11 +356,6 @@
 \thispagestyle{empty}
 
 \cleardoublepage
-\renewcommand{\listtablename}{\centering{Lista de Tabelas}}
-\listoftables
-\thispagestyle{empty}
-
-\cleardoublepage
 \renewcommand{\listalgorithmname}{\centering{Lista de Algoritmos}}
 \listofalgorithms
 \thispagestyle{empty}
@@ -369,16 +364,17 @@
 
 \chapter{Introdução}\label{introduuxe7uxe3o}
 
-\chapter{Sobre a empresa}\label{sobre-a-empresa}
+\textbf{(FALAR SOBRE PARA QUE FOI O ESTÁGIO E FALAR BREVEMENTE SOBRE A
+EMPRESA)}
 
 \chapter{Recursos Computacionais}\label{recursos-computacionais}
 
 ~~~Nesta seção, serão apresentados os recursos computacionais utilizados
 no desenvolvimento do projeto realizado durante o estágio. As
 ferramentas selecionadas incluem a linguagem de programação Python,
-amplamente conhecida, e o sistema de banco de dados Denodo, utilizado
-por toda a empresa para consulta à base de dados. Dessa forma, a
-primeira etapa consiste em descrever a tecnologia empregada na coleta
+amplamente conhecida, e o sistema de banco de dados \textbf{Denodo},
+utilizado por toda a empresa para consulta à base de dados. Dessa forma,
+a primeira etapa consiste em descrever a tecnologia empregada na coleta
 dos dados utilizados no projeto.
 
 \section{Recurso para coleta de
@@ -421,19 +417,32 @@ modelagem de cada um dos produtos utilizados.
 \section{Recursos utilizados para modelagem e visualização dos
 resultados}\label{recursos-utilizados-para-modelagem-e-visualizauxe7uxe3o-dos-resultados}
 
-~~~Com os dados coletados, a etapa de modelagem dos valores de imóveis
+~~~Com os dados coletados, a etapa de modelagem dos produtos financeiros
 torna-se essencial para converter essas informações em entendimentos
-relevantes e aplicáveis. Essa etapa permite identificar padrões de
-comportamento entre as variáveis que influenciam os valores
-imobiliários, além de determinar quais fatores exercem maior impacto
-sobre esses valores. Para chegar a esses resultados, foram utilizadas
-bibliotecas desenvolvidas em \textbf{Python}, como
-\href{https://scikit-learn.org/stable/}{\textbf{scikit-learn}}
-(PEDREGOSA, F. et al., 2011),
+relevantes e aplicáveis. Para chegar a esses resultados, foram
+utilizadas bibliotecas desenvolvidas em Python, como
+\href{https://scikit-learn.org/stable/}{\textbf{scikit-learn}},
+\href{https://nixtlaverse.nixtla.io/statsforecast/index.html}{\textbf{StatsForecast}},
 \href{https://pandas.pydata.org/}{\textbf{pandas}} (TEAM, 2020),
 empregada para a manipulação das bases de dados utilizadas neste
 trabalho, \href{https://numpy.org/}{\textbf{numpy}} (HARRIS et al.,
 2020), voltada para computação numérica, entre outras.
+
+\vspace{12pt}
+
+A biblioteca
+\href{https://nixtlaverse.nixtla.io/statsforecast/index.html}{\textbf{StatsForecast}}
+foi utilizada especificamente para a aplicação de modelos de séries
+temporais, com o objetivo de prever a evolução dos diferentes produtos
+financeiros ao longo do tempo. Essa ferramenta oferece implementações
+eficientes de modelos clássicos de previsão, como ARIMA, ETS
+(Exponential Smoothing), AutoETS e AutoARIMA, além de suportar geração
+de previsões em larga escala. A StatsForecast é especialmente otimizada
+para performance, com implementações em
+\href{https://numba.pydata.org/}{\textbf{Numba}}, o que permite
+processar grandes volumes de séries temporais de forma rápida e
+escalável. Essas funcionalidades foram fundamentais para lidar com a
+diversidade e a quantidade de produtos analisados neste estudo.
 
 \vspace{12pt}
 
@@ -530,40 +539,6 @@ gráficos gerados podem ser personalizados pelo usuário.
 
 \vspace{12pt}
 
-Vale destacar que bibliotecas como o
-\href{https://matplotlib.org/}{\textbf{Matplotlib}} e o
-\href{https://seaborn.pydata.org/}{\textbf{seaborn}} (WASKOM, 2021)
-desempenharam um papel fundamental na geração dos gráficos e na
-visualização dos dados apresentados neste trabalho. Essas ferramentas
-foram indispensáveis para a análise exploratória e a apresentação dos
-resultados de forma clara e compreensível. Além dessas bibliotecas,
-também foram utilizados recursos voltados para a análise do impacto e
-das relações entre as variáveis e as previsões realizadas pelos modelos.
-Nesse contexto, destacam-se o
-\href{https://shap.readthedocs.io/en/latest}{\textbf{SHAP}} (LUNDBERG;
-LEE, 2017), que fornece explicações interpretáveis para os modelos de
-aprendizado de máquina, e o próprio
-\href{https://scikit-learn.org/stable/}{\textbf{scikit-learn}}, que foi
-essencial para a criação dos gráficos de ICE (Individual Conditional
-Expectation). Esses métodos serão detalhados na seção de metodologia
-deste trabalho.
-
-\vspace{12pt}
-
-Vale ressaltar que algumas bibliotecas externas, baseadas na API do
-\href{https://scikit-learn.org/stable/}{\textbf{scikit-learn}}, também
-foram utilizadas neste trabalho. Entre elas, destacam-se a
-\href{https://lightgbm.readthedocs.io/en/stable/}{\textbf{LightGBM}} (KE
-et al., 2017) e a
-\href{https://xgboost.readthedocs.io/en/stable/}{\textbf{XGBoost}}
-(CHEN, T.; GUESTRIN, 2016), empregadas para a implementação de
-algoritmos de aprendizado de máquina. Essas bibliotecas fornecem,
-respectivamente, os algoritmos de gradient boosting LightGBM e Extreme
-Gradient Boosting, reconhecidos por sua eficiência computacional e
-desempenho em tarefas de modelagem preditiva.
-
-\vspace{12pt}
-
 Conclui-se, assim, a apresentação das ferramentas empregadas na
 modelagem e visualização dos resultados. A seguir, serão descritas as
 tecnologias utilizadas no desenvolvimento da aplicação final deste
@@ -585,16 +560,17 @@ final.
 final}\label{recursos-utilizados-para-a-criauxe7uxe3o-da-aplicauxe7uxe3o-final}
 
 ~~~A aplicação final foi desenvolvida com o objetivo de realizar
-previsões de valores de imóveis e oferecer uma análise detalhada do
-mercado imobiliário da cidade de João Pessoa. Além de integrar a
-pipeline de machine learning criada durante a etapa de modelagem, a
-aplicação também dispõe de funcionalidades interativas que permitem aos
-usuários explorar os dados e visualizar os resultados de forma clara e
-intuitiva. Para alcançar esses objetivos, foram empregadas tecnologias
-para o desenvolvimento do front-end\footnote{Front-end é a parte de um
-  sistema ou aplicação responsável pela interface gráfica e pela
-  interação com o usuário.} e do back-end, que foram desenvolvidos em
-\textbf{Python}.
+previsões dos produtos para que se tivesse uma comparação da agência com
+sua linha de porte e de cluster. A partir disso, seria possível saber se
+o planejamento das agências estavam sendo muito abaixo ou acima do seu
+porte ou cluster e o porquê. Além de integrar a pipeline de machine
+learning criada durante a etapa de modelagem, a aplicação também dispõe
+de funcionalidades interativas que permitem aos usuários explorar os
+dados e visualizar os resultados de forma clara e intuitiva. Para
+alcançar esses objetivos, foram empregadas tecnologias para o
+desenvolvimento do front-end\footnote{Front-end é a parte de um sistema
+  ou aplicação responsável pela interface gráfica e pela interação com o
+  usuário.} e do back-end, que foram desenvolvidos em \textbf{Python}.
 
 \vspace{12pt}
 
@@ -703,11 +679,7 @@ gerenciamento de banco de dados relacional amplamente reconhecido por
 sua robustez e alto desempenho. Isso permitiu que os dados fossem
 expostos na API e consumidos no front-end. Além disso, a API foi
 responsável por expor a pipeline do modelo, possibilitando a realização
-de previsões de valores imobiliários diretamente na aplicação. Não
-obstante, os mapas da cidade de João Pessoa, criados com a biblioteca
-\href{https://python-visualization.github.io/folium/latest/}{\textbf{Folium}}
-(PYTHON-VISUALIZATION, 2020), foram servidos pela API, que expôs seus
-arquivos HTML para consumo no front-end.
+de previsões de dos produtos diretamente na aplicação.
 
 \vspace{12pt}
 
@@ -734,32 +706,19 @@ instalado. Isso elimina problemas comuns relacionados a diferenças de
 ambiente e facilita o processo de desenvolvimento, teste e implantação
 de aplicações.
 
-\vspace{12pt}
-
-Com as tecnologias mencionadas anteriormente e o modelo final obtido,
-foi possível criar uma aplicação capaz de realizar previsões para os
-imóveis da cidade de João Pessoa, além de proporcionar uma análise de
-seu setor imobiliário. No entanto, o desenvolvimento de todo o código da
-aplicação exigiu o uso de ferramentas que facilitassem sua escrita,
-desenvolvimento e organização. Assim, a seguir serão apresentadas as
-ferramentas utilizadas tanto para a implementação do código deste
-trabalho quanto para a elaboração do documento final de texto que o
-descreve.
-
 \section{Recursos utilizados para escrita de código e de
 documento}\label{recursos-utilizados-para-escrita-de-cuxf3digo-e-de-documento}
 
 ~~~O desenvolvimento deste trabalho foi realizado em um computador
-equipado com processador AMD Ryzen 7 5800H (16 núcleos), 8 GB de memória
+equipado com processador Intel Core i5 de nova geração, 16 GB de memória
 RAM, placa de vídeo GeForce GTX 1650 e um SSD NVMe de 256 GB, operando
-sob o sistema Pop!\_OS 22.04 LTS. Embora a máquina ofereça um desempenho
-geral satisfatório, a quantidade limitada de memória RAM apresentou
-desafios em tarefas mais intensivas, como a otimização de
-hiperparâmetros dos modelos. Essas tarefas frequentemente demandavam até
-dois dias para sua conclusão e, em alguns casos, falhavam próximo ao
-término devido ao alto consumo computacional. Dessa forma, a escolha das
-ferramentas utilizadas para a escrita do código foram as que impactassem
-o mínimo possível no desempenho do sistema.
+sob o sistema Windows 11. A máquina apresentou desempenho satisfatório
+em todas as etapas do projeto, incluindo tarefas mais intensivas como a
+otimização de hiperparâmetros dos modelos. Não foram observados
+problemas durante o treinamento, o que permitiu a execução das rotinas
+de forma eficiente e contínua. Dessa forma, a escolha das ferramentas
+utilizadas para a escrita do código priorizou a praticidade e a
+compatibilidade com o ambiente de desenvolvimento adotado.
 
 \vspace{12pt}
 
@@ -846,15 +805,14 @@ projeto, fundamentando primeiramente as árvores de decisão.
 ~~~Árvores de decisão podem ser utilizadas tanto para regressão quanto
 para classificação. Elas servem de base para os modelos baseados em
 árvores empregados neste trabalho, focando particularmente nas árvores
-de regressão\footnote{Uma árvore de regressão é um caso específico da
-  árvore de decisão, mas para regressão.}. O processo de construção de
-uma árvore se baseia no particionamento recursivo do espaço dos
-preditores, onde cada particionamento é chamado de nó e o resultado
-final é chamado de folha ou nó terminal. Em cada nó, é definida uma
-condição e, caso essa condição seja satisfeita, o resultado será uma das
-folhas desse nó. Caso contrário, o processo segue para o próximo nó e
-verifica a próxima condição, podendo gerar uma folha ou outro nó. Veja
-um exemplo na Figura~\ref{fig-arvore}.
+de regressão. O processo de construção de uma árvore se baseia no
+particionamento recursivo do espaço dos preditores, onde cada
+particionamento é chamado de nó e o resultado final é chamado de folha
+ou nó terminal. Em cada nó, é definida uma condição e, caso essa
+condição seja satisfeita, o resultado será uma das folhas desse nó. Caso
+contrário, o processo segue para o próximo nó e verifica a próxima
+condição, podendo gerar uma folha ou outro nó. Veja um exemplo na
+Figura~\ref{fig-arvore}.
 
 \begin{figure}
 
@@ -1459,6 +1417,368 @@ sem regularização.
 
 \chapter{Metodologia}\label{metodologia}
 
+\section{Coleta dos dados}\label{coleta-dos-dados}
+
+~~~Os dados foram obtidos por meio do \textbf{Denodo}, plataforma
+utilizada pela empresa que centraliza informações de todos os setores. A
+partir do \textbf{Denodo}, foram coletadas 29 séries temporais
+distintas. Duas delas representam a quantidade de associados
+conquistados por cada agência a cada mês, segmentados entre pessoas
+físicas (PF) e pessoas jurídicas (PJ). Além dessas, foram extraídas
+séries relativas à quantidade de cartões emitidos mensalmente e ao
+rendimento obtido com investimentos em depósitos a prazo e à vista.
+
+\vspace{12pt}
+
+Além dos dados predominantemente relacionados a investimentos,
+associados e cartões, também foram coletadas informações sobre as
+despesas de cada agência. Entre essas, destacam-se as despesas
+operacionais, administrativas e a Provisão para Créditos de Liquidação
+Duvidosa (PCLD), que representa estimativas de perdas com empréstimos
+que provavelmente não serão quitados. Essas despesas impactam
+diretamente o lucro líquido da empresa. Complementando esse conjunto de
+dados, foram incluídas as receitas administrativas e operacionais,
+possibilitando a modelagem completa dessas séries temporais.
+
+\vspace{12pt}
+
+Como variáveis independentes, foram utilizados alguns indicadores
+econômicos apontados como relevantes por economistas da empresa. Entre
+eles, a taxa selic acumulada em 12 meses, que permite observar a
+tendência dos juros básicos da economia ao longo do tempo; a Taxa
+Referencial (TR), frequentemente utilizada como referência para correção
+de contratos e investimentos; o IPCA (Índice Nacional de Preços ao
+Consumidor Amplo), que mede a inflação oficial do país; e o IGP-M
+(Índice Geral de Preços -- Mercado), amplamente utilizado para reajuste
+de contratos de aluguel e tarifas em geral. Esses indicadores foram
+considerados como potenciais explicativos para a variação dos produtos
+financeiros analisados. Vale destacar que esses foram os únicos dados
+não extraídos diretamente do Denodo, tratam-se de projeções
+disponibilizadas por economistas do Banco Central do Brasil (BACEN), com
+estimativas futuras para cada indicador até o ano de 2030.
+
+\vspace{12pt}
+
+Esses dados foram coletados para todas as agências das cooperativas que
+integram a Central Sicredi Nordeste. Na região Nordeste, existem 15
+cooperativas, cada uma composta por diversas agências subordinadas. No
+total, essas cooperativas reúnem mais de 300 agências.
+
+\vspace{12pt}
+
+Devido à grande quantidade de séries temporais --- consequência direta
+do número elevado de agências --- tornou-se inviável realizar uma
+análise minuciosa do comportamento das previsões de cada série
+individualmente em relação às métricas de erro adotadas. Por isso, foi
+necessário adotar um processo mais automatizado para a escolha dos
+modelos, com base no desempenho das métricas de erro. Sendo assim, a
+próxima seção será dedicada à descrição dessas métricas, bem como ao
+processo de otimização dos hiperparâmetros do modelo selecionado para
+cada agência.
+
+\section{Construção do modelo}\label{construuxe7uxe3o-do-modelo}
+
+\subsection{Etapas de
+pré-processamento}\label{etapas-de-pruxe9-processamento}
+
+Para todas as séries temporais e variáveis independentes, foi
+inicialmente aplicada a transformação de Yeo-Johnson (YEO; JOHNSON,
+2000), que apresenta a vantagem de ser aplicável a dados que incluem
+valores negativos e zero --- como é o caso das séries temporais
+analisadas neste trabalho. Essa transformação foi aplicada com o
+objetivo de tornar a distribuição dos dados mais normais e estabilizar a
+sua variância.
+
+\vspace{12pt}
+
+A transformação de Yeo-Johnson é definida da seguinte forma:
+
+\[
+\psi(\lambda, x) = \begin{cases}
+    [(1 + x)^\lambda - 1] / \lambda  &  \lambda \neq 0, \; x \ge 0 \\
+    \ln(1 + x)                       &  \lambda = 0, \; x \ge 0 \\
+    [(1 - x)^{2 - \lambda} - 1] / (\lambda - 2) \quad & \lambda \neq 2, \; x < 0 \\
+    -\ln(1 - x)                     &   \lambda = 2, \; x < 0
+\end{cases} \text{,}
+\] em que \(\lambda\) é estimado por máxima verossimilhança. Além disso,
+percebe-se que a transformação \(\log(1 + x)\) é um caso particular da
+transformação de Yeo-Johnson quando \(\lambda = 0\) e \(x \ge 0\).
+
+\vspace{12pt}
+
+No entanto, antes da aplicação da transformação de Yeo-Johnson, foi
+necessário lidar com a presença de valores ausentes em algumas séries
+temporais. Para isso, utilizou-se o método de interpolação linear,
+disponível na biblioteca pandas, por meio da função
+\texttt{pandas.DataFrame.interpolate()}.
+
+\vspace{12pt}
+
+A interpolação linear estima os valores ausentes assumindo que os pontos
+adjacentes apresentam uma variação linear. Em outras palavras, o valor
+faltante é preenchido com base em uma reta traçada entre os valores
+anterior e posterior ao ponto ausente. Essa abordagem é especialmente
+útil quando os dados apresentam continuidade e uma variação
+relativamente suave entre observações consecutivas.
+
+\vspace{12pt}
+
+Além das variáveis independentes mencionadas anteriormente, também foram
+criadas variáveis derivadas da própria série temporal. Essas variáveis
+foram obtidas por meio da decomposição da série utilizando o método STL
+(Seasonal-Trend decomposition using Loess). A partir dessa decomposição,
+foram extraídos os componentes de tendência e sazonalidade, que passaram
+a ser utilizados como variáveis explicativas adicionais no modelo. Essa
+abordagem visa capturar padrões estruturais intrínsecos à série,
+enriquecendo a modelagem e contribuindo para uma melhor capacidade
+preditiva.
+
+\subsection{Otimização de
+hiperparâmetros}\label{otimizauxe7uxe3o-de-hiperparuxe2metros}
+
+~~~Existem diversas técnicas para a otimização de hiperparâmetros em
+aprendizado de máquina. Uma das mais comuns é o Grid Search. Segundo
+BISCHL et al. (2023), o Grid Search divide o intervalo contínuo de
+valores possíveis de cada hiperparâmetro em um conjunto de valores
+discretos, avaliando exaustivamente o desempenho do algoritmo para todas
+as combinações possíveis. No entanto, como o número de combinações
+cresce exponencialmente com o aumento do número de hiperparâmetros, o
+Grid Search apresenta um custo computacional elevado.
+
+\vspace{12pt}
+
+Por essa razão, métodos de otimização mais avançados, como a otimização
+bayesiana, têm ganhado destaque, pois oferecem um desempenho superior ao
+explorar o espaço de hiperparâmetros de maneira mais eficiente. Neste
+trabalho, utilizamos a otimização bayesiana para realizar a otimização
+dos modelos e determinar a quantidade ideal de vizinhos mais próximos na
+classe \texttt{KNNImputer}, empregada para a imputação de valores
+ausentes.
+
+\vspace{12pt}
+
+A otimização bayesiana não se refere a um algoritmo específico, mas sim
+a uma abordagem de otimização fundamentada na inferência bayesiana, que
+engloba uma ampla família de algoritmos (GARNETT, 2023). Além disso, a
+otimização bayesiana tem alcançado benchmarks superiores em comparação
+com outros algoritmos em diversos problemas complexos de otimização de
+hiperparâmetros (SNOEK; LAROCHELLE; ADAMS, 2012).
+
+\vspace{12pt}
+
+Diferentemente de outros algoritmos de otimização de hiperparâmetros, a
+otimização bayesiana ajusta suas tentativas futuras com base nos
+resultados obtidos anteriormente (YANG; SHAMI, 2020). Para definir os
+pontos de avaliação futuros, utiliza-se uma função probabilística
+\(P\left(c | \lambda \right)\), que modela a relação entre os
+hiperparâmetros \(\lambda\) e a métrica de desempenho \(c\) (BERGSTRA;
+YAMINS; COX, 2013). A partir dessa função, estima-se, para cada conjunto
+de hiperparâmetros \(\lambda\), a performance esperada
+\(\hat{c}\left(\lambda\right)\) e a incerteza associada à predição
+\(\hat{\sigma}\left(\lambda\right)\). Com essas estimativas, a
+distribuição preditiva derivada da função probabilística permite a
+aplicação de uma função de aquisição. Essa função orienta a escolha dos
+próximos pontos a serem avaliados, equilibrando exploitation (explorar
+regiões próximas às melhores observações anteriores) e exploration
+(investigar áreas ainda não exploradas).
+
+\vspace{12pt}
+
+Portanto, os algoritmos de otimização bayesiana são regidos pela relação
+\(\lambda \rightarrow c\left(\lambda \right)\) e buscam equilibrar
+exploitation e exploration. Isso permite identificar as regiões mais
+promissoras no espaço de hiperparâmetros, ao mesmo tempo em que evita
+negligenciar possíveis configurações melhores em áreas ainda
+inexploradas.
+
+\subsection{Tree-Structured Parzen
+Estimator}\label{tree-structured-parzen-estimator}
+
+~~~A função probabilística utilizada para a otimização bayesiana neste
+trabalho foi a Tree-Structured Parzen Estimator (TPE). O TPE define duas
+funções de densidade, \(l\left(\lambda\right)\) e
+\(g\left(\lambda\right)\), que são empregadas para modelar a
+distribuição das variáveis no domínio dos hiperparâmetros \(\lambda\)
+(YANG; SHAMI, 2020). Essas densidades são utilizadas para estimar a
+probabilidade condicional \(p\left(\lambda | y\right)\) de observar uma
+combinação de hiperparâmetros \(\lambda\), dado um valor de métrica de
+desempenho \(y\). A definição é dada por:
+
+\begin{equation}\phantomsection\label{eq-tpe}{
+P(\lambda|y) =
+\begin{cases}
+    l(\lambda) & \text{if } y < y^* \\
+    g(\lambda) & \text{if } y \ge y^*
+\end{cases}\text{,}
+}\end{equation} em que \(l\left(\lambda\right)\) representa a densidade
+associada aos valores de \(y\) menores que o limiar \(y^*\) e
+\(g\left(\lambda\right)\) é a densidade associada aos valores de \(y\)
+iguais ou superiores a \(y^*\) (BERGSTRA et al., 2011). No algoritmo de
+TPE, o valor de \(y^*\) é definido como sendo um quantil \(\gamma\) dos
+valores observados de \(y\), de forma que
+\(p\left(y < y^*\right) = \gamma\).
+
+\vspace{12pt}
+
+Por padrão, o Tree-Structured Parzen Estimator (TPE) utiliza como função
+de aquisição o Expected Improvement (EI). O EI representa a expectativa
+de um modelo \(M\), que mapeia \(f:\Lambda \rightarrow \mathbb{R}^N\),
+sobre a melhora esperada em relação a um limiar \(y^*\). Formalmente, o
+EI é definido como:
+
+\[
+EI_{y^*}\left(\lambda\right) = \int_{-\infty}^{\infty} \max\left(y^* - y, 0\right)p_{M}\left(y|\lambda\right)dy\text{.}
+\]
+
+Se, para o valor de \(\lambda\), o modelo prevê um \(y\) tal que
+\(y > y^∗\), a diferença \(y^∗ − y\) será negativa, e o retorno será 0,
+o que significa que não haverá melhora. Por outro lado, se \(y < y^∗\),
+a diferença será positiva, indicando que o modelo apresenta um
+desempenho superior em relação ao limiar \(y^∗\).
+
+\vspace{12pt}
+
+Portanto, para o cálculo do EI utilizando as definições dadas pelo TPE e
+assumindo que \(y^∗>y\), adota-se a parametrização de
+\(p\left(\lambda,y\right)\) como
+\(p\left(y\right)p\left(\lambda∣y\right)\), com o objetivo de
+simplificar os cálculos. Assim, a expressão do EI, para o TPE, se reduz
+a:
+
+\begin{equation}\phantomsection\label{eq-exp}{
+EI_{y^*}\left(\lambda\right) = \int_{-\infty}^{y^*} \left(y^* - y\right)p\left(y | \lambda\right) dy = \int_{-\infty}^{y^*} \left(y^* - y\right)\frac{p\left(\lambda | y\right) p\left(y \right)}{p\left(\lambda\right)} dy\text{.}
+}\end{equation}
+
+A partir da Equação~\ref{eq-tpe} e da definição
+\(p\left(y < y^*\right) = \gamma\) e
+\(p\left(y \geq y^*\right) = 1 - \gamma\), pode-se encontrar a
+distribuição marginal \(p\left(\lambda\right)\). Dessa forma, segue-se
+que:
+
+\[
+\begin{aligned}
+p\left(\lambda\right) &= \int_{-\infty}^{\infty} p\left(\lambda, y\right) dy \\
+&= \int_{-\infty}^{\infty} p\left(\lambda | y\right) p\left(y\right) dy \\
+&= \int_{-\infty}^{y^*} p\left(\lambda | y\right) p\left(y\right) dy + \int_{y^*}^{\infty} p\left(\lambda | y\right) p\left(y\right) dy \\
+&= \int_{-\infty}^{y^*} l\left(\lambda\right) p\left(y\right) dy + \int_{y^*}^{\infty} g\left(\lambda\right) p\left(y\right) dy \\
+&= \gamma l\left(\lambda\right) + \left(1 - \gamma\right) g\left(\lambda\right)\text{.}
+\end{aligned}
+\]
+
+Agora, basta calcular a integral
+\(\int_{-\infty}^{y^*}\left(y^* - y\right) p\left(\lambda|y\right)p\left(y\right)dy\).
+Tem-se, portanto:
+
+\[
+\begin{aligned}
+\int_{-\infty}^{y^*}\left(y^* - y\right) p\left(\lambda|y\right)p\left(y\right)dy &= l\left(\lambda\right) \int_{-\infty}^{y^*} \left(y^* - y\right) p\left(y\right)dy \\
+&= \gamma y^{*} l\left(\lambda\right) - l\left(\lambda\right) \int_{-\infty}^{y^*} y p\left(y\right)dy\text{.}
+\end{aligned}
+\]
+
+Finalmente, substituindo essa última expressão encontrada e
+\(p\left(\lambda\right)\) na Equação~\ref{eq-exp}, chega-se a:
+
+\[
+EI_{y^*}\left(\lambda\right) = \frac{\gamma y^* l\left(\lambda\right) - l\left(\lambda\right) \int_{-\infty}^{y^*} yp\left(y\right)dy}{\gamma l\left(\lambda\right) + \left(1 - \gamma\right)g\left(\lambda\right)} \propto \left[\gamma + \frac{g\left(\lambda\right)}{l\left(\lambda\right)} \left(1 - \gamma\right)\right]^{-1}\text{.}
+\]
+
+Essa última expressão mostra que, para maximizar o Expected Improvement,
+é necessário encontrar valores de \(\lambda\) que apresentem alta
+probabilidade em \(l\left(\lambda\right)\) e baixa probabilidade em
+\(g\left(\lambda\right)\). Portanto, no TPE, maximizar o EI equivale a
+maximizar a razão \(l\left(\lambda\right) / g\left(\lambda\right)\).
+
+\subsection{Otimização de hiperparâmetros com
+optuna}\label{otimizauxe7uxe3o-de-hiperparuxe2metros-com-optuna}
+
+~~~Para otimizar os hiperparâmetros dos modelos foi utilizado a
+bilbioteca \href{https://optuna.org/}{\textbf{Optuna}} da linguagem de
+programação \textbf{Python}. Essa biblioteca implementa diversos métodos
+para otimização automatizada de hiperparâmetros. Para a sua utilização,
+é preciso definir inicialmente uma função objetivo. Por exemplo, para
+otimizar os hiperparâmetros de uma random forest, é necessário definir
+uma função objetivo da seguinte forma:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ImportTok{import}\NormalTok{ optuna}
+\ImportTok{import}\NormalTok{ numpy }\ImportTok{as}\NormalTok{ np}
+\ImportTok{import}\NormalTok{ pandas }\ImportTok{as}\NormalTok{ pd}
+\ImportTok{from}\NormalTok{ sklearn }\ImportTok{import}\NormalTok{ ensemble}
+\ImportTok{from}\NormalTok{ sklearn.model\_selection }\ImportTok{import}\NormalTok{ cross\_val\_score, KFold}
+
+\KeywordTok{def}\NormalTok{ objective(trial):}
+\NormalTok{    X }\OperatorTok{=}\NormalTok{ train\_df[variaveis\_independentes]}
+\NormalTok{    y }\OperatorTok{=}\NormalTok{ train\_df.variavel\_dependente}
+
+\NormalTok{    params }\OperatorTok{=} \BuiltInTok{dict}\NormalTok{(}
+\NormalTok{        n\_estimators}\OperatorTok{=}\NormalTok{trial.suggest\_int(}
+\NormalTok{          name}\OperatorTok{=}\StringTok{\textquotesingle{}n\_estimators\textquotesingle{}}\NormalTok{,}
+\NormalTok{          low}\OperatorTok{=}\DecValTok{1}\NormalTok{,}
+\NormalTok{          high}\OperatorTok{=}\DecValTok{1000}\NormalTok{),}
+\NormalTok{        max\_depth}\OperatorTok{=}\NormalTok{trial.suggest\_int(}
+\NormalTok{          name}\OperatorTok{=}\StringTok{\textquotesingle{}max\_depth\textquotesingle{}}\NormalTok{,}
+\NormalTok{          low}\OperatorTok{=}\DecValTok{20}\NormalTok{,}
+\NormalTok{          high}\OperatorTok{=}\DecValTok{1000}\NormalTok{),}
+\NormalTok{        max\_features}\OperatorTok{=}\StringTok{\textquotesingle{}sqrt\textquotesingle{}}\NormalTok{,}
+\NormalTok{        random\_state}\OperatorTok{=}\DecValTok{42}
+\NormalTok{    )}
+
+\NormalTok{    model }\OperatorTok{=}\NormalTok{ ensemble.RandomForestRegressor(}
+        \OperatorTok{*}\NormalTok{params}
+\NormalTok{    )}
+\NormalTok{    model.fit(X}\OperatorTok{=}\NormalTok{X, y}\OperatorTok{=}\NormalTok{y)}
+
+\NormalTok{    cv\_scores }\OperatorTok{=}\NormalTok{ np.expm1(np.sqrt(}\OperatorTok{{-}}\NormalTok{cross\_val\_score(}
+\NormalTok{        estimator}\OperatorTok{=}\NormalTok{model,}
+\NormalTok{        X}\OperatorTok{=}\NormalTok{X,}
+\NormalTok{        y}\OperatorTok{=}\NormalTok{y,}
+\NormalTok{        scoring}\OperatorTok{=}\StringTok{"neg\_mean\_squared\_error"}\NormalTok{,}
+\NormalTok{        n\_jobs}\OperatorTok{=}\DecValTok{3}\NormalTok{,}
+\NormalTok{        cv}\OperatorTok{=}\NormalTok{KFold(n\_splits}\OperatorTok{=}\DecValTok{20}\NormalTok{))))}
+
+    \ControlFlowTok{return}\NormalTok{ np.mean(cv\_scores)}
+
+\NormalTok{study }\OperatorTok{=}\NormalTok{ optuna.create\_study()}
+\NormalTok{study.optimize(objective, n\_trials}\OperatorTok{=}\DecValTok{100}\NormalTok{, n\_jobs}\OperatorTok{={-}}\DecValTok{1}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+Primeiro, define-se, em cada tentativa (trial), quais hiperparâmetros
+serão otimizados, especificados no objeto \texttt{params} no início da
+função. Após definir o espaço de busca para cada hiperparâmetro, o
+modelo escolhido é ajustado aos dados de treinamento. Com o modelo
+ajustado, realiza-se a validação cruzada em cada trial, utilizando o
+método K-Fold com 20 divisões (folds), conforme definido previamente.
+Após definir a função objetivo, inicializa-se um estudo com
+\texttt{optuna.create\_study} e, em seguida, inicia-se a otimização com
+\texttt{study.optimize(objective,\ n\_trials=100,\ n\_jobs=-1)}. Por
+fim, para selecionar os melhores hiperparâmetros ao fim do último trial,
+basta executar \texttt{study.best\_params}.
+
+\vspace{12pt}
+
+Por padrão, a biblioteca \href{https://optuna.org/}{\textbf{Optuna}}
+utiliza o Tree-Structured Parzen Estimator (TPE) para otimizar
+hiperparâmetros de um modelo. A técnica de otimização é escolhida por
+meio do argumento \texttt{sampler} no método \texttt{create\_study}.
+Para selecionar o TPE, basta passar \texttt{optuna.samplers.TPESampler}
+como argumento para a criação do estudo. O método TPE é o padrão para
+otimização na biblioteca \href{https://optuna.org/}{\textbf{Optuna}}. No
+entanto, caso se deseje utilizar outro método de otimização da
+biblioteca, basta especificá-lo da mesma forma:
+\texttt{optuna.create\_study(sampler=metodo\_otimizacao)}.
+
+\vspace{12pt}
+
+A função objetivo definido no
+\href{https://optuna.org/}{\textbf{Optuna}} foi utilizada com a métrica
+de error MAPE (Erro Percentual Absoluto Médio), que entrega boas
+interpretações sobre o comportamento do modelo. Essa métrica mede, em
+termos percentuais, o desvio médio entre os valores estimados e os
+valores observados, oferecendo uma interpretação relativa ao erro.
+
 \chapter{Produto final}\label{produto-final}
 
 \chapter{Conclusão}\label{conclusuxe3o}
@@ -1485,9 +1805,24 @@ BAYER, M. \href{http://aosabook.org/en/sqlalchemy.html}{SQLAlchemy}.
 Open Source Applications Volume II: Structure, Scale, and a Few More
 Fearless Hacks}. {[}S.l.{]}: aosabook.org, 2012.
 
-\bibitem[\citeproctext]{ref-chen2016xgboost}
-CHEN, T.; GUESTRIN, C. Xgboost: A scalable tree boosting system.
-{[}S.l.{]}: {[}s.n.{]}, 2016. p. 785--794.
+\bibitem[\citeproctext]{ref-bergstra2011algorithms}
+BERGSTRA, J. et al. Algorithms for hyper-parameter optimization.
+\textbf{Advances in neural information processing systems}, 2011. v. 24.
+
+\bibitem[\citeproctext]{ref-bergstra2013making}
+\_\_\_\_\_\_; YAMINS, D.; COX, D. Making a science of model search:
+Hyperparameter optimization in hundreds of dimensions for vision
+architectures. {[}S.l.{]}: PMLR, 2013. p. 115--123.
+
+\bibitem[\citeproctext]{ref-bischl2023hyperparameter}
+BISCHL, B. et al. Hyperparameter optimization: Foundations, algorithms,
+best practices, and open challenges. \textbf{Wiley Interdisciplinary
+Reviews: Data Mining and Knowledge Discovery}, 2023. v. 13, n. 2, p.
+e1484.
+
+\bibitem[\citeproctext]{ref-garnett2023bayesian}
+GARNETT, R. \textbf{Bayesian optimization}. {[}S.l.{]}: Cambridge
+University Press, 2023.
 
 \bibitem[\citeproctext]{ref-goodfellow2016deep}
 GOODFELLOW, I. et al. \textbf{Deep learning}. {[}S.l.{]}: MIT press
@@ -1525,30 +1860,14 @@ INC., P. T. Collaborative data science. 2015. Disponível em:
 JAMES, G. et al. \textbf{An introduction to statistical learning}.
 {[}S.l.{]}: Springer, 2013. V. 112.
 
-\bibitem[\citeproctext]{ref-ke2017lightgbm}
-KE, G. et al. Lightgbm: A highly efficient gradient boosting decision
-tree. \textbf{Advances in neural information processing systems}, 2017.
-v. 30.
-
-\bibitem[\citeproctext]{ref-NIPS2017_7062}
-LUNDBERG, S. M.; LEE, S.-I.
-\href{http://papers.nips.cc/paper/7062-a-unified-approach-to-interpreting-model-predictions.pdf}{A
-Unified Approach to Interpreting Model Predictions}. \emph{Em}: GUYON,
-I. et al. (Org.). \textbf{Advances in Neural Information Processing
-Systems 30}. {[}S.l.{]}: Curran Associates, Inc., 2017, p. 4765--4774.
-
 \bibitem[\citeproctext]{ref-morettin2022analise}
 MORETTIN, P. A.; TOLOI, C. M. De C. An{á}lise de s{é}ries temporais.
 2022.
 
-\bibitem[\citeproctext]{ref-scikit-learn}
-PEDREGOSA, F. et al. Scikit-learn: Machine Learning in {P}ython.
-\textbf{Journal of Machine Learning Research}, 2011. v. 12, p.
-2825--2830.
-
-\bibitem[\citeproctext]{ref-folium}
-PYTHON-VISUALIZATION. \textbf{Folium}. Disponível em:
-\textless{}\url{https://python-visualization.github.io/folium/}\textgreater.
+\bibitem[\citeproctext]{ref-snoek2012practical}
+SNOEK, J.; LAROCHELLE, H.; ADAMS, R. P. Practical bayesian optimization
+of machine learning algorithms. \textbf{Advances in neural information
+processing systems}, 2012. v. 25.
 
 \bibitem[\citeproctext]{ref-reback2020pandas}
 TEAM, T. Pandas Development. \textbf{pandas-dev/pandas: Pandas}. Zenodo.
@@ -1561,10 +1880,17 @@ VIRTANEN, P. et al.
 Fundamental Algorithms for Scientific Computing in Python}}.
 \textbf{Nature Methods}, 2020. v. 17, p. 261--272.
 
-\bibitem[\citeproctext]{ref-Waskom2021}
-WASKOM, M. L. seaborn: statistical data visualization. \textbf{Journal
-of Open Source Software}, 2021. v. 6, n. 60, p. 3021. Disponível em:
-\textless{}\url{https://doi.org/10.21105/joss.03021}\textgreater.
+\bibitem[\citeproctext]{ref-yang2020hyperparameter}
+YANG, L.; SHAMI, A. On hyperparameter optimization of machine learning
+algorithms: Theory and practice. \textbf{Neurocomputing}, 2020. v. 415,
+p. 295--316.
+
+\bibitem[\citeproctext]{ref-yeo}
+YEO, I.-K.; JOHNSON, R. A. A New Family of Power Transformations to
+Improve Normality or Symmetry. \textbf{Biometrika}, 2000. v. 87, n. 4,
+p. 954--959. Disponível em:
+\textless{}\url{http://www.jstor.org/stable/2673623}\textgreater. Acesso
+em: 25 out. 2023.
 
 \end{CSLReferences}
 
