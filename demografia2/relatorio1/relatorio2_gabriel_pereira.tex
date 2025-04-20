@@ -179,7 +179,7 @@
 \@ifundefined{codebgcolor}{\definecolor{codebgcolor}{HTML}{F0F2F4}}{}
 \makeatother
 \makeatletter
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[breakable, boxrule=0pt, colback={codebgcolor}, enhanced, frame hidden, sharp corners]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, breakable, frame hidden, boxrule=0pt, colback={codebgcolor}, enhanced]}{\end{tcolorbox}}\fi
 \makeatother
 
 \ifLuaTeX
@@ -531,7 +531,7 @@ Não foi possível aplicar a técnica de sobrevivência de Brass devido às
 proporções negativas e por \(\text{FV} > \text{FNV}\).
 
 \begin{longtable}[]{@{}lllllll@{}}
-\caption{}\label{T_38adf}\tabularnewline
+\caption{}\label{T_2559b}\tabularnewline
 \toprule\noalign{}
 Idade & Nascidos & Mulheres & Vivos\_referencia & FV & FNV &
 Prop\_nao\_sob \\
@@ -595,7 +595,7 @@ Valores calculados para encontrar os fatores de multiplicação:
 \((0.764 - 0.721033721935657) / (0.764 - 0.605) = 0.2702281639266858\).
 
 \begin{longtable}[]{@{}llllllllll@{}}
-\caption{}\label{T_94edc}\tabularnewline
+\caption{}\label{T_d9891}\tabularnewline
 \toprule\noalign{}
 Idade & Nascidos & Mulheres & Nascidos\_vivos\_2009 & fi & Pi & Fi & Wi
 & Fi\_acum\_media & fi\_corrigido \\
@@ -645,7 +645,7 @@ anos, há um recuo substancial na fecundidade (0.022913), e o valor
 ajustado (0.023745) reflete com precisão essa mudança
 
 \begin{longtable}[]{@{}lllllllll@{}}
-\caption{}\label{T_3fd49}\tabularnewline
+\caption{}\label{T_db713}\tabularnewline
 \toprule\noalign{}
 Idade & TFE & v\_a & n\_a & Mulheres & Nascimentos\_casadas & r\_a &
 log\_r\_a\_n\_a & r\_a\_estimado \\
@@ -709,7 +709,7 @@ declínio acentuado, com valores próximos a zero, sem gerar disrupções
 artificiais.
 
 \begin{longtable}[]{@{}llllllllllll@{}}
-\caption{}\label{T_c4fc0}\tabularnewline
+\caption{}\label{T_58b7f}\tabularnewline
 \toprule\noalign{}
 Idade & TFE & p\_a & idade\_e & F\_a & G & F\_a\_padrao & G\_padrao &
 G\textquotesingle{} & antgompt & p\textquotesingle(a) &
@@ -895,7 +895,7 @@ altos do que os previstos pela tabela-padrão utilizada pelo modelo de
 Brass.
 
 \begin{longtable}[]{@{}lllllll@{}}
-\caption{}\label{T_0abed}\tabularnewline
+\caption{}\label{T_c2bcf}\tabularnewline
 \toprule\noalign{}
 Idade & I(x) & I(x) GB & Ys(x) & Y(x) & Y(x) estimado GB & I(x) estimado
 GB \\
@@ -948,7 +948,7 @@ estimado é 0,704, o que representa uma redução coerente, considerando o
 padrão de aumento de mortalidade nessa fase.
 
 \begin{longtable}[]{@{}lllllll@{}}
-\caption{}\label{T_7e0f7}\tabularnewline
+\caption{}\label{T_eb182}\tabularnewline
 \toprule\noalign{}
 Idade & I(x) & I(x) MAB & Ys(x) & Y(x) & Y(x) estimado MAB & I(x)
 estimado MAB \\
@@ -988,7 +988,7 @@ para os homens foram obtidas com os valores padrão do Mortpak,
 utilizando o método Far East.
 
 \begin{longtable}[]{@{}lllllll@{}}
-\caption{}\label{T_15c2b}\tabularnewline
+\caption{}\label{T_42d1c}\tabularnewline
 \toprule\noalign{}
 Idade & I(x) & I(x) far\_east & Ys(x) & Y(x) & Y(x) estimado far\_east &
 I(x) estimado far\_east \\
@@ -1036,7 +1036,7 @@ demograficamente: as mulheres têm maior expectativa de vida e sobrevivem
 em maiores proporções nas idades avançadas em comparação aos homens.
 
 \begin{longtable}[]{@{}lllllll@{}}
-\caption{}\label{T_5777b}\tabularnewline
+\caption{}\label{T_32545}\tabularnewline
 \toprule\noalign{}
 Idade & I(x) & I(x) GB & Ys(x) & Y(x) & Y(x) estimado GB & I(x) estimado
 GB \\
@@ -1084,7 +1084,7 @@ suaviza ou generaliza padrões que não capturam totalmente a dinâmica
 real da mortalidade feminina brasileira nessas idades.
 
 \begin{longtable}[]{@{}lllllll@{}}
-\caption{}\label{T_b129c}\tabularnewline
+\caption{}\label{T_fb43b}\tabularnewline
 \toprule\noalign{}
 Idade & I(x) & I(x) MAB & Ys(x) & Y(x) & Y(x) estimado MAB & I(x)
 estimado MAB \\
@@ -1120,12 +1120,12 @@ estimado MAB \\
 \subsection{Caso com o passo 3
 Mulheres}\label{caso-com-o-passo-3-mulheres}
 
-Assim como observado para o sexo masculino, as melhores estimativas para
-o sexo feminino foram obtidas a partir dos valores padrão do Mortpak,
-utilizando o modelo Far East.
+~~~Assim como observado para o sexo masculino, as melhores estimativas
+para o sexo feminino foram obtidas a partir dos valores padrão do
+Mortpak, utilizando o modelo Far East.
 
 \begin{longtable}[]{@{}lllllll@{}}
-\caption{}\label{T_af524}\tabularnewline
+\caption{}\label{T_9c25d}\tabularnewline
 \toprule\noalign{}
 Idade & I(x) & I(x) far\_east & Ys(x) & Y(x) & Y(x) estimado far\_east &
 I(x) estimado far\_east \\

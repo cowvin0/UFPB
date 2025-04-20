@@ -851,7 +851,7 @@ duas_tabuas_mulheres_mab\
 
 ### Caso com o passo 3 Mulheres
 
-Assim como observado para o sexo masculino, as melhores estimativas para o sexo feminino foram obtidas a partir dos valores padrão do Mortpak, utilizando o modelo Far East.
+\ \ \ Assim como observado para o sexo masculino, as melhores estimativas para o sexo feminino foram obtidas a partir dos valores padrão do Mortpak, utilizando o modelo Far East.
 
 ```{python}
 duas_tabuas_mulheres_mab = pd.DataFrame(
