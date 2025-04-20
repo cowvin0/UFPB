@@ -224,7 +224,7 @@
 \@ifundefined{codebgcolor}{\definecolor{codebgcolor}{HTML}{F0F2F4}}{}
 \makeatother
 \makeatletter
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[breakable, sharp corners, colback={codebgcolor}, boxrule=0pt, frame hidden, enhanced]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, breakable, frame hidden, colback={codebgcolor}, enhanced, boxrule=0pt]}{\end{tcolorbox}}\fi
 \makeatother
 \makeatletter
 \@ifpackageloaded{algorithm}{}{\usepackage{algorithm}}
@@ -364,8 +364,97 @@
 
 \chapter{Introdução}\label{introduuxe7uxe3o}
 
-\textbf{(FALAR SOBRE PARA QUE FOI O ESTÁGIO E FALAR BREVEMENTE SOBRE A
-EMPRESA)}
+~~~Este relatório tem como objetivo apresentar as atividades
+desenvolvidas durante o estágio supervisionado realizado na Sicredi, uma
+instituição financeira cooperativa com mais de 120 anos de história no
+Brasil. Fundada em 1902, na cidade de Nova Petrópolis, no Rio Grande do
+Sul, a Sicredi surgiu a partir da iniciativa de um grupo de agricultores
+que buscavam alternativas para o acesso a crédito e serviços financeiros
+em suas comunidades. Inspirada no modelo cooperativo europeu, a
+instituição foi pioneira no cooperativismo de crédito no país e, desde
+então, tem consolidado sua atuação com base em princípios como a
+solidariedade, a autonomia e o compromisso com o desenvolvimento local.
+
+\vspace{12pt}
+
+Atualmente, a Sicredi está presente em todas as regiões do Brasil,
+composta por mais de cem cooperativas de crédito filiadas ao Sistema,
+atendendo milhões de associados por meio de uma ampla rede de agências.
+Seu portfólio de produtos abrange uma variedade de serviços financeiros,
+como conta corrente, crédito, investimentos, seguros, consórcios e
+previdência. Diferentemente dos bancos tradicionais, o Sicredi adota um
+modelo de gestão em que os próprios associados participam das decisões
+estratégicas, o que fortalece o vínculo entre a instituição e a
+comunidade em que está inserida.
+
+\vspace{12pt}
+
+O estágio teve como foco principal a aplicação de técnicas estatísticas
+de séries temporais, com o objetivo de contribuir para o aprimoramento
+do processo de planejamento estratégico da empresa. O trabalho se
+concentrou na modelagem e previsão de indicadores relacionados a 26
+produtos financeiros distintos, abrangendo tanto receitas quanto
+despesas das cooperativas da região Nordeste. A etapa de modelagem
+envolveu a análise e o tratamento de dados históricos, a seleção de
+variáveis relevantes e a escolha de metodologias de previsão adequadas.
+
+\vspace{12pt}
+
+Como resultado prático, foi desenvolvido um produto final na forma de
+uma ferramenta interativa voltada para apoiar as áreas de gestão e
+planejamento da Sicredi Nordeste. Essa aplicação permite visualizar as
+séries históricas e as previsões geradas de forma dinâmica, além de
+possibilitar a realização de simulações com diferentes cenários, como
+projeções baseadas em taxas de crescimento percentual ou na variação da
+taxa Selic. A ferramenta também permite comparar o desempenho de
+diferentes agências e cooperativas, oferecendo visões por cluster e por
+porte, o que amplia significativamente a capacidade analítica da
+instituição.
+
+\vspace{12pt}
+
+Dessa forma, o estágio proporcionou uma experiência prática
+enriquecedora, permitindo a aplicação de conhecimentos estatísticos em
+um contexto real de negócio e contribuindo diretamente para a tomada de
+decisões mais embasadas e estratégicas por parte da organização.
+
+\section{Objetivos}\label{objetivos}
+
+\subsection{Objetivo Geral}\label{objetivo-geral}
+
+~~~Aplicar técnicas estatísticas de modelagem e previsão de séries
+temporais para apoiar o planejamento estratégico da Sicredi, por meio do
+desenvolvimento de uma ferramenta interativa capaz de gerar previsões e
+simulações para produtos financeiros, receitas e despesas das
+cooperativas da região Nordeste.
+
+\subsection{Objetivos Específicos}\label{objetivos-especuxedficos}
+
+\begin{itemize}
+\item
+  Realizar o levantamento, organização e tratamento dos dados históricos
+  relacionados aos produtos financeiros, despesas e receitas das
+  cooperativas;
+\item
+  Identificar e aplicar metodologias adequadas para a modelagem e
+  previsão de séries temporais;
+\item
+  Avaliar o desempenho dos modelos gerados, com base em métricas
+  estatísticas e validações cruzadas;
+\item
+  Desenvolver uma ferramenta interativa que permita a visualização das
+  séries históricas e das previsões geradas;
+\item
+  Implementar funcionalidades de simulação, permitindo a análise de
+  cenários com diferentes taxas de crescimento ou variações na taxa
+  Selic;
+\item
+  Automatizar o processo de geração de previsões, substituindo práticas
+  manuais anteriormente adotadas;
+\item
+  Fornecer suporte à análise comparativa entre agências e cooperativas,
+  considerando diferentes agrupamentos por porte e cluster.
+\end{itemize}
 
 \chapter{Recursos Computacionais}\label{recursos-computacionais}
 
@@ -1421,7 +1510,7 @@ sem regularização.
 
 ~~~Os dados foram obtidos por meio do \textbf{Denodo}, plataforma
 utilizada pela empresa que centraliza informações de todos os setores. A
-partir do \textbf{Denodo}, foram coletadas 29 séries temporais
+partir do \textbf{Denodo}, foram coletadas 26 séries temporais
 distintas. Duas delas representam a quantidade de associados
 conquistados por cada agência a cada mês, segmentados entre pessoas
 físicas (PF) e pessoas jurídicas (PJ). Além dessas, foram extraídas
@@ -1462,7 +1551,7 @@ estimativas futuras para cada indicador até o ano de 2030.
 Esses dados foram coletados para todas as agências das cooperativas que
 integram a Central Sicredi Nordeste. Na região Nordeste, existem 15
 cooperativas, cada uma composta por diversas agências subordinadas. No
-total, essas cooperativas reúnem mais de 300 agências.
+total, essas cooperativas reúnem mais de 100 agências.
 
 \vspace{12pt}
 
@@ -1780,6 +1869,70 @@ termos percentuais, o desvio médio entre os valores estimados e os
 valores observados, oferecendo uma interpretação relativa ao erro.
 
 \chapter{Produto final}\label{produto-final}
+
+~~~O produto final, contendo as previsões dos produtos de investimento,
+bem como das despesas e receitas das cooperativas do Nordeste, foi
+desenvolvido com o objetivo de facilitar o processo de planejamento da
+empresa. Anteriormente, todo o planejamento e o acompanhamento das metas
+eram realizados de forma bastante manual, utilizando-se, em geral, de
+médias móveis simples ou estimativas baseadas em percentuais de
+crescimento. Agora, com esse produto, e de forma mais automatizada,
+basta baixar as bases de dados para que seja possível realizar o
+planejamento das agências.
+
+\textbf{(INSERIR AQUI UMA PÁGINA INICIAL COM APENAS UM PRODUTO
+SELECIONADO)}
+
+\vspace{12pt}
+
+Como pode ser visto na (\textbf{fig?}), a página inicial do produto
+conta com seletores no cabeçalho. No primeiro seletor, é possível
+escolher entre todos os produtos disponíveis para análise, sendo
+necessário selecionar apenas um. A partir dessa seleção, a base de dados
+é carregada com informações sobre todas as cooperativas, suas
+respectivas agências e o porte ou cluster ao qual cada agência pertence.
+
+\textbf{(INSERIR AQUI O GRÁFICO GERADO NA PÁGINA FINAL. AO LADO, FAZER
+UM FILTRO NO GRÁFICO PARA ATUALIZAR OS CARDS)}
+
+\vspace{12pt}
+
+Após a escolha de valores para todos os seletores, um gráfico de série
+temporal é gerado no cartão principal da página, localizado no centro.
+Esse gráfico apresenta quatro linhas: uma representa os valores da
+agência selecionada para análise; outra, a média mensal das 25\%
+melhores agências dentro do mesmo cluster; a terceira exibe a média
+mensal das agências do mesmo porte; e, por fim, a última linha mostra a
+média das 25\% melhores agências considerando todas as agências da
+cooperativa. Além do gráfico, há também cartões que apresentam os
+valores realizados e as previsões correspondentes a cada linha. Por
+padrão, esses cartões exibem a soma acumulada de todo o período da série
+temporal. No entanto, caso desejado, é possível aplicar um filtro para
+selecionar um período específico, atualizando assim os valores exibidos
+nos cartões, como ilustrado na (\textbf{fig?}).
+
+\vspace{12pt}
+
+Além da visão inicial, foi adicionada uma seção dedicada à realização de
+simulações. Há duas formas de realizar a simulação. A primeira segue o
+modelo utilizado anteriormente, considerando um percentual de
+crescimento mensal com base no mesmo mês do ano anterior (como ilustrado
+na (\textbf{fig?}), em que é simulado um crescimento de 20\% para todos
+os meses). A segunda possibilidade permite simular e analisar a variação
+dos valores da série em função da taxa Selic. Para isso, é necessário
+inserir os valores da Selic nos respectivos meses, na tabela destacada
+em vermelho na (\textbf{fig?}). Por fim, para executar a simulação
+baseada na Selic, basta clicar no botão ``Simule'', que gerará
+automaticamente o gráfico correspondente.
+
+\vspace{12pt}
+
+\textbf{(ADICIONAR FIGURA DA PÁGINA DE ANALÍTICO)}
+
+A página final é dedicada à análise analítica. Ela possui uma estrutura
+bastante semelhante à da página anterior, porém com os valores pontuais
+dos gráficos apresentados em formato de tabela, como pode ser visto na
+(\textbf{fig?}).
 
 \chapter{Conclusão}\label{conclusuxe3o}
 
