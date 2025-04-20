@@ -125,6 +125,7 @@ Para utilizar a técnica de Brass, será necessário calcular os nascidos vivos 
 
 Após encontrar os fatores de multiplicação $W_i$, basta cálcular a fecundidade acumulada média com $F_i =  F_i + W_if_i$. Por fim, encontram-se os coeficientes específicos corrigidos $f^{'}=f_iP_{2}/F_{2}$.
 
+
 ## Modelando taxa de fecundidade marital
 
 \ \ \ O modelo de fecundidade marital de Coale-Trussell é uma das abordagens clássicas para estudar o comportamento reprodutivo de mulheres casadas, oferecendo uma maneira prática de estimar e interpretar padrões de fecundidade observados com base em uma curva-padrão e parâmetros de ajuste. Sua aplicação é especialmente útil em estudos demográficos comparativos entre diferentes regiões ou ao longo do tempo.
@@ -199,7 +200,19 @@ df_brass_sob = pd.read_csv("data_relatorio2/nascidos_vivos_idade_mae_2010.csv")\
     )
 ```
 
+\blandscape
+
 ## Técnica de Brass para a fecundidade
+
+\ \ \ Na faixa de 20 a 24 anos, a fecundidade começa a aumentar, com uma taxa de fecundidade corrigida de 0,918372 e um valor acumulado (fi_acum) de 2,950542. Isso reflete um aumento na fecundidade, que geralmente ocorre à medida que as mulheres atingem idades mais próximas do pico reprodutivo. O valor de 0,065290 para o ajuste de fecundidade também está dentro do esperado, indicando que a técnica Brass está corrigindo adequadamente os dados.
+
+\vspace{12pt}
+
+Nas faixas de 25 a 29 anos e 30 a 34 anos, a fecundidade continua a aumentar, atingindo valores de fi corrigido de 1,518141 e 1,937938, respectivamente, com valores de fi acumulado chegando a 3,069595 e 3,183244. Isso é consistente com a expectativa, pois a fecundidade atinge seu pico em torno de 30 anos, e as mulheres dessa faixa etária tendem a ter mais filhos.
+
+\vspace{12pt}
+
+Finalmente, na faixa de 45 a 49 anos, a fecundidade é muito baixa, como esperado para essa faixa etária. O valor de fi corrigido de 2,322042 é alto em relação ao número de nascimentos (1,610,379), refletindo a diminuição significativa na fecundidade após os 40 anos. A técnica de Brass consegue corrigir adequadamente os dados, gerando uma taxa de fecundidade realista para as mulheres dessa faixa etária avançada.
 
 $0.096731 / 0.134156 = 0.721033721935657$
 
@@ -234,9 +247,23 @@ df_brass_fec = pd.read_csv("data_relatorio2/nascidos_vivos_idade_mae_2010.csv")\
         Fi_acum_media=lambda x: x.Fi + x.Wi*x.fi,
         fi_corrigido=lambda x: x.fi * x.Pi.iloc[1] / x.Fi_acum_media.iloc[1]
     )
+
+df_brass_fec\
+  .style\
+  .set_table_styles([
+        {"selector": "th", "props": [("text-align", "center")]},
+        {"selector": "td", "props": [("text-align", "center")]}
+  ])\
+  .hide()
 ```
 
+\elandscape
+
+\blandscape
+
 ## Modelando taxa de fecundidade marital
+
+\ \ \ Na faixa de 20 a 24 anos, a fecundidade marital observada (0.053424) está próxima da estimada (0.062416), o que indica que o modelo consegue capturar bem a dinâmica reprodutiva das mulheres casadas nesse grupo. Conforme a idade avança, como na faixa de 25 a 29 anos, a fecundidade observada diminui levemente (0.053185), mas o modelo ainda mantém boa aderência ao produzir um valor estimado compatível (0.048705). Na faixa de 30 a 34 anos, a queda na fecundidade é mais acentuada (0.043441), e novamente o modelo responde de forma adequada, com valor estimado de 0.033542, demonstrando sensibilidade ao declínio na intensidade reprodutiva. Esse padrão se mantém nas idades seguintes: de 35 a 39 anos, há um recuo substancial na fecundidade (0.022913), e o valor ajustado (0.023745) reflete com precisão essa mudança
 
 ```{python}
 df_tfe = pd.read_csv("data/tfe_roraima_2000_2010.csv", delimiter="\t")\
@@ -283,9 +310,35 @@ df_tfe = df_tfe\
   .assign(
     r_a_estimado=lambda x: np.exp(preds) * x.n_a
   )
+
+df_tfe\
+  .style\
+  .set_table_styles([
+        {"selector": "th", "props": [("text-align", "center")]},
+        {"selector": "td", "props": [("text-align", "center")]}
+  ])\
+  .hide()
 ```
 
+\elandscape
+
+\blandscape
+
 ## Modelo relacional de Gompertz
+
+\ \ \ Na faixa de 15 a 19 anos, os valores de $f\left(a\right)$ e $f′\left(a\right)$ indicam que o modelo superestima um pouco a fecundidade específica (0.220 vs 0.137 observada), ainda que a acumulada p′(a)p′(a) esteja razoavelmente próxima. Isso pode ser reflexo de um início mais precoce da fecundidade do que o padrão esperado.
+
+\vspace{12pt}
+
+Entre 20 e 24 anos, o modelo começa a se ajustar melhor, com $f^{'}\left(a\right)=0.1519$ sendo mais próximo de $F_a=0.1504$, e o valor acumulado $p^{'}(a)\approx 0.51$, em linha com a acumulação observada. Isso sugere que o modelo consegue captar bem a intensidade e a forma da fecundidade nesse pico inicial.
+
+\vspace{12pt}
+
+De 25 a 29 anos, o modelo continua a fornecer uma boa aproximação tanto para a fecundidade específica quanto para a acumulada, o que indica que ele ajusta corretamente o pico de fecundidade típico dessa faixa etária, que é o período de maior concentração de nascimentos.
+
+\vspace{12pt}
+
+Nas faixas de 35 a 39 e 40 a 44 anos, o modelo ajusta valores muito baixos de $f^{'}(a)$, o que é esperado, pois essas idades correspondem ao final do período reprodutivo. O ajuste segue a tendência esperada de declínio acentuado, com valores próximos a zero, sem gerar disrupções artificiais.
 
 ```{python}
 df_tfe_gomp = pd.read_csv("data/tfe_roraima_2000_2010.csv", delimiter="\t")\
@@ -299,25 +352,25 @@ df_tfe_gomp = pd.read_csv("data/tfe_roraima_2000_2010.csv", delimiter="\t")\
     p_a=lambda x: x.TFE / x.TFE.sum(),
     idade_e=lambda x: x.Idade.str.split().apply(lambda y: y[2]).astype(int) + 1,
     F_a=lambda x: x.p_a.cumsum(),
-    Gompit=lambda x: -np.log(-np.log(x.F_a)),
+    G=lambda x: -np.log(-np.log(x.F_a)),
     F_a_padrao=[
       0.136, 0.377, 0.609, 0.796,
       0.930, 0.992, 1
     ],
-    Gompit_padrao=[
+    G_padrao=[
       -0.691, 0.026, 0.7,
       1.479, 2.626, 4.809,
       np.nan
     ]
   ).dropna()
 
-X = df_tfe_gomp[['Gompit_padrao']]
-y = df_tfe_gomp['Gompit']
+X = df_tfe_gomp[['G_padrao']]
+y = df_tfe_gomp['G']
 
 model = LinearRegression()
 model.fit(X, y)
 
-df_tfe_gomp["Gompit\'"] = model.predict(X)
+df_tfe_gomp["G\'"] = model.predict(X)
 df_tfe_gomp["antgompt"] = np.exp(-np.exp(-model.predict(X)))
 df_tfe_gomp["p\'(a)"] = [4.540190] + [
   df_tfe_gomp.antgompt.iloc[i] - df_tfe_gomp.antgompt.iloc[i - 1]
@@ -329,9 +382,17 @@ df_tfe_gomp["f'(a)"] = df_tfe_gomp["p'(a)"] * df_tfe_gomp.TFE.sum()
 alpha = model.intercept_
 beta = model.coef_[0]
 
+df_tfe_gomp\
+  .style\
+  .set_table_styles([
+        {"selector": "th", "props": [("text-align", "center")]},
+        {"selector": "td", "props": [("text-align", "center")]}
+  ])\
+  .hide()
+
 # plt.figure(figsize=(8,5))
-# plt.scatter(df_tfe_gomp['Gompit_padrao'], df_tfe_gomp['Gompit'], label='Dados observados')
-# plt.plot(df_tfe_gomp['Gompit_padrao'], model.predict(X), color='red', label='Ajuste linear')
+# plt.scatter(df_tfe_gomp['G_padrao'], df_tfe_gomp['Gompit'], label='Dados observados')
+# plt.plot(df_tfe_gomp['G_padrao'], model.predict(X), color='red', label='Ajuste linear')
 # plt.xlabel('Gompit(Padrão)')
 # plt.ylabel('Gompit(F_a)')
 # plt.title('Ajuste do Modelo Relacional de Gompertz')
@@ -340,17 +401,23 @@ beta = model.coef_[0]
 # plt.show()
 ```
 
+\elandscape
+
 # Exercícios do Mortpak
 
 ::: {layout-nrow=2}
-![Tábua de vida para o sexo masculino.](includes/tabua_vida_homens.png)
+![Tábua de vida para o sexo masculino.](includes/tabua_vida_homens.png){#fig-tabua_vida_masc}
 
-![Tábua de vida para o sexo feminino.](includes/tabua_vida_mulheres.png)
+![Tábua de vida para o sexo feminino.](includes/tabua_vida_mulheres.png){#fig-tabua_vida_fem}
 :::
 
 ## Questão 1)
 
 Ver no Mortpak qual é o melhor modelo ao comparar os Modelos das Nações Unidas aos de Coale-Demeny (Função COMPAR);
+
+\vspace{12pt}
+
+Ao comparar os modelos das Nações Unidas com os de Coale-Demeny e observar a expectativa de vida estimada para o sexo masculino na @fig-tabua_vida_masc, nota-se que o modelo que mais se aproxima é o Far East, das Nações Unidas. Por outro lado, no caso do sexo feminino, o modelo que mais se aproxima é o East, de Coale-Demeny.
 
 ::: {layout-ncol=2}
 ![Função COMPAR para o sexo masculino.](includes/expec_vida_homens.png)
@@ -362,6 +429,10 @@ Ver no Mortpak qual é o melhor modelo ao comparar os Modelos das Nações Unida
 
 Considerar apenas os Modelos das Nações Unidas e ver qual é o melhor (Função COMPAR);
 
+\vspace{12pt}
+
+O melhor modelo das Nações Unidas para o sexo masculino foi o de Far East. Da mesma forma, o melhor modelo foi o de Far East.
+
 ## Questão 3)
 
 Observar os valores da $E\left(x\right)$ e escolher a TV Modelo das Nações Unidas mais adequada (depende do passo 2...);
@@ -369,3 +440,329 @@ Observar os valores da $E\left(x\right)$ e escolher a TV Modelo das Nações Uni
 ## Questão 4)
 
 Usar o sistema logito de tábuas de vida de dois parâmetros de Brass e considerar os seguintes padrões: Modelo Geral de Brass; MAB e o resultado do passo 3.
+
+### Caso com o Modelo Geral de Brass Homens
+
+\ \ \ Observa-se que, para as idades iniciais, os valores de I(x) estão próximos de 1, indicando alta sobrevivência na infância, como esperado. À medida que a idade avança, os valores de I(x) diminuem, refletindo o aumento da mortalidade com o tempo. No entanto, ao comparar I(x) com I(x) estimado GB, nota-se que o modelo tende a subestimar a sobrevivência em praticamente todas as idades, ou seja, o valor ajustado pelo modelo é sistematicamente inferior ao valor observado. Essa diferença se torna mais evidente nas idades adultas e avançadas. Por exemplo, aos 40 anos, o valor observado de I(x) é 0,911, enquanto o estimado é 0,510, uma discrepância considerável. Isso sugere que a população masculina analisada apresenta níveis de sobrevivência mais altos do que os previstos pela tabela-padrão utilizada pelo modelo de Brass.
+
+```{python}
+duas_tabuas_homem = pd.DataFrame(
+  {
+    "Idade": [
+      0, 1, 5, 10,
+      15, 20, 25, 30,
+      35, 40, 45, 50,
+      55, 60, 65, 70,
+      75, 80, 85, 90
+    ],
+    "I(x)": [
+      100_000, 98_611,
+      98_199, 98_043,
+      97_779, 96_907,
+      95_770, 94_421,
+      92_799, 91_071,
+      89_108, 86_689,
+      83_418, 78_759,
+      73_106, 65_071,
+      55_268, 42_737,
+      28_308, 14_887
+    ],
+    "I(x) GB": [
+      1, 0.8499, 0.7691,
+      0.7502, 0.7362,
+      0.7130, 0.6826,
+      0.6525, 0.6223,
+      0.5090, 0.5534,
+      0.5106, 0.4590,
+      0.3965, 0.3221,
+      0.2380,
+      0.1521, 0.0776,
+      0.0281, 0.006
+    ]
+  }
+)
+
+duas_tabuas_homem["I(x)"] = duas_tabuas_homem["I(x)"] / 100_000
+
+duas_tabuas_homem["Ys(x)"] = 0.5 * np.log(
+  (1 - duas_tabuas_homem["I(x) GB"]) / duas_tabuas_homem["I(x) GB"]
+)
+
+duas_tabuas_homem["Y(x)"] = 0.5 * np.log(
+  (1 - duas_tabuas_homem["I(x)"]) / duas_tabuas_homem["I(x)"]
+)
+
+duas_tabuas_homem = duas_tabuas_homem[duas_tabuas_homem["Ys(x)"] != -np.inf]
+
+X = duas_tabuas_homem.dropna()[['Y(x)']]
+y = duas_tabuas_homem.dropna()['Ys(x)']
+
+model = LinearRegression()
+model.fit(X, y)
+
+predict = model.predict(X)
+alpha = model.intercept_
+beta = model.coef_[0]
+
+duas_tabuas_homem["Y(x) estimado GB"] = predict.tolist()
+duas_tabuas_homem["I(x) estimado GB"] = 1 / (1 + np.exp(2 * predict))
+
+duas_tabuas_homem\
+  .style\
+  .set_table_styles([
+        {"selector": "th", "props": [("text-align", "center")]},
+        {"selector": "td", "props": [("text-align", "center")]}
+  ])\
+  .format("{:.3f}", decimal=",", thousands=".").hide()
+```
+
+### Caso com o MAB Homens
+
+\ \ \ Aos 1 ano de idade, o valor observado de sobrevivência $I\left(x\right)$ é 0,986, enquanto o estimado pelo modelo é 0,862. Apesar de uma leve subestimação, o valor já se aproxima bastante, mostrando que o modelo é capaz de capturar adequadamente a alta sobrevivência nos primeiros anos de vida, mesmo considerando a maior mortalidade infantil masculina em comparação ao sexo feminino.
+
+\vspace{12pt}
+
+Ao longo da infância e juventude (até os 20–25 anos), o modelo continua apresentando valores estimados que acompanham a tendência dos valores observados, com pequenas diferenças — o que indica bom ajuste. Por exemplo, aos 25 anos, o $I\left(x\right)$ observado é 0,958 e o estimado é 0,704, o que representa uma redução coerente, considerando o padrão de aumento de mortalidade nessa fase.
+
+```{python}
+
+duas_tabuas_homem_mab = pd.DataFrame(
+  {
+    "Idade": [
+      0, 1, 5, 10,
+      15, 20, 25, 30,
+      35, 40, 45, 50,
+      55, 60, 65, 70,
+      75, 80, 85, 90
+    ],
+    "I(x)": [
+      100_000, 98_611,
+      98_199, 98_043,
+      97_779, 96_907,
+      95_770, 94_421,
+      92_799, 91_071,
+      89_108, 86_689,
+      83_418, 78_759,
+      73_106, 65_071,
+      55_268, 42_737,
+      28_308, 14_887
+    ],
+    "I(x) MAB": [
+      1, 0.8419, 0.7593,
+      0.7510, 0.7449,
+      0.7340, 0.7169,
+      0.6943, 0.6643,
+      0.6269, 0.5853,
+      0.5364, 0.4867,
+      0.4234, 0.3468,
+      0.2597,
+      0.167, 0.0859,
+      0.0313, np.nan
+    ]
+  }
+).dropna()
+
+duas_tabuas_homem_mab["I(x)"] = duas_tabuas_homem_mab["I(x)"] / 100_000
+
+duas_tabuas_homem_mab["Ys(x)"] = 0.5 * np.log(
+  (1 - duas_tabuas_homem_mab["I(x) MAB"]) / duas_tabuas_homem_mab["I(x) MAB"]
+)
+
+duas_tabuas_homem_mab["Y(x)"] = 0.5 * np.log(
+  (1 - duas_tabuas_homem_mab["I(x)"]) / duas_tabuas_homem_mab["I(x)"]
+)
+
+duas_tabuas_homem_mab = duas_tabuas_homem_mab[duas_tabuas_homem_mab["Ys(x)"] != -np.inf]
+
+X = duas_tabuas_homem_mab.dropna()[['Y(x)']]
+y = duas_tabuas_homem_mab.dropna()['Ys(x)']
+
+model = LinearRegression()
+model.fit(X, y)
+
+predict = model.predict(X)
+alpha = model.intercept_
+beta = model.coef_[0]
+
+duas_tabuas_homem_mab["Y(x) estimado MAB"] = predict.tolist()
+duas_tabuas_homem_mab["I(x) estimado MAB"] = 1 / (1 + np.exp(2 * predict))
+
+duas_tabuas_homem_mab\
+  .style\
+  .set_table_styles([
+        {"selector": "th", "props": [("text-align", "center")]},
+        {"selector": "td", "props": [("text-align", "center")]}
+  ])\
+  .format("{:.3f}", decimal=",", thousands=".").hide()
+```
+
+### Caso com o Modelo Geral de Brass Mulheres
+
+Nas idades avançadas, a sobrevivência observada das mulheres continua sistematicamente superior aos valores estimados pelo modelo, como evidencia, por exemplo, a idade de 60 anos, em que $I\left(x\right)$ é 0,878 e $I\left(x\right)$ estimado GB é 0,306, uma diferença acentuada. Essa tendência se intensifica com o avanço da idade, revelando que a tabela-padrão subestima a longevidade feminina na população analisada. Isso está de acordo com o que se conhece demograficamente: as mulheres têm maior expectativa de vida e sobrevivem em maiores proporções nas idades avançadas em comparação aos homens.
+
+```{python}
+duas_tabuas_mulheres = pd.DataFrame(
+  {
+    "Idade": [
+      0, 1, 5, 10,
+      15, 20, 25, 30,
+      35, 40, 45, 50,
+      55, 60, 65, 70,
+      75, 80, 85, 90
+    ],
+    "I(x)": [
+      100_000, 98_676,
+      98_377, 98_216,
+      98_055, 97_716,
+      97_300, 96_895,
+      96_335, 95_609,
+      94_698, 93_259,
+      91_064, 87_830,
+      83_103, 75_768,
+      67_913, 56_261,
+      40_527, 23_363
+    ],
+    "I(x) GB": [
+      1, 0.8499, 0.7691,
+      0.7502, 0.7362,
+      0.7130, 0.6826,
+      0.6525, 0.6223,
+      0.5090, 0.5534,
+      0.5106, 0.4590,
+      0.3965, 0.3221,
+      0.2380,
+      0.1521, 0.0776,
+      0.0281, 0.006
+    ]
+  }
+)
+
+duas_tabuas_mulheres["I(x)"] = duas_tabuas_mulheres["I(x)"] / 100_000
+
+duas_tabuas_mulheres["Ys(x)"] = 0.5 * np.log(
+  (1 - duas_tabuas_mulheres["I(x) GB"]) / duas_tabuas_mulheres["I(x) GB"]
+)
+
+duas_tabuas_mulheres["Y(x)"] = 0.5 * np.log(
+  (1 - duas_tabuas_mulheres["I(x)"]) / duas_tabuas_mulheres["I(x)"]
+)
+
+duas_tabuas_mulheres = duas_tabuas_mulheres[duas_tabuas_mulheres["Ys(x)"] != -np.inf]
+
+X = duas_tabuas_mulheres.dropna()[['Y(x)']]
+y = duas_tabuas_mulheres.dropna()['Ys(x)']
+
+model = LinearRegression()
+model.fit(X, y)
+
+predict = model.predict(X)
+alpha = model.intercept_
+beta = model.coef_[0]
+
+duas_tabuas_mulheres["Y(x) estimado GB"] = predict.tolist()
+duas_tabuas_mulheres["I(x) estimado GB"] = 1 / (1 + np.exp(2 * predict))
+
+duas_tabuas_mulheres\
+  .style\
+  .set_table_styles([
+        {"selector": "th", "props": [("text-align", "center")]},
+        {"selector": "td", "props": [("text-align", "center")]}
+  ])\
+  .format("{:.3f}", decimal=",", thousands=".").hide()
+```
+
+### Caso com o MAB Mulheres
+
+\ \ \ À medida que a idade avança, especialmente a partir dos 20 ou 25 anos, essa diferença entre os valores observados e estimados começa a crescer. Ainda que o modelo continue refletindo a diminuição progressiva da sobrevivência com a idade — o que está em conformidade com a realidade demográfica —, ele tende a acentuar essa queda de forma um pouco mais intensa do que a observada nos dados. Por exemplo, aos 40 e 50 anos, os valores de I(x)I(x) estimados já se distanciam mais significativamente dos observados, o que pode indicar que o modelo suaviza ou generaliza padrões que não capturam totalmente a dinâmica real da mortalidade feminina brasileira nessas idades.
+
+```{python}
+duas_tabuas_mulheres_mab = pd.DataFrame(
+  {
+    "Idade": [
+      0, 1, 5, 10,
+      15, 20, 25, 30,
+      35, 40, 45, 50,
+      55, 60, 65, 70,
+      75, 80, 85, 90
+    ],
+    "I(x)": [
+      100_000, 98_676,
+      98_377, 98_216,
+      98_055, 97_716,
+      97_300, 96_895,
+      96_335, 95_609,
+      94_698, 93_259,
+      91_064, 87_830,
+      83_103, 75_768,
+      67_913, 56_261,
+      40_527, 23_363
+    ],
+    "I(x) MAB": [
+      1, 0.8419, 0.7593,
+      0.7510, 0.7449,
+      0.7340, 0.7169,
+      0.6943, 0.6643,
+      0.6269, 0.5853,
+      0.5364, 0.4867,
+      0.4234, 0.3468,
+      0.2597,
+      0.167, 0.0859,
+      0.0313, np.nan
+    ]
+  }
+).dropna()
+
+duas_tabuas_mulheres_mab["I(x)"] = duas_tabuas_mulheres_mab["I(x)"] / 100_000
+
+duas_tabuas_mulheres_mab["Ys(x)"] = 0.5 * np.log(
+  (1 - duas_tabuas_mulheres_mab["I(x) MAB"]) / duas_tabuas_mulheres_mab["I(x) MAB"]
+)
+
+duas_tabuas_mulheres_mab["Y(x)"] = 0.5 * np.log(
+  (1 - duas_tabuas_mulheres_mab["I(x)"]) / duas_tabuas_mulheres_mab["I(x)"]
+)
+
+duas_tabuas_mulheres_mab = duas_tabuas_mulheres_mab[duas_tabuas_mulheres_mab["Ys(x)"] != -np.inf]
+
+X = duas_tabuas_mulheres_mab.dropna()[['Y(x)']]
+y = duas_tabuas_mulheres_mab.dropna()['Ys(x)']
+
+model = LinearRegression()
+model.fit(X, y)
+
+predict = model.predict(X)
+alpha = model.intercept_
+beta = model.coef_[0]
+
+duas_tabuas_mulheres_mab["Y(x) estimado MAB"] = predict.tolist()
+duas_tabuas_mulheres_mab["I(x) estimado MAB"] = 1 / (1 + np.exp(2 * predict))
+
+duas_tabuas_mulheres_mab\
+  .style\
+  .set_table_styles([
+        {"selector": "th", "props": [("text-align", "center")]},
+        {"selector": "td", "props": [("text-align", "center")]}
+  ])\
+  .format("{:.3f}", decimal=",", thousands=".").hide()
+```
+
+
+## Resumo sobre Modelos de Migração
+
+\ \ \ Os modelos de migração são instrumentos essenciais para a análise de padrões etários da mobilidade populacional, especialmente em contextos onde os dados são escassos ou pouco confiáveis. Entre esses modelos, destaca-se o modelo de Rogers-Castro, desenvolvido na década de 1970 no âmbito da demometria, uma área da demografia inspirada na econometria, voltada à aplicação de técnicas matemáticas e estatísticas aos fenômenos populacionais. Esse modelo busca representar de forma padronizada as taxas específicas de migração por idade, sintetizando padrões recorrentes observados em diferentes populações.
+
+\vspace{12pt}
+
+A estrutura do modelo é composta por uma combinação de funções exponenciais e curvas tipo sino, permitindo a estimação de padrões com 7, 9, 11 ou 13 parâmetros, a depender da complexidade do comportamento migratório analisado. A função padrão envolve cinco componentes principais: uma curva exponencial decrescente nas idades infantis, um pico unimodal na juventude associado à mobilidade da força de trabalho, um pico secundário por volta da idade de aposentadoria, um crescimento nas idades mais avançadas relacionado à migração de idosos, e um termo constante. Com base nessas componentes, o modelo permite a análise de regularidades como o pico de migração na juventude, o declínio gradual com o avanço da idade e possíveis aumentos na mobilidade em fases posteriores da vida.
+
+\vspace{12pt}
+
+Além da representação gráfica, o modelo oferece medidas derivadas como a taxa bruta de migraprodução (GMR), que indica o número médio de migrações que um indivíduo hipotético realizaria ao longo da vida, e outros indicadores analíticos como o parental shift, a dominância da força de trabalho, a simetria da curva e a regularidade entre padrões migratórios de crianças e adultos. Essas medidas auxiliam na comparação entre populações e no entendimento das transições do ciclo de vida associadas à migração.
+
+\vspace{12pt}
+
+Apesar de suas vantagens, o modelo Rogers-Castro apresenta limitações, como a sensibilidade aos parâmetros iniciais, instabilidade em populações pequenas e desafios na interpretação dos coeficientes, além da subjetividade na escolha entre versões com diferentes números de parâmetros. Ainda assim, sua aplicação aos dados do Censo Demográfico de 2010 demonstrou grande potencial para descrever padrões migratórios no Brasil, revelando distinções por sexo, cor/raça e região, e permitindo inferências sobre tipos de migração – como fluxos predominantemente familiares ou individuais – e sua associação com etapas do ciclo de vida.
+
+\vspace{12pt}
+
+A robustez analítica e a capacidade de projeção do modelo garantem sua relevância para estudos demográficos atuais e futuros. Novas abordagens, como o uso de métodos bayesianos ou a incorporação de informações sobre transições do curso de vida, podem contribuir para sua aplicação em pequenas áreas ou em situações com maior variabilidade e incerteza nos dados.
