@@ -65,9 +65,21 @@ from sklearn.linear_model import LinearRegression
 
 # Introdução
 
-## Recursos computacionais
+Roraima é o estado menos populoso do Brasil, localizado na região Norte e caracterizado por uma extensa área territorial, baixa densidade demográfica e significativa presença de populações indígenas. Sua dinâmica demográfica é influenciada por fatores como migração, crescimento populacional e acesso a serviços de saúde.
+
+\vspace{12pt}
+
+Neste estudo, serão aplicadas diferentes técnicas demográficas para estimar indicadores populacionais no estado de Roraima. Serão utilizadas a Técnica de Brass para estimar a fecundidade, o método de Coale-Trussel para modelar a taxa de fecundidade marital, o modelo relacional de Gompertz e a técnica de sobrevivência de Brass. Essas metodologias permitem obter estimativas mais precisas sobre a dinâmica populacional e avaliar a consistência dos dados disponíveis.
 
 # Metodologia
+
+## Obtenção dos dados
+
+\ \ \ Os dados demográficos utilizados neste estudo foram obtidos de duas fontes principais. As informações sobre a população por faixa etária foram extraídas do TABNET, uma ferramenta desenvolvida pelo DATASUS. O TABNET é um tabulador genérico de domínio público que facilita a organização e consulta rápida de dados conforme os critérios definidos, enquanto o DATASUS fornece informações essenciais para a análise da saúde pública e variáveis demográficas, contribuindo para a formulação de políticas e programas de saúde. Alguns dos dados também foram obtidos a partir do sistema Sidra, como é o caso dos dados populacionais e de óbitos por faixa etária.
+
+## Recursos computacionais
+
+\ \ \ As análises apresentadas neste estudo foram realizadas utilizando a linguagem de programação Python [@van1995python], com o auxílio da biblioteca Pandas [@reback2020pandas] para manipulação de dados e da biblioteca Matplotlib para visualização gráfica [@Hunter:2007]. Os documentos do relatório foram elaborados com o Quarto [@quarto], um sistema de escrita e publicação científica. Todo o código-fonte utilizado nas análises está disponível no GitHub.
 
 ## Técnica de sobrevivência de Brass
 
@@ -179,6 +191,8 @@ Para aplicar o modelo, é necessário calcular a distribuição proporcional das
 
 ## Técnica de sobrevivência de Brass
 
+Não foi possível aplicar a técnica de sobrevivência de Brass devido às proporções negativas e por $\text{FV} > \text{FNV}$.
+
 ```{python}
 df_brass_sob = pd.read_csv("data_relatorio2/nascidos_vivos_idade_mae_2010.csv")\
     .assign(
@@ -194,10 +208,18 @@ df_brass_sob = pd.read_csv("data_relatorio2/nascidos_vivos_idade_mae_2010.csv")\
         42227, 40899, 37730,
         33505
       ],
-      FV=lambda x: x.Vivos_referencia.sum() / x.Mulheres,
-      FNV=lambda x: x.Nascidos.sum() / x.Mulheres,
+      FV=lambda x: x.Vivos_referencia / x.Mulheres,
+      FNV=lambda x: x.Nascidos / x.Mulheres,
       Prop_nao_sob=lambda x: 1 - x.FV / x.FNV
     )
+
+df_brass_sob\
+  .style\
+  .set_table_styles([
+        {"selector": "th", "props": [("text-align", "center")]},
+        {"selector": "td", "props": [("text-align", "center")]}
+  ])\
+  .hide()
 ```
 
 \blandscape
@@ -214,9 +236,9 @@ Nas faixas de 25 a 29 anos e 30 a 34 anos, a fecundidade continua a aumentar, at
 
 Finalmente, na faixa de 45 a 49 anos, a fecundidade é muito baixa, como esperado para essa faixa etária. O valor de fi corrigido de 2,322042 é alto em relação ao número de nascimentos (1,610,379), refletindo a diminuição significativa na fecundidade após os 40 anos. A técnica de Brass consegue corrigir adequadamente os dados, gerando uma taxa de fecundidade realista para as mulheres dessa faixa etária avançada.
 
-$0.096731 / 0.134156 = 0.721033721935657$
+\vspace{12pt}
 
-$(0.764 - 0.721033721935657) / (0.764 - 0.605) = 0.2702281639266858$
+Valores calculados para encontrar os fatores de multiplicação: $0.096731 / 0.134156 = 0.721033721935657$ e $(0.764 - 0.721033721935657) / (0.764 - 0.605) = 0.2702281639266858$.
 
 ```{python}
 df_brass_fec = pd.read_csv("data_relatorio2/nascidos_vivos_idade_mae_2010.csv")\
@@ -437,6 +459,12 @@ O melhor modelo das Nações Unidas para o sexo masculino foi o de Far East. Da 
 
 Observar os valores da $E\left(x\right)$ e escolher a TV Modelo das Nações Unidas mais adequada (depende do passo 2...);
 
+::: {layout-ncol=2}
+![TV encontrado para o sexo masculino.](includes/TV_masculino_far_east.png)
+
+![TV encontrada para o sexo feminino.](includes/TV_mulheres_far_east.png)
+:::
+
 ## Questão 4)
 
 Usar o sistema logito de tábuas de vida de dois parâmetros de Brass e considerar os seguintes padrões: Modelo Geral de Brass; MAB e o resultado do passo 3.
@@ -516,7 +544,7 @@ duas_tabuas_homem\
   .format("{:.3f}", decimal=",", thousands=".").hide()
 ```
 
-### Caso com o MAB Homens
+### Caso com o MAB homens
 
 \ \ \ Aos 1 ano de idade, o valor observado de sobrevivência $I\left(x\right)$ é 0,986, enquanto o estimado pelo modelo é 0,862. Apesar de uma leve subestimação, o valor já se aproxima bastante, mostrando que o modelo é capaz de capturar adequadamente a alta sobrevivência nos primeiros anos de vida, mesmo considerando a maior mortalidade infantil masculina em comparação ao sexo feminino.
 
@@ -525,7 +553,6 @@ duas_tabuas_homem\
 Ao longo da infância e juventude (até os 20–25 anos), o modelo continua apresentando valores estimados que acompanham a tendência dos valores observados, com pequenas diferenças — o que indica bom ajuste. Por exemplo, aos 25 anos, o $I\left(x\right)$ observado é 0,958 e o estimado é 0,704, o que representa uma redução coerente, considerando o padrão de aumento de mortalidade nessa fase.
 
 ```{python}
-
 duas_tabuas_homem_mab = pd.DataFrame(
   {
     "Idade": [
@@ -586,6 +613,82 @@ beta = model.coef_[0]
 
 duas_tabuas_homem_mab["Y(x) estimado MAB"] = predict.tolist()
 duas_tabuas_homem_mab["I(x) estimado MAB"] = 1 / (1 + np.exp(2 * predict))
+
+duas_tabuas_homem_mab\
+  .style\
+  .set_table_styles([
+        {"selector": "th", "props": [("text-align", "center")]},
+        {"selector": "td", "props": [("text-align", "center")]}
+  ])\
+  .format("{:.3f}", decimal=",", thousands=".").hide()
+```
+
+### Caso com o passo 3 Homens
+
+\ \ \ Em comparação aos valores padrão anteriores, as melhores estimativas para os homens foram obtidas com os valores padrão do Mortpak, utilizando o método Far East.
+
+```{python}
+duas_tabuas_homem_mab = pd.DataFrame(
+  {
+    "Idade": [
+      0, 1, 5, 10,
+      15, 20, 25, 30,
+      35, 40, 45, 50,
+      55, 60, 65, 70,
+      75, 80, 85, 90
+    ],
+    "I(x)": [
+      100_000, 98_611,
+      98_199, 98_043,
+      97_779, 96_907,
+      95_770, 94_421,
+      92_799, 91_071,
+      89_108, 86_689,
+      83_418, 78_759,
+      73_106, 65_071,
+      55_268, 42_737,
+      28_308, 14_887
+    ],
+    "I(x) far_east": [
+      100_000, 96568,
+      95590, 95313,
+      95141, 94898,
+      94568, 94142,
+      93592, 92836,
+      91756, 90168,
+      87785, 84171,
+      78674, 70317,
+      58509, 43716,
+      26956, 12637
+    ]
+  }
+).dropna()
+
+duas_tabuas_homem_mab["I(x) far_east"] = duas_tabuas_homem_mab["I(x) far_east"] / 100_000
+duas_tabuas_homem_mab["I(x)"] = duas_tabuas_homem_mab["I(x)"] / 100_000
+
+duas_tabuas_homem_mab["Ys(x)"] = 0.5 * np.log(
+  (1 - duas_tabuas_homem_mab["I(x) far_east"]) / duas_tabuas_homem_mab["I(x) far_east"]
+)
+
+duas_tabuas_homem_mab["Y(x)"] = 0.5 * np.log(
+  (1 - duas_tabuas_homem_mab["I(x)"]) / duas_tabuas_homem_mab["I(x)"]
+)
+
+duas_tabuas_homem_mab = duas_tabuas_homem_mab[duas_tabuas_homem_mab["Ys(x)"] != -np.inf]
+
+X = duas_tabuas_homem_mab.dropna()[['Y(x)']]
+y = duas_tabuas_homem_mab.dropna()['Ys(x)']
+
+model = LinearRegression()
+model.fit(X, y)
+
+predict = model.predict(X)
+alpha = model.intercept_
+beta = model.coef_[0]
+
+duas_tabuas_homem_mab["Y(x) estimado far_east"] = predict.tolist()
+duas_tabuas_homem_mab["I(x) estimado far_east"] = 1 / (1 + np.exp(2 * predict))
 
 duas_tabuas_homem_mab\
   .style\
@@ -746,6 +849,81 @@ duas_tabuas_mulheres_mab\
   .format("{:.3f}", decimal=",", thousands=".").hide()
 ```
 
+### Caso com o passo 3 Mulheres
+
+Assim como observado para o sexo masculino, as melhores estimativas para o sexo feminino foram obtidas a partir dos valores padrão do Mortpak, utilizando o modelo Far East.
+
+```{python}
+duas_tabuas_mulheres_mab = pd.DataFrame(
+  {
+    "Idade": [
+      0, 1, 5, 10,
+      15, 20, 25, 30,
+      35, 40, 45, 50,
+      55, 60, 65, 70,
+      75, 80, 85, 90
+    ],
+    "I(x)": [
+      100_000, 98_676,
+      98_377, 98_216,
+      98_055, 97_716,
+      97_300, 96_895,
+      96_335, 95_609,
+      94_698, 93_259,
+      91_064, 87_830,
+      83_103, 75_768,
+      67_913, 56_261,
+      40_527, 23_363
+    ],
+    "I(x) far_east": [
+      100_000, 98055,
+      97569, 97435,
+      97353, 97239,
+      97084, 96880,
+      96610, 96225,
+      95648, 94767,
+      93399, 91251,
+      87841, 82177,
+      73305, 60704,
+      43648, 25475
+    ]
+  }
+).dropna()
+
+duas_tabuas_mulheres_mab["I(x) far_east"] = duas_tabuas_mulheres_mab["I(x) far_east"] / 100_000
+duas_tabuas_mulheres_mab["I(x)"] = duas_tabuas_mulheres_mab["I(x)"] / 100_000
+
+duas_tabuas_mulheres_mab["Ys(x)"] = 0.5 * np.log(
+  (1 - duas_tabuas_mulheres_mab["I(x) far_east"]) / duas_tabuas_mulheres_mab["I(x) far_east"]
+)
+
+duas_tabuas_mulheres_mab["Y(x)"] = 0.5 * np.log(
+  (1 - duas_tabuas_mulheres_mab["I(x)"]) / duas_tabuas_mulheres_mab["I(x)"]
+)
+
+duas_tabuas_mulheres_mab = duas_tabuas_mulheres_mab[duas_tabuas_mulheres_mab["Ys(x)"] != -np.inf]
+
+X = duas_tabuas_mulheres_mab.dropna()[['Y(x)']]
+y = duas_tabuas_mulheres_mab.dropna()['Ys(x)']
+
+model = LinearRegression()
+model.fit(X, y)
+
+predict = model.predict(X)
+alpha = model.intercept_
+beta = model.coef_[0]
+
+duas_tabuas_mulheres_mab["Y(x) estimado far_east"] = predict.tolist()
+duas_tabuas_mulheres_mab["I(x) estimado far_east"] = 1 / (1 + np.exp(2 * predict))
+
+duas_tabuas_mulheres_mab\
+  .style\
+  .set_table_styles([
+        {"selector": "th", "props": [("text-align", "center")]},
+        {"selector": "td", "props": [("text-align", "center")]}
+  ])\
+  .format("{:.3f}", decimal=",", thousands=".").hide()
+```
 
 ## Resumo sobre Modelos de Migração
 
@@ -766,3 +944,10 @@ Apesar de suas vantagens, o modelo Rogers-Castro apresenta limitações, como a 
 \vspace{12pt}
 
 A robustez analítica e a capacidade de projeção do modelo garantem sua relevância para estudos demográficos atuais e futuros. Novas abordagens, como o uso de métodos bayesianos ou a incorporação de informações sobre transições do curso de vida, podem contribuir para sua aplicação em pequenas áreas ou em situações com maior variabilidade e incerteza nos dados.
+
+# \centering Referências {.unlisted .unnumbered}
+
+\markboth{Referências}{Referências}
+
+::: {#refs}
+:::

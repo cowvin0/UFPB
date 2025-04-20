@@ -61,6 +61,39 @@
 % Set default figure placement to htbp
 \def\fps@figure{htbp}
 \makeatother
+% definitions for citeproc citations
+\NewDocumentCommand\citeproctext{}{}
+\NewDocumentCommand\citeproc{mm}{%
+  \begingroup\def\citeproctext{#2}\cite{#1}\endgroup}
+\makeatletter
+ % allow citations to break across lines
+ \let\@cite@ofmt\@firstofone
+ % avoid brackets around text for \cite:
+ \def\@biblabel#1{}
+ \def\@cite#1#2{{#1\if@tempswa , #2\fi}}
+\makeatother
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newlength{\csllabelwidth}
+\setlength{\csllabelwidth}{3em}
+\newenvironment{CSLReferences}[2] % #1 hanging-indent, #2 entry-spacing
+ {\begin{list}{}{%
+  \setlength{\itemindent}{0pt}
+  \setlength{\leftmargin}{0pt}
+  \setlength{\parsep}{0pt}
+  % turn on hanging indent if param 1 is 1
+  \ifodd #1
+   \setlength{\leftmargin}{\cslhangindent}
+   \setlength{\itemindent}{-1\cslhangindent}
+  \fi
+  % set entry spacing
+  \setlength{\itemsep}{#2\baselineskip}}}
+ {\end{list}}
+\usepackage{calc}
+\newcommand{\CSLBlock}[1]{\hfill\break\parbox[t]{\linewidth}{\strut\ignorespaces#1\strut}}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
 
 \usepackage{dirtree}
 \usepackage{amsmath}
@@ -146,7 +179,7 @@
 \@ifundefined{codebgcolor}{\definecolor{codebgcolor}{HTML}{F0F2F4}}{}
 \makeatother
 \makeatletter
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, sharp corners, colback={codebgcolor}, boxrule=0pt, enhanced, breakable]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[breakable, boxrule=0pt, colback={codebgcolor}, enhanced, frame hidden, sharp corners]}{\end{tcolorbox}}\fi
 \makeatother
 
 \ifLuaTeX
@@ -232,9 +265,46 @@ Roraima \par}
 
 \chapter{Introdução}\label{introduuxe7uxe3o}
 
-\section{Recursos computacionais}\label{recursos-computacionais}
+Roraima é o estado menos populoso do Brasil, localizado na região Norte
+e caracterizado por uma extensa área territorial, baixa densidade
+demográfica e significativa presença de populações indígenas. Sua
+dinâmica demográfica é influenciada por fatores como migração,
+crescimento populacional e acesso a serviços de saúde.
+
+\vspace{12pt}
+
+Neste estudo, serão aplicadas diferentes técnicas demográficas para
+estimar indicadores populacionais no estado de Roraima. Serão utilizadas
+a Técnica de Brass para estimar a fecundidade, o método de Coale-Trussel
+para modelar a taxa de fecundidade marital, o modelo relacional de
+Gompertz e a técnica de sobrevivência de Brass. Essas metodologias
+permitem obter estimativas mais precisas sobre a dinâmica populacional e
+avaliar a consistência dos dados disponíveis.
 
 \chapter{Metodologia}\label{metodologia}
+
+\section{Obtenção dos dados}\label{obtenuxe7uxe3o-dos-dados}
+
+~~~Os dados demográficos utilizados neste estudo foram obtidos de duas
+fontes principais. As informações sobre a população por faixa etária
+foram extraídas do TABNET, uma ferramenta desenvolvida pelo DATASUS. O
+TABNET é um tabulador genérico de domínio público que facilita a
+organização e consulta rápida de dados conforme os critérios definidos,
+enquanto o DATASUS fornece informações essenciais para a análise da
+saúde pública e variáveis demográficas, contribuindo para a formulação
+de políticas e programas de saúde. Alguns dos dados também foram obtidos
+a partir do sistema Sidra, como é o caso dos dados populacionais e de
+óbitos por faixa etária.
+
+\section{Recursos computacionais}\label{recursos-computacionais}
+
+~~~As análises apresentadas neste estudo foram realizadas utilizando a
+linguagem de programação Python (VAN ROSSUM; DRAKE JR, 1995), com o
+auxílio da biblioteca Pandas (TEAM, 2020) para manipulação de dados e da
+biblioteca Matplotlib para visualização gráfica (HUNTER, 2007). Os
+documentos do relatório foram elaborados com o Quarto (ALLAIRE;
+DERVIEUX, 2024), um sistema de escrita e publicação científica. Todo o
+código-fonte utilizado nas análises está disponível no GitHub.
 
 \section{Técnica de sobrevivência de
 Brass}\label{tuxe9cnica-de-sobrevivuxeancia-de-brass}
@@ -457,6 +527,36 @@ outras populações.
 \section{Técnica de sobrevivência de
 Brass}\label{tuxe9cnica-de-sobrevivuxeancia-de-brass-1}
 
+Não foi possível aplicar a técnica de sobrevivência de Brass devido às
+proporções negativas e por \(\text{FV} > \text{FNV}\).
+
+\begin{longtable}[]{@{}lllllll@{}}
+\caption{}\label{T_38adf}\tabularnewline
+\toprule\noalign{}
+Idade & Nascidos & Mulheres & Vivos\_referencia & FV & FNV &
+Prop\_nao\_sob \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+Idade & Nascidos & Mulheres & Vivos\_referencia & FV & FNV &
+Prop\_nao\_sob \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+15 a 19 anos & 2253 & 23250 & 5823 & 0.250452 & 0.096903 & -1.584554 \\
+20 a 24 anos & 2866 & 21788 & 19694 & 0.903892 & 0.131540 & -5.871598 \\
+25 a 29 anos & 2276 & 21792 & 34552 & 1.585536 & 0.104442 &
+-14.181019 \\
+30 a 34 anos & 1394 & 18669 & 42227 & 2.261878 & 0.074669 &
+-29.291966 \\
+35 a 39 anos & 587 & 14839 & 40899 & 2.756183 & 0.039558 & -68.674617 \\
+40 a 44 anos & 155 & 12269 & 37730 & 3.075230 & 0.012633 &
+-242.419355 \\
+45 a 49 anos & 16 & 10379 & 33505 & 3.228153 & 0.001542 &
+-2093.062500 \\
+\end{longtable}
+
 \blandscape
 
 \section{Técnica de Brass para a
@@ -488,12 +588,14 @@ diminuição significativa na fecundidade após os 40 anos. A técnica de
 Brass consegue corrigir adequadamente os dados, gerando uma taxa de
 fecundidade realista para as mulheres dessa faixa etária avançada.
 
-\(0.096731 / 0.134156 = 0.721033721935657\)
+\vspace{12pt}
 
-\((0.764 - 0.721033721935657) / (0.764 - 0.605) = 0.2702281639266858\)
+Valores calculados para encontrar os fatores de multiplicação:
+\(0.096731 / 0.134156 = 0.721033721935657\) e
+\((0.764 - 0.721033721935657) / (0.764 - 0.605) = 0.2702281639266858\).
 
 \begin{longtable}[]{@{}llllllllll@{}}
-\caption{}\label{T_fee00}\tabularnewline
+\caption{}\label{T_94edc}\tabularnewline
 \toprule\noalign{}
 Idade & Nascidos & Mulheres & Nascidos\_vivos\_2009 & fi & Pi & Fi & Wi
 & Fi\_acum\_media & fi\_corrigido \\
@@ -543,7 +645,7 @@ anos, há um recuo substancial na fecundidade (0.022913), e o valor
 ajustado (0.023745) reflete com precisão essa mudança
 
 \begin{longtable}[]{@{}lllllllll@{}}
-\caption{}\label{T_9e95a}\tabularnewline
+\caption{}\label{T_3fd49}\tabularnewline
 \toprule\noalign{}
 Idade & TFE & v\_a & n\_a & Mulheres & Nascimentos\_casadas & r\_a &
 log\_r\_a\_n\_a & r\_a\_estimado \\
@@ -607,7 +709,7 @@ declínio acentuado, com valores próximos a zero, sem gerar disrupções
 artificiais.
 
 \begin{longtable}[]{@{}llllllllllll@{}}
-\caption{}\label{T_9c8c4}\tabularnewline
+\caption{}\label{T_c4fc0}\tabularnewline
 \toprule\noalign{}
 Idade & TFE & p\_a & idade\_e & F\_a & G & F\_a\_padrao & G\_padrao &
 G\textquotesingle{} & antgompt & p\textquotesingle(a) &
@@ -737,6 +839,38 @@ East. Da mesma forma, o melhor modelo foi o de Far East.
 Observar os valores da \(E\left(x\right)\) e escolher a TV Modelo das
 Nações Unidas mais adequada (depende do passo 2\ldots);
 
+\begin{figure}
+
+\begin{minipage}{0.50\linewidth}
+
+\begin{figure}[H]
+
+{\centering \pandocbounded{\includegraphics[keepaspectratio]{includes/TV_masculino_far_east.png}}
+
+}
+
+\subcaption{TV encontrado para o sexo masculino.}
+
+\end{figure}%
+
+\end{minipage}%
+%
+\begin{minipage}{0.50\linewidth}
+
+\begin{figure}[H]
+
+{\centering \pandocbounded{\includegraphics[keepaspectratio]{includes/TV_mulheres_far_east.png}}
+
+}
+
+\subcaption{TV encontrada para o sexo feminino.}
+
+\end{figure}%
+
+\end{minipage}%
+
+\end{figure}%
+
 \section{Questão 4)}\label{questuxe3o-4}
 
 Usar o sistema logito de tábuas de vida de dois parâmetros de Brass e
@@ -761,7 +895,7 @@ altos do que os previstos pela tabela-padrão utilizada pelo modelo de
 Brass.
 
 \begin{longtable}[]{@{}lllllll@{}}
-\caption{}\label{T_dd803}\tabularnewline
+\caption{}\label{T_0abed}\tabularnewline
 \toprule\noalign{}
 Idade & I(x) & I(x) GB & Ys(x) & Y(x) & Y(x) estimado GB & I(x) estimado
 GB \\
@@ -795,7 +929,7 @@ GB \\
 90,000 & 0,149 & 0,006 & 2,555 & 0,872 & 1,964 & 0,019 \\
 \end{longtable}
 
-\subsection{Caso com o MAB Homens}\label{caso-com-o-mab-homens}
+\subsection{Caso com o MAB homens}\label{caso-com-o-mab-homens}
 
 ~~~Aos 1 ano de idade, o valor observado de sobrevivência
 \(I\left(x\right)\) é 0,986, enquanto o estimado pelo modelo é 0,862.
@@ -814,7 +948,7 @@ estimado é 0,704, o que representa uma redução coerente, considerando o
 padrão de aumento de mortalidade nessa fase.
 
 \begin{longtable}[]{@{}lllllll@{}}
-\caption{}\label{T_4ad54}\tabularnewline
+\caption{}\label{T_7e0f7}\tabularnewline
 \toprule\noalign{}
 Idade & I(x) & I(x) MAB & Ys(x) & Y(x) & Y(x) estimado MAB & I(x)
 estimado MAB \\
@@ -847,6 +981,47 @@ estimado MAB \\
 85,000 & 0,283 & 0,031 & 1,716 & 0,465 & 1,279 & 0,072 \\
 \end{longtable}
 
+\subsection{Caso com o passo 3 Homens}\label{caso-com-o-passo-3-homens}
+
+~~~Em comparação aos valores padrão anteriores, as melhores estimativas
+para os homens foram obtidas com os valores padrão do Mortpak,
+utilizando o método Far East.
+
+\begin{longtable}[]{@{}lllllll@{}}
+\caption{}\label{T_15c2b}\tabularnewline
+\toprule\noalign{}
+Idade & I(x) & I(x) far\_east & Ys(x) & Y(x) & Y(x) estimado far\_east &
+I(x) estimado far\_east \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+Idade & I(x) & I(x) far\_east & Ys(x) & Y(x) & Y(x) estimado far\_east &
+I(x) estimado far\_east \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+1,000 & 0,986 & 0,966 & -1,669 & -2,131 & -1,885 & 0,977 \\
+5,000 & 0,982 & 0,956 & -1,538 & -1,999 & -1,774 & 0,972 \\
+10,000 & 0,980 & 0,953 & -1,506 & -1,957 & -1,738 & 0,970 \\
+15,000 & 0,978 & 0,951 & -1,487 & -1,892 & -1,684 & 0,967 \\
+20,000 & 0,969 & 0,949 & -1,462 & -1,722 & -1,541 & 0,956 \\
+25,000 & 0,958 & 0,946 & -1,429 & -1,560 & -1,404 & 0,943 \\
+30,000 & 0,944 & 0,941 & -1,388 & -1,414 & -1,282 & 0,928 \\
+35,000 & 0,928 & 0,936 & -1,341 & -1,278 & -1,167 & 0,912 \\
+40,000 & 0,911 & 0,928 & -1,281 & -1,161 & -1,069 & 0,895 \\
+45,000 & 0,891 & 0,918 & -1,205 & -1,051 & -0,976 & 0,876 \\
+50,000 & 0,867 & 0,902 & -1,108 & -0,937 & -0,881 & 0,853 \\
+55,000 & 0,834 & 0,878 & -0,986 & -0,808 & -0,772 & 0,824 \\
+60,000 & 0,788 & 0,842 & -0,836 & -0,655 & -0,644 & 0,784 \\
+65,000 & 0,731 & 0,787 & -0,653 & -0,500 & -0,513 & 0,736 \\
+70,000 & 0,651 & 0,703 & -0,431 & -0,311 & -0,355 & 0,670 \\
+75,000 & 0,553 & 0,585 & -0,172 & -0,106 & -0,182 & 0,590 \\
+80,000 & 0,427 & 0,437 & 0,126 & 0,146 & 0,030 & 0,485 \\
+85,000 & 0,283 & 0,270 & 0,498 & 0,465 & 0,297 & 0,356 \\
+90,000 & 0,149 & 0,126 & 0,967 & 0,872 & 0,640 & 0,218 \\
+\end{longtable}
+
 \subsection{Caso com o Modelo Geral de Brass
 Mulheres}\label{caso-com-o-modelo-geral-de-brass-mulheres}
 
@@ -861,7 +1036,7 @@ demograficamente: as mulheres têm maior expectativa de vida e sobrevivem
 em maiores proporções nas idades avançadas em comparação aos homens.
 
 \begin{longtable}[]{@{}lllllll@{}}
-\caption{}\label{T_a282c}\tabularnewline
+\caption{}\label{T_5777b}\tabularnewline
 \toprule\noalign{}
 Idade & I(x) & I(x) GB & Ys(x) & Y(x) & Y(x) estimado GB & I(x) estimado
 GB \\
@@ -909,7 +1084,7 @@ suaviza ou generaliza padrões que não capturam totalmente a dinâmica
 real da mortalidade feminina brasileira nessas idades.
 
 \begin{longtable}[]{@{}lllllll@{}}
-\caption{}\label{T_b203a}\tabularnewline
+\caption{}\label{T_b129c}\tabularnewline
 \toprule\noalign{}
 Idade & I(x) & I(x) MAB & Ys(x) & Y(x) & Y(x) estimado MAB & I(x)
 estimado MAB \\
@@ -940,6 +1115,48 @@ estimado MAB \\
 75,000 & 0,679 & 0,167 & 0,804 & -0,375 & 0,870 & 0,149 \\
 80,000 & 0,563 & 0,086 & 1,182 & -0,126 & 1,106 & 0,099 \\
 85,000 & 0,405 & 0,031 & 1,716 & 0,192 & 1,406 & 0,057 \\
+\end{longtable}
+
+\subsection{Caso com o passo 3
+Mulheres}\label{caso-com-o-passo-3-mulheres}
+
+Assim como observado para o sexo masculino, as melhores estimativas para
+o sexo feminino foram obtidas a partir dos valores padrão do Mortpak,
+utilizando o modelo Far East.
+
+\begin{longtable}[]{@{}lllllll@{}}
+\caption{}\label{T_af524}\tabularnewline
+\toprule\noalign{}
+Idade & I(x) & I(x) far\_east & Ys(x) & Y(x) & Y(x) estimado far\_east &
+I(x) estimado far\_east \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+Idade & I(x) & I(x) far\_east & Ys(x) & Y(x) & Y(x) estimado far\_east &
+I(x) estimado far\_east \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+1,000 & 0,987 & 0,981 & -1,960 & -2,156 & -2,082 & 0,985 \\
+5,000 & 0,984 & 0,976 & -1,846 & -2,052 & -1,989 & 0,982 \\
+10,000 & 0,982 & 0,974 & -1,819 & -2,004 & -1,946 & 0,980 \\
+15,000 & 0,981 & 0,974 & -1,802 & -1,960 & -1,907 & 0,978 \\
+20,000 & 0,977 & 0,972 & -1,781 & -1,878 & -1,834 & 0,975 \\
+25,000 & 0,973 & 0,971 & -1,753 & -1,792 & -1,757 & 0,971 \\
+30,000 & 0,969 & 0,969 & -1,718 & -1,720 & -1,693 & 0,967 \\
+35,000 & 0,963 & 0,966 & -1,675 & -1,635 & -1,616 & 0,962 \\
+40,000 & 0,956 & 0,962 & -1,619 & -1,540 & -1,532 & 0,955 \\
+45,000 & 0,947 & 0,956 & -1,545 & -1,441 & -1,444 & 0,947 \\
+50,000 & 0,933 & 0,948 & -1,448 & -1,314 & -1,330 & 0,935 \\
+55,000 & 0,911 & 0,934 & -1,325 & -1,161 & -1,194 & 0,916 \\
+60,000 & 0,878 & 0,913 & -1,172 & -0,988 & -1,040 & 0,889 \\
+65,000 & 0,831 & 0,878 & -0,989 & -0,796 & -0,868 & 0,850 \\
+70,000 & 0,758 & 0,822 & -0,764 & -0,570 & -0,666 & 0,791 \\
+75,000 & 0,679 & 0,733 & -0,505 & -0,375 & -0,492 & 0,728 \\
+80,000 & 0,563 & 0,607 & -0,217 & -0,126 & -0,270 & 0,632 \\
+85,000 & 0,405 & 0,436 & 0,128 & 0,192 & 0,014 & 0,493 \\
+90,000 & 0,234 & 0,255 & 0,537 & 0,594 & 0,373 & 0,322 \\
 \end{longtable}
 
 \section{Resumo sobre Modelos de
@@ -1002,6 +1219,34 @@ como o uso de métodos bayesianos ou a incorporação de informações sobre
 transições do curso de vida, podem contribuir para sua aplicação em
 pequenas áreas ou em situações com maior variabilidade e incerteza nos
 dados.
+
+\chapter*{\texorpdfstring{\centering Referências}{Referências}}\label{referuxeancias}
+
+\markboth{Referências}{Referências}
+
+\phantomsection\label{refs}
+\begin{CSLReferences}{0}{1}
+\bibitem[\citeproctext]{ref-quarto}
+ALLAIRE, J.; DERVIEUX, C.
+\textbf{\href{https://CRAN.R-project.org/package=quarto}{quarto: R
+Interface to 'Quarto' Markdown Publishing System}}. {[}S.l.{]}:
+{[}s.n.{]}, 2024.
+
+\bibitem[\citeproctext]{ref-Hunter:2007}
+HUNTER, J. D. \href{https://doi.org/10.1109/MCSE.2007.55}{Matplotlib: A
+2D graphics environment}. \textbf{Computing in Science \& Engineering},
+2007. v. 9, n. 3, p. 90--95.
+
+\bibitem[\citeproctext]{ref-reback2020pandas}
+TEAM, T. Pandas Development. \textbf{pandas-dev/pandas: Pandas}. Zenodo.
+Disponível em:
+\textless{}\url{https://doi.org/10.5281/zenodo.3509134}\textgreater.
+
+\bibitem[\citeproctext]{ref-van1995python}
+VAN ROSSUM, G.; DRAKE JR, F. L. \textbf{Python reference manual}.
+{[}S.l.{]}: Centrum voor Wiskunde en Informatica Amsterdam, 1995.
+
+\end{CSLReferences}
 
 
 
