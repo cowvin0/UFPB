@@ -34,3 +34,5 @@ baguette
 MASS
 rpart
 xgboost
+themis
+future

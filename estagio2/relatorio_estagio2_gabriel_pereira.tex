@@ -224,7 +224,7 @@
 \@ifundefined{codebgcolor}{\definecolor{codebgcolor}{HTML}{F0F2F4}}{}
 \makeatother
 \makeatletter
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, breakable, frame hidden, colback={codebgcolor}, enhanced, boxrule=0pt]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[boxrule=0pt, breakable, sharp corners, enhanced, colback={codebgcolor}, frame hidden]}{\end{tcolorbox}}\fi
 \makeatother
 \makeatletter
 \@ifpackageloaded{algorithm}{}{\usepackage{algorithm}}
@@ -391,12 +391,13 @@ comunidade em que está inserida.
 
 O estágio teve como foco principal a aplicação de técnicas estatísticas
 de séries temporais, com o objetivo de contribuir para o aprimoramento
-do processo de planejamento estratégico da empresa. O trabalho se
-concentrou na modelagem e previsão de indicadores relacionados a 26
-produtos financeiros distintos, abrangendo tanto receitas quanto
-despesas das cooperativas da região Nordeste. A etapa de modelagem
-envolveu a análise e o tratamento de dados históricos, a seleção de
-variáveis relevantes e a escolha de metodologias de previsão adequadas.
+do processo de planejamento estratégico da empresa para o ano de 2025. O
+trabalho se concentrou na modelagem e previsão de indicadores
+relacionados a 26 produtos financeiros distintos, abrangendo tanto
+receitas quanto despesas das cooperativas da região Nordeste. A etapa de
+modelagem envolveu a análise e o tratamento de dados históricos, a
+seleção de variáveis relevantes e a escolha de metodologias de previsão
+adequadas.
 
 \vspace{12pt}
 
@@ -423,10 +424,10 @@ decisões mais embasadas e estratégicas por parte da organização.
 \subsection{Objetivo Geral}\label{objetivo-geral}
 
 ~~~Aplicar técnicas estatísticas de modelagem e previsão de séries
-temporais para apoiar o planejamento estratégico da Sicredi, por meio do
-desenvolvimento de uma ferramenta interativa capaz de gerar previsões e
-simulações para produtos financeiros, receitas e despesas das
-cooperativas da região Nordeste.
+temporais para apoiar o planejamento estratégico da Sicredi no ano de
+2025, por meio do desenvolvimento de uma ferramenta interativa capaz de
+gerar previsões e simulações para produtos financeiros, receitas e
+despesas das cooperativas da região Nordeste.
 
 \subsection{Objetivos Específicos}\label{objetivos-especuxedficos}
 
@@ -649,17 +650,17 @@ final.
 final}\label{recursos-utilizados-para-a-criauxe7uxe3o-da-aplicauxe7uxe3o-final}
 
 ~~~A aplicação final foi desenvolvida com o objetivo de realizar
-previsões dos produtos para que se tivesse uma comparação da agência com
-sua linha de porte e de cluster. A partir disso, seria possível saber se
-o planejamento das agências estavam sendo muito abaixo ou acima do seu
-porte ou cluster e o porquê. Além de integrar a pipeline de machine
-learning criada durante a etapa de modelagem, a aplicação também dispõe
-de funcionalidades interativas que permitem aos usuários explorar os
-dados e visualizar os resultados de forma clara e intuitiva. Para
-alcançar esses objetivos, foram empregadas tecnologias para o
-desenvolvimento do front-end\footnote{Front-end é a parte de um sistema
-  ou aplicação responsável pela interface gráfica e pela interação com o
-  usuário.} e do back-end, que foram desenvolvidos em \textbf{Python}.
+previsões dos produtos para possibilitar a comparação da agência com sua
+linha de porte e de cluster. A partir disso, seria possível verificar se
+o planejamento das agências estava muito abaixo ou acima do seu porte ou
+cluster. Além de integrar a pipeline de machine learning criada durante
+a etapa de modelagem, a aplicação também dispõe de funcionalidades
+interativas que permitem aos usuários explorar os dados e visualizar os
+resultados de forma clara e intuitiva. Para alcançar esses objetivos,
+foram empregadas tecnologias para o desenvolvimento do
+front-end\footnote{Front-end é a parte de um sistema ou aplicação
+  responsável pela interface gráfica e pela interação com o usuário.} e
+do back-end, que foram desenvolvidos em \textbf{Python}.
 
 \vspace{12pt}
 
@@ -745,9 +746,8 @@ então retornado para ser exibido no componente \texttt{Graph}.
 \vspace{12pt}
 
 Para o desenvolvimento do back-end da aplicação foi utilizado o
-framework \href{https://fastapi.tiangolo.com/}{\textbf{FastAPI}}, uma
-ferramenta moderna e eficiente para a criação de APIs em
-\textbf{Python}. O
+\href{https://fastapi.tiangolo.com/}{\textbf{FastAPI}}, uma ferramenta
+moderna e eficiente para a criação de APIs em \textbf{Python}. O
 \href{https://fastapi.tiangolo.com/}{\textbf{FastAPI}} é conhecido por
 sua alta performance, graças ao uso de tipagem estática e a sua
 facilidade de suporte assíncrono, além de permitir a criação de APIs de
@@ -761,14 +761,13 @@ para interação e conexão com bancos de dados.
 \vspace{12pt}
 
 No projeto, o \href{https://www.sqlalchemy.org/}{\textbf{SQLAlchemy}}
-foi utilizado para gerenciar a conexão com o banco de dados,
-implementado com
-\href{https://www.postgresql.org/}{\textbf{PostgresSQL}}, um sistema de
+foi utilizado para gerenciar a conexão com o banco de dados, baseado com
+\href{https://www.postgresql.org/}{\textbf{PostgreSQL}}, um sistema de
 gerenciamento de banco de dados relacional amplamente reconhecido por
 sua robustez e alto desempenho. Isso permitiu que os dados fossem
 expostos na API e consumidos no front-end. Além disso, a API foi
 responsável por expor a pipeline do modelo, possibilitando a realização
-de previsões de dos produtos diretamente na aplicação.
+de previsões dos produtos diretamente na aplicação.
 
 \vspace{12pt}
 
@@ -1454,8 +1453,8 @@ separadamente.
 
 \vspace{12pt}
 
-Assim como com os mínimos quadrados, a regressão ridge busca estimativas
-de coeficientes que se ajustem bem aos dados, tornando o soma dos
+Assim como com os mínimos quadrados, a regressão Ridge busca estimativas
+de coeficientes que se ajustem bem aos dados, tornando a soma dos
 quadrados dos erros pequeno. No entanto, o segundo termo,
 \(\lambda \sum_{j=1}^{p}\beta_{j}^2\), chamado de penalidade de
 encolhimento (shrinkage penalty), é pequeno quando
@@ -1467,14 +1466,14 @@ desses dois termos nas estimativas do coeficiente de regressão.
 \vspace{12pt}
 
 Quando \(\lambda = 0\), o termo de penalidade não tem efeito e a
-regressão ridge produzirá as estimativas dos mínimos quadrados. No
-entanto, conforme \(\lambda \rightarrow \infty\), o impacto da
+regressão Ridge produzirá as estimativas dos mínimos quadrados. No
+entanto, à medida que \(\lambda\) tende ao infinito, o impacto da
 penalidade de encolhimento aumenta e as estimativas do coeficiente de
 regressão ridge se aproximarão de zero.
 
 \vspace{12pt}
 
-Na regressão lasso, a soma dos mínimos quadrados penalizada é dada por:
+Na regressão lasso, a soma penalizada dos mínimos quadrados é dada por:
 
 \[
 \hat{\beta}^{\text{lasso}} = \arg \min_{\beta} \Biggl\{\frac{1}{2}\sum_{i = 1}^{n}\left(y_{i} - \beta_{0} - \sum_{j=1}^{p}x_{ij}\beta_{j}\right)^2 + \lambda \sum_{j=1}^{p}|\beta_{j}| \Biggl\}\text{, }
@@ -1542,9 +1541,9 @@ Consumidor Amplo), que mede a inflação oficial do país; e o IGP-M
 de contratos de aluguel e tarifas em geral. Esses indicadores foram
 considerados como potenciais explicativos para a variação dos produtos
 financeiros analisados. Vale destacar que esses foram os únicos dados
-não extraídos diretamente do Denodo, tratam-se de projeções
-disponibilizadas por economistas do Banco Central do Brasil (BACEN), com
-estimativas futuras para cada indicador até o ano de 2030.
+não extraídos diretamente do Denodo, são de projeções disponibilizadas
+por economistas do Banco Central do Brasil (BACEN), com estimativas
+futuras para cada indicador até o ano de 2030.
 
 \vspace{12pt}
 
@@ -1781,8 +1780,8 @@ maximizar a razão \(l\left(\lambda\right) / g\left(\lambda\right)\).
 \subsection{Otimização de hiperparâmetros com
 optuna}\label{otimizauxe7uxe3o-de-hiperparuxe2metros-com-optuna}
 
-~~~Para otimizar os hiperparâmetros dos modelos foi utilizado a
-bilbioteca \href{https://optuna.org/}{\textbf{Optuna}} da linguagem de
+~~~Para otimizar os hiperparâmetros dos modelos foi utilizada a
+biblioteca \href{https://optuna.org/}{\textbf{Optuna}} da linguagem de
 programação \textbf{Python}. Essa biblioteca implementa diversos métodos
 para otimização automatizada de hiperparâmetros. Para a sua utilização,
 é preciso definir inicialmente uma função objetivo. Por exemplo, para
@@ -1863,7 +1862,7 @@ biblioteca, basta especificá-lo da mesma forma:
 
 A função objetivo definido no
 \href{https://optuna.org/}{\textbf{Optuna}} foi utilizada com a métrica
-de error MAPE (Erro Percentual Absoluto Médio), que entrega boas
+de MAPE (Erro Percentual Absoluto Médio), que entrega boas
 interpretações sobre o comportamento do modelo. Essa métrica mede, em
 termos percentuais, o desvio médio entre os valores estimados e os
 valores observados, oferecendo uma interpretação relativa ao erro.
@@ -1880,22 +1879,63 @@ crescimento. Agora, com esse produto, e de forma mais automatizada,
 basta baixar as bases de dados para que seja possível realizar o
 planejamento das agências.
 
-\textbf{(INSERIR AQUI UMA PÁGINA INICIAL COM APENAS UM PRODUTO
-SELECIONADO)}
+\begin{figure}
+
+\centering{
+
+\includegraphics[width=4.6875in,height=2.60417in]{includes/um_produto_selecionado.png}
+
+}
+
+\caption{\label{fig-um_produto}Seleção de produto para carregamento dos
+dados.}
+
+\end{figure}%
 
 \vspace{12pt}
 
-Como pode ser visto na (\textbf{fig?}), a página inicial do produto
-conta com seletores no cabeçalho. No primeiro seletor, é possível
-escolher entre todos os produtos disponíveis para análise, sendo
-necessário selecionar apenas um. A partir dessa seleção, a base de dados
-é carregada com informações sobre todas as cooperativas, suas
+Como pode ser visto na Figura~\ref{fig-um_produto}, a página inicial do
+produto conta com seletores no cabeçalho. No primeiro seletor, é
+possível escolher entre todos os produtos disponíveis para análise,
+sendo necessário selecionar apenas um. A partir dessa seleção, a base de
+dados é carregada com informações sobre todas as cooperativas, suas
 respectivas agências e o porte ou cluster ao qual cada agência pertence.
 
-\textbf{(INSERIR AQUI O GRÁFICO GERADO NA PÁGINA FINAL. AO LADO, FAZER
-UM FILTRO NO GRÁFICO PARA ATUALIZAR OS CARDS)}
+\begin{figure}
 
-\vspace{12pt}
+\begin{minipage}{0.50\linewidth}
+
+\begin{figure}[H]
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{includes/previsao_2025.png}}
+
+}
+
+\caption{\label{fig-previsao_2025}Geração do gráfico.}
+
+\end{figure}%
+
+\end{minipage}%
+%
+\begin{minipage}{0.50\linewidth}
+
+\begin{figure}[H]
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{includes/previsao_2025_card.png}}
+
+}
+
+\caption{\label{fig-previsao_2025_card}Atualização dos cartões.}
+
+\end{figure}%
+
+\end{minipage}%
+
+\end{figure}%
 
 Após a escolha de valores para todos os seletores, um gráfico de série
 temporal é gerado no cartão principal da página, localizado no centro.
@@ -1906,35 +1946,93 @@ mensal das agências do mesmo porte; e, por fim, a última linha mostra a
 média das 25\% melhores agências considerando todas as agências da
 cooperativa. Além do gráfico, há também cartões que apresentam os
 valores realizados e as previsões correspondentes a cada linha. Por
-padrão, esses cartões exibem a soma acumulada de todo o período da série
-temporal. No entanto, caso desejado, é possível aplicar um filtro para
-selecionar um período específico, atualizando assim os valores exibidos
-nos cartões, como ilustrado na (\textbf{fig?}).
+padrão, esses cartões exibem a soma de todo o período da série temporal.
+No entanto, caso desejado, é possível aplicar um filtro para selecionar
+um período específico, atualizando assim os valores exibidos nos
+cartões, como ilustrado na Figura~\ref{fig-previsao_2025_card}.
 
-\vspace{12pt}
+\begin{figure}
+
+\centering{
+
+\includegraphics[width=4.6875in,height=2.60417in]{includes/simula_cresciment_perc.png}
+
+}
+
+\caption{\label{fig-simula_cresc_perc}Simulação com crescimento
+percentual.}
+
+\end{figure}%
+
+\begin{figure}
+
+\centering{
+
+\includegraphics[width=4.6875in,height=2.60417in]{includes/analitico.png}
+
+}
+
+\caption{\label{fig-analitico}Página de análitico.}
+
+\end{figure}%
 
 Além da visão inicial, foi adicionada uma seção dedicada à realização de
 simulações. Há duas formas de realizar a simulação. A primeira segue o
 modelo utilizado anteriormente, considerando um percentual de
 crescimento mensal com base no mesmo mês do ano anterior (como ilustrado
-na (\textbf{fig?}), em que é simulado um crescimento de 20\% para todos
-os meses). A segunda possibilidade permite simular e analisar a variação
-dos valores da série em função da taxa Selic. Para isso, é necessário
-inserir os valores da Selic nos respectivos meses, na tabela destacada
-em vermelho na (\textbf{fig?}). Por fim, para executar a simulação
-baseada na Selic, basta clicar no botão ``Simule'', que gerará
-automaticamente o gráfico correspondente.
+na Figura~\ref{fig-simula_cresc_perc}, em que é simulado um crescimento
+de 5\% para todos os meses). A segunda possibilidade permite simular e
+analisar a variação dos valores da série em função da taxa Selic. Para
+isso, é necessário inserir os valores da Selic nos respectivos meses, na
+tabela destacada em vermelho. Por fim, para executar a simulação baseada
+na Selic, basta clicar no botão ``Simule'', que gerará automaticamente o
+gráfico correspondente.
 
 \vspace{12pt}
 
-\textbf{(ADICIONAR FIGURA DA PÁGINA DE ANALÍTICO)}
-
-A página final é dedicada à análise analítica. Ela possui uma estrutura
+A página final é dedicada à análise detalhada. Ela possui uma estrutura
 bastante semelhante à da página anterior, porém com os valores pontuais
 dos gráficos apresentados em formato de tabela, como pode ser visto na
-(\textbf{fig?}).
+Figura~\ref{fig-analitico}.
 
 \chapter{Conclusão}\label{conclusuxe3o}
+
+A realização deste estágio na Sicredi proporcionou uma experiência
+valiosa tanto do ponto de vista técnico quanto profissional,
+possibilitando a aplicação prática de conhecimentos estatísticos em um
+contexto real de negócios. Através da modelagem e previsão de séries
+temporais para 26 produtos financeiros, entre receitas e despesas das
+cooperativas da região Nordeste, foi possível compreender de forma
+aprofundada a importância da análise de dados para o planejamento
+estratégico de uma grande instituição financeira cooperativa.
+
+\vspace{12pt}
+
+O produto final desenvolvido --- uma ferramenta interativa para
+visualização de históricos, previsões e simulações --- representa uma
+importante contribuição para a automatização e aprimoramento do processo
+de tomada de decisão dentro da empresa. A solução permite maior
+agilidade, precisão e flexibilidade no acompanhamento do desempenho das
+agências, além de possibilitar análises personalizadas por cluster e
+porte, e a simulação de cenários com base em parâmetros como crescimento
+percentual e variações da taxa Selic.
+
+\vspace{12pt}
+
+Além dos ganhos técnicos, o estágio também proporcionou o
+desenvolvimento de habilidades interpessoais, como a comunicação com
+diferentes equipes, a organização do trabalho em um ambiente corporativo
+e a adaptação a prazos e demandas do mundo profissional. A oportunidade
+de contribuir para uma instituição com a história e a relevância da
+Sicredi reforça a importância do papel do estatístico na geração de
+valor e inovação dentro das organizações.
+
+\vspace{12pt}
+
+Dessa forma, o estágio cumpriu plenamente seus objetivos e consolidou-se
+como uma etapa fundamental para a formação acadêmica e profissional,
+estabelecendo uma base sólida para desafios futuros na área de ciência
+de dados e estatística aplicada
 
 \chapter*{\texorpdfstring{\centering Referências}{Referências}}\label{referuxeancias}
 
