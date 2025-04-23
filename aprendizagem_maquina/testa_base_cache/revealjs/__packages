@@ -1,5 +1,7 @@
-ranger
 dplyr
+recipes
+themis
+ranger
 ggplot2
 kknn
 naivebayes
@@ -21,7 +23,6 @@ scales
 dials
 infer
 modeldata
-recipes
 rsample
 tune
 workflows
@@ -33,6 +34,9 @@ corrplot
 baguette
 MASS
 rpart
-xgboost
-themis
 future
+xgboost
+nnet
+pdp
+DALEX
+DALEXtra

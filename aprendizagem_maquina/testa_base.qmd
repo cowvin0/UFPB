@@ -62,6 +62,9 @@ lang: pt-br
 ### Código
 
 ```{r}
+library(yardstick)
+library(DALEXtra)
+library(pdp)
 library(themis)
 library(ranger)
 library(dplyr)
@@ -407,6 +410,14 @@ psvm_spec <- svm_poly(cost = tune(),
   set_engine("kernlab")  |>
   set_mode("classification")
 
+mlp_spec <- mlp(
+  hidden_units = tune(),
+  penalty = tune(),
+  epochs = tune()
+) |>
+  set_engine("nnet") |>
+  set_mode("classification")
+
 wf = workflow_set(
   preproc = list(rec),
   models = list(
@@ -421,10 +432,12 @@ wf = workflow_set(
 		xgb_fit = xgb_spec,
     lsvm_fit = lsvm_spec,
     rsvm_fit = rsvm_spec,
-    psvm_fit = psvm_spec
+    psvm_fit = psvm_spec,
+    mlp_fit = mlp_spec
     )
   )  |>
   mutate(wflow_id = gsub("(recipe_)", "", wflow_id))
+
 
 grid_ctrl = control_grid(
   save_pred = TRUE,
@@ -496,7 +509,7 @@ model_ids <- c(
   "nbayes_fit", "lda_fit",
   "qda_fit", "dt_fit",
   "bt_fit", "rf_fit", "xgb_fit",
-  "rsvm_fit", "lsvm_fit", "psvm_fit")
+  "rsvm_fit", "lsvm_fit", "psvm_fit", "mlp_fit")
 
 best_sets <- map(model_ids, ~ grid_results %>%
                    extract_workflow_set_result(.x) %>%
@@ -527,7 +540,7 @@ metrics_table <- map_dfr(test_results_list, collect_metrics, .id = "model_id") |
     "Naive Bayes", "LDA",
     "QDA", "Árvore de Decisão", "Boost tree",
     "Floresta aleatória", "XGBoost",
-    "RSVM", "LSVM", "PSVM"
+    "RSVM", "LSVM", "PSVM", "Neural Network"
     )
   ) |>
   relocate(Modelo) |>
@@ -631,8 +644,398 @@ grid_results |>
   extract_workflow_set_result("psvm_fit") |>
   select_by_one_std_err(desc(cost), metric = "roc_auc") |>
   knitr::kable()
+
+# Hiperparâmetros da rede neural
+
+grid_results |>
+  extract_workflow_set_result("mlp_fit") |>
+  select_by_one_std_err(desc(hidden_units), metric = "roc_auc") |>
+  knitr::kable()
 ```
 
+<!-- ## Relação das variáveis com gráficos PDP
+
+::: {.panel-tabset}
+
+### Código
+
+```{r eval=FALSE}
+library(tidymodels)
+library(DALEXtra)
+library(ggplot2)
+library(stringr)
+library(purrr)
+library(dplyr)
+
+best_xgb_result <- grid_results |>
+  extract_workflow_set_result("xgb_fit") |>
+  select_best(metric = "roc_auc")
+
+xgb_wf <- grid_results |>
+  extract_workflow("xgb_fit") |>
+  finalize_workflow(best_xgb_result)
+
+xgb_final_fit <- fit(xgb_wf, data = train_data)
+
+baked_data <- xgb_final_fit |>
+  workflows::extract_preprocessor() |>
+  recipes::prep() |>
+  recipes::bake(new_data = train_data)
+
+available_vars <- names(baked_data)
+
+vars_to_plot <- intersect(c("Pregnancies", "N0", "N8", "N13", "BloodPressure"), available_vars)
+
+xgb_explainer <- explain_tidymodels(
+  xgb_final_fit,
+  data = baked_data,
+  y = as.integer(train_data$Outcome),
+  verbose = FALSE
+)
+
+ice_plots <- lapply(vars_to_plot, function(var) {
+  pd_profile <- model_profile(
+    xgb_explainer,
+    variables = var,
+    N = NULL,
+    type = "partial",
+    groups = NULL
+  )
+
+  as_tibble(pd_profile$agr_profiles) %>%
+    mutate(`_label_` = str_remove(`_label_`, "workflow_")) %>%
+    ggplot(aes(`_x_`, `_yhat_`, color = `_label_`)) +
+    geom_line(size = 1.2, alpha = 0.8) +
+    labs(
+      x = var,
+      y = "Probabilidade predita de Outcome",
+      color = NULL,
+      title = paste("PDP para", var),
+      subtitle = "Modelo XGBoost"
+    ) +
+    theme_minimal()
+})
+
+ice_plots
+```
+
+### PDP
+
+```{r echo=FALSE}
+library(tidymodels)
+library(DALEXtra)
+library(ggplot2)
+library(stringr)
+library(purrr)
+library(dplyr)
+
+best_xgb_result <- grid_results |>
+  extract_workflow_set_result("xgb_fit") |>
+  select_best(metric = "roc_auc")
+
+xgb_wf <- grid_results |>
+  extract_workflow("xgb_fit") |>
+  finalize_workflow(best_xgb_result)
+
+xgb_final_fit <- fit(xgb_wf, data = train_data)
+
+baked_data <- xgb_final_fit |>
+  workflows::extract_preprocessor() |>
+  recipes::prep() |>
+  recipes::bake(new_data = train_data)
+
+available_vars <- names(baked_data)
+
+vars_to_plot <- intersect(c("Pregnancies", "N0", "N8", "N13", "BloodPressure"), available_vars)
+
+xgb_explainer <- explain_tidymodels(
+  xgb_final_fit,
+  data = baked_data,
+  y = as.integer(train_data$Outcome),
+  verbose = FALSE
+)
+
+ice_plots <- lapply(vars_to_plot, function(var) {
+  pd_profile <- model_profile(
+    xgb_explainer,
+    variables = var,
+    N = NULL,
+    type = "partial",
+    groups = NULL
+  )
+
+  as_tibble(pd_profile$agr_profiles) %>%
+    mutate(`_label_` = str_remove(`_label_`, "workflow_")) %>%
+    ggplot(aes(`_x_`, `_yhat_`, color = `_label_`)) +
+    geom_line(size = 1.2, alpha = 0.8) +
+    labs(
+      x = var,
+      y = "Probabilidade predita de Outcome",
+      color = NULL,
+      title = paste("PDP para", var),
+      subtitle = "Modelo XGBoost"
+    ) +
+    theme_minimal()
+})
+
+ice_plots
+```
+
+::: -->
+
+## Matriz de confusão do melhor modelo
+
+```{r}
+test_predictions <- predict(xgb_final_fit, new_data = test_data) |>
+  bind_cols(test_data)
+
+conf_matrix <- conf_mat(test_predictions, truth = Outcome, estimate = .pred_class)
+
+conf_matrix
+```
+
+# Resultados com SMOTE
+
+## Otimização dos hiperparâmetros (SMOTE)
+
+::: {.panel-tabset}
+
+### Código
+
+```{r}
+rec <- recipe(Outcome ~ ., data = train_data) |>
+  step_impute_median(all_numeric_predictors()) |>
+  step_mutate(across(all_numeric_predictors(), log1p)) |>
+  step_mutate(
+    N0 = BMI * SkinThickness,
+    N8 = Age / Insulin,
+    N13 = Glucose / DiabetesPedigreeFunction,
+  ) |>
+  step_smote(Outcome) |>
+  step_nzv(all_numeric_predictors()) |>
+  step_normalize(all_numeric_predictors())
+
+set.seed(123)
+
+cv_folds <- vfold_cv(train_data,
+                     v = 10,
+                     strata = Outcome
+                     )
+
+knn_spec <- nearest_neighbor(neighbors = tune(), weight_func = tune()) |>
+  set_engine("kknn") |>
+  set_mode("classification")
+
+nbayes_spec <- naive_Bayes(smoothness = tune(), Laplace = tune()) |>
+  set_engine("naivebayes") |>
+  set_mode("classification")
+
+lda_spec <- discrim_linear() |>
+  set_engine("MASS") |>
+  set_mode("classification")
+
+qda_spec <- discrim_quad() |>
+  set_engine("MASS") |>
+  set_mode("classification")
+
+logistic_spec <- logistic_reg(
+  engine = "glmnet",
+  penalty = tune(),
+  mixture = tune()
+)
+
+dt_spec <- decision_tree(
+  cost_complexity = tune(),
+  min_n = tune(),
+  tree_depth = tune()) |>
+  set_engine(engine = "rpart") |>
+  set_mode("classification")
+
+rf_spec <- rand_forest(mtry = tune(),
+                       min_n = tune(),
+                       trees = tune()) |>
+  set_engine(engine = "ranger") |>
+  set_mode("classification")
+
+bt_spec <- bag_tree(
+		cost_complexity = tune(),
+		min_n = tune(),
+		tree_depth = tune()
+	) |>
+  	set_engine("rpart") |>
+  	set_mode("classification")
+
+rf_spec <- rand_forest(
+		mtry = tune(),
+		min_n = tune(),
+		trees = tune()
+	) |>
+  	set_engine(engine = "ranger") |>
+  	set_mode("classification")
+
+xgb_spec <- boost_tree(
+	tree_depth = tune(),
+	learn_rate = tune(),
+	loss_reduction = tune(),
+	min_n = tune(),
+	sample_size = tune(),
+	trees = tune(),
+	mtry = tune()
+	) |>
+  	set_engine(engine = "xgboost") |>
+  	set_mode("classification")
+
+lsvm_spec <- svm_linear(cost = tune(),
+                        margin = tune()) |>
+  set_engine(engine = "kernlab") |>
+  set_mode("classification")
+
+rsvm_spec <- svm_rbf(cost = tune(),
+                     rbf_sigma = tune(),
+                     margin = tune()) |>
+  set_engine(engine = "kernlab") |>
+  set_mode("classification")
+
+psvm_spec <- svm_poly(cost = tune(),
+                      degree = tune(),
+                      scale_factor = tune(),
+                      margin = tune()) |>
+  set_engine("kernlab")  |>
+  set_mode("classification")
+
+mlp_spec <- mlp(
+  hidden_units = tune(),
+  penalty = tune(),
+  epochs = tune()
+) |>
+  set_engine("nnet") |>
+  set_mode("classification")
+
+wf = workflow_set(
+  preproc = list(rec),
+  models = list(
+		knn_fit = knn_spec,
+    nbayes_fit = nbayes_spec,
+    lda_fit = lda_spec,
+    qda_fit = qda_spec,
+    linear_fit = logistic_spec,
+		dt_fit = dt_spec,
+		bt_fit = bt_spec,
+		rf_fit = rf_spec,
+		xgb_fit = xgb_spec,
+    lsvm_fit = lsvm_spec,
+    rsvm_fit = rsvm_spec,
+    psvm_fit = psvm_spec,
+    mlp_fit = mlp_spec
+    )
+  )  |>
+  mutate(wflow_id = gsub("(recipe_)", "", wflow_id))
+
+
+grid_ctrl = control_grid(
+  save_pred = TRUE,
+  parallel_over = "resamples",
+  save_workflow = TRUE
+)
+
+grid_results = wf  |>
+  workflow_map(
+    seed = 123,
+    resamples = cv_folds,
+    grid = 50,
+    control = grid_ctrl
+  )
+
+
+```
+
+### Melhores resultados para cada métrica (SMOTE)
+
+```{r echo=FALSE}
+autoplot(grid_results, select_best = TRUE) +
+  theme_bw() +
+  labs(y = "Métrica", x = "")
+```
+
+:::
+
+## Resultado na base de teste (SMOTE)
+
+::: {.panel-tabset}
+
+### Código
+
+```{r}
+results_acc = workflowsets::rank_results(
+  grid_results,
+  select_best = TRUE,
+  rank_metric = "roc_auc"
+  ) |>
+  filter(.metric == "roc_auc") |>
+  dplyr::select(wflow_id, mean, std_err, model, rank)
+
+model_ids <- c(
+  "linear_fit", "knn_fit",
+  "nbayes_fit", "lda_fit",
+  "qda_fit", "dt_fit",
+  "bt_fit", "rf_fit", "xgb_fit",
+  "rsvm_fit", "lsvm_fit", "psvm_fit", "mlp_fit")
+
+best_sets <- map(model_ids, ~ grid_results %>%
+                   extract_workflow_set_result(.x) %>%
+                   select_best(metric = "roc_auc"))
+
+names(best_sets) <- model_ids
+
+test_results <- function(rc_rslts, fit_obj, par_set, split_obj) {
+  rc_rslts %>%
+    extract_workflow(fit_obj) %>%
+    finalize_workflow(par_set) %>%
+    last_fit(
+      split = split_obj,
+      metrics = metric_set(accuracy, roc_auc, brier_class
+      )
+    )
+}
+
+test_results_list <- map2(model_ids, best_sets,
+                          ~ test_results(grid_results, .x, .y, data_split))
+
+metrics_table <- map_dfr(test_results_list, collect_metrics, .id = "model_id") |>
+  dplyr::select(model_id, .metric, .estimate) |>
+  pivot_wider(names_from = .metric, values_from = .estimate) |>
+  mutate(across(where(is.numeric), round, 4)) |>
+  mutate(
+    Modelo = c("Logistic", "K-NN",
+    "Naive Bayes", "LDA",
+    "QDA", "Árvore de Decisão", "Boost tree",
+    "Floresta aleatória", "XGBoost",
+    "RSVM", "LSVM", "PSVM", "Neural Network"
+    )
+  ) |>
+  relocate(Modelo) |>
+  dplyr::select(-model_id)
+
+colnames(metrics_table) <- c("Modelo", "Accuracy", "ROC AUC", "Brier Score")
+
+metrics_table <- as_tibble(metrics_table)
+```
+
+```{r eval=FALSE}
+metrics_table |>
+  arrange(desc(`ROC AUC`)) |>
+  knitr::kable()
+```
+
+### Resultados
+
+```{r echo=FALSE}
+metrics_table |>
+  arrange(desc(`ROC AUC`)) |>
+  knitr::kable()
+```
+
+:::
 
 # Referência
 
