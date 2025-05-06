@@ -224,7 +224,7 @@
 \@ifundefined{codebgcolor}{\definecolor{codebgcolor}{HTML}{F0F2F4}}{}
 \makeatother
 \makeatletter
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, enhanced, boxrule=0pt, sharp corners, breakable, colback={codebgcolor}]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[breakable, frame hidden, boxrule=0pt, enhanced, sharp corners, colback={codebgcolor}]}{\end{tcolorbox}}\fi
 \makeatother
 \makeatletter
 \@ifpackageloaded{algorithm}{}{\usepackage{algorithm}}
@@ -263,7 +263,7 @@
 
 \title{Relatório de estágio supervisionado II}
 \author{Gabriel de Jesus Pereira}
-\date{abril, 2025}
+\date{maio, 2025}
 
 \begin{document}
 \cleardoublepage
@@ -287,7 +287,7 @@
 
 {\large Gabriel de Jesus Pereira \par}
 \vfill
-{\normalsize abril, 2025 \par}
+{\normalsize maio, 2025 \par}
 
 
 \noindent\rule{\textwidth}{0.5pt}
@@ -312,7 +312,7 @@
 \vfill
 
 {\normalsize\bfseries João Pessoa \par}
-{\normalsize\bfseries abril, 2025 \par}
+{\normalsize\bfseries maio, 2025 \par}
 
 }
 \numberwithin{algorithm}{chapter}
@@ -1877,7 +1877,11 @@ eram realizados de forma bastante manual, utilizando-se, em geral, de
 médias móveis simples ou estimativas baseadas em percentuais de
 crescimento. Agora, com esse produto, e de forma mais automatizada,
 basta baixar as bases de dados para que seja possível realizar o
-planejamento das agências.
+planejamento das agências. Na aplicação, para previsão de cada série
+temporal são disponibilizados: o modelo com melhor desempenho de ajuste
+para aquela agência, um método de médias móveis simples com base nos
+últimos três meses e o modelo de Holt-Winters, cuja utilização se
+justifica pela presença de tendência em algumas séries temporais.
 
 \begin{figure}
 
@@ -1986,7 +1990,9 @@ analisar a variação dos valores da série em função da taxa Selic. Para
 isso, é necessário inserir os valores da Selic nos respectivos meses, na
 tabela destacada em vermelho. Por fim, para executar a simulação baseada
 na Selic, basta clicar no botão ``Simule'', que gerará automaticamente o
-gráfico correspondente.
+gráfico correspondente. A simulação é realizada com base em um modelo
+ajustado separadamente, utilizando exclusivamente a taxa Selic como
+variável independente.
 
 \vspace{12pt}
 

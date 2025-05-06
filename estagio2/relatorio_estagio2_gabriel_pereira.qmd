@@ -898,7 +898,7 @@ A função objetivo definido no [**Optuna**](https://optuna.org/) foi utilizada 
 
 # Produto final
 
-\ \ \ O produto final, contendo as previsões dos produtos de investimento, bem como das despesas e receitas das cooperativas do Nordeste, foi desenvolvido com o objetivo de facilitar o processo de planejamento da empresa. Anteriormente, todo o planejamento e o acompanhamento das metas eram realizados de forma bastante manual, utilizando-se, em geral, de médias móveis simples ou estimativas baseadas em percentuais de crescimento. Agora, com esse produto, e de forma mais automatizada, basta baixar as bases de dados para que seja possível realizar o planejamento das agências.
+\ \ \ O produto final, contendo as previsões dos produtos de investimento, bem como das despesas e receitas das cooperativas do Nordeste, foi desenvolvido com o objetivo de facilitar o processo de planejamento da empresa. Anteriormente, todo o planejamento e o acompanhamento das metas eram realizados de forma bastante manual, utilizando-se, em geral, de médias móveis simples ou estimativas baseadas em percentuais de crescimento. Agora, com esse produto, e de forma mais automatizada, basta baixar as bases de dados para que seja possível realizar o planejamento das agências. Na aplicação, para previsão de cada série temporal são disponibilizados: o modelo com melhor desempenho de ajuste para aquela agência, um método de médias móveis simples com base nos últimos três meses e o modelo de Holt-Winters, cuja utilização se justifica pela presença de tendência em algumas séries temporais.
 
 ![Seleção de produto para carregamento dos dados.](includes/um_produto_selecionado.png){#fig-um_produto width=450 height=250}
 
@@ -920,7 +920,7 @@ Após a escolha de valores para todos os seletores, um gráfico de série tempor
 
 ![Página de análitico.](includes/analitico.png){#fig-analitico width=450 height=250}
 
-Além da visão inicial, foi adicionada uma seção dedicada à realização de simulações. Há duas formas de realizar a simulação. A primeira segue o modelo utilizado anteriormente, considerando um percentual de crescimento mensal com base no mesmo mês do ano anterior (como ilustrado na @fig-simula_cresc_perc, em que é simulado um crescimento de 5% para todos os meses). A segunda possibilidade permite simular e analisar a variação dos valores da série em função da taxa Selic. Para isso, é necessário inserir os valores da Selic nos respectivos meses, na tabela destacada em vermelho. Por fim, para executar a simulação baseada na Selic, basta clicar no botão "Simule", que gerará automaticamente o gráfico correspondente.
+Além da visão inicial, foi adicionada uma seção dedicada à realização de simulações. Há duas formas de realizar a simulação. A primeira segue o modelo utilizado anteriormente, considerando um percentual de crescimento mensal com base no mesmo mês do ano anterior (como ilustrado na @fig-simula_cresc_perc, em que é simulado um crescimento de 5% para todos os meses). A segunda possibilidade permite simular e analisar a variação dos valores da série em função da taxa Selic. Para isso, é necessário inserir os valores da Selic nos respectivos meses, na tabela destacada em vermelho. Por fim, para executar a simulação baseada na Selic, basta clicar no botão "Simule", que gerará automaticamente o gráfico correspondente. A simulação é realizada com base em um modelo ajustado separadamente, utilizando exclusivamente a taxa Selic como variável independente.
 
 \vspace{12pt}
 

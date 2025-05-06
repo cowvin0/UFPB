@@ -794,6 +794,14 @@ conf_matrix <- conf_mat(test_predictions, truth = Outcome, estimate = .pred_clas
 conf_matrix
 ```
 
+## Matriz de confusão do melhor modelo
+
+- Acurácia: (TP + TN) / Total = (29 + 91) / 154 ≈ 77,92%
+
+- Precisão: TP / (TP + FP) = 29 / (29 + 25) ≈ 53,7%
+
+- Sensibilidade: TP / (TP + FN) = 29 / (29 + 9) ≈ 76,3%
+
 # Resultados com SMOTE
 
 ## Otimização dos hiperparâmetros (SMOTE)
