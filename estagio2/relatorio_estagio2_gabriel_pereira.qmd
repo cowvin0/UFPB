@@ -914,6 +914,8 @@ Como pode ser visto na @fig-um_produto, a página inicial do produto conta com s
 
 :::
 
+\vspace{12pt}
+
 Após a escolha de valores para todos os seletores, um gráfico de série temporal é gerado no cartão principal da página, localizado no centro. Esse gráfico apresenta quatro linhas: uma representa os valores da agência selecionada para análise; outra, a média mensal das 25% melhores agências dentro do mesmo cluster; a terceira exibe a média mensal das agências do mesmo porte; e, por fim, a última linha mostra a média das 25% melhores agências considerando todas as agências da cooperativa. Além do gráfico, há também cartões que apresentam os valores realizados e as previsões correspondentes a cada linha. Por padrão, esses cartões exibem a soma de todo o período da série temporal. No entanto, caso desejado, é possível aplicar um filtro para selecionar um período específico, atualizando assim os valores exibidos nos cartões, como ilustrado na @fig-previsao_2025_card.
 
 ![Simulação com crescimento percentual.](includes/simula_cresciment_perc.png){#fig-simula_cresc_perc width=450 height=250}
@@ -928,7 +930,7 @@ A página final é dedicada à análise detalhada. Ela possui uma estrutura bast
 
 # Conclusão
 
-A realização deste estágio na Sicredi proporcionou uma experiência valiosa tanto do ponto de vista técnico quanto profissional, possibilitando a aplicação prática de conhecimentos estatísticos em um contexto real de negócios. Através da modelagem e previsão de séries temporais para 26 produtos financeiros, entre receitas e despesas das cooperativas da região Nordeste, foi possível compreender de forma aprofundada a importância da análise de dados para o planejamento estratégico de uma grande instituição financeira cooperativa.
+\ \ \ A realização deste estágio na Sicredi proporcionou uma experiência valiosa tanto do ponto de vista técnico quanto profissional, possibilitando a aplicação prática de conhecimentos estatísticos em um contexto real de negócios. Através da modelagem e previsão de séries temporais para 26 produtos financeiros, entre receitas e despesas das cooperativas da região Nordeste, foi possível compreender de forma aprofundada a importância da análise de dados para o planejamento estratégico de uma grande instituição financeira cooperativa.
 
 \vspace{12pt}
 
